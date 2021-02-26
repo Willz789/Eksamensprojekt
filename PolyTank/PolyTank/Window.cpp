@@ -58,12 +58,22 @@ Window::~Window() {
 	UnregisterClassA(wndClsName, GetModuleHandle(NULL));
 }
 
+HWND Window::getHwnd() const
+{	
+	return hWnd;
+}
+
 void Window::setVisible(bool visible) {
 	ShowWindow(hWnd, visible ? SW_SHOW : SW_HIDE);
 }
 
 bool Window::isVisible() const {
 	return IsWindowVisible(hWnd);
+}
+
+void Window::setResizeCB(std::function<void(uint32_t, uint32_t)> CB)
+{
+	resizeCB = CB;
 }
 
 bool Window::handleMessages() {
@@ -103,5 +113,7 @@ Window* Window::getWndPtr(HWND hWnd) {
 }
 
 void Window::resize(uint32_t w, uint32_t h) {
-	
+	if (resizeCB) {
+		resizeCB(w, h);
+	}
 }
