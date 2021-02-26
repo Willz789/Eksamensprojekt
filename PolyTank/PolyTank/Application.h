@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Window.h"
+#include "Graphics.h"
 
 class Application {
 public:
@@ -10,6 +11,7 @@ public:
 
 private:
 	Window wnd;
+	Graphics gfx;
 
 };
 
