@@ -69,6 +69,9 @@
     <ClCompile Include="InputLayout.cpp">
       <Filter>Source Files\Rendering\Bindables</Filter>
     </ClCompile>
+    <ClCompile Include="PrimitiveTopology.cpp">
+      <Filter>Source Files\Rendering\Bindables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -111,6 +114,9 @@
       <Filter>Header Files\Rendering\Bindables</Filter>
     </ClInclude>
     <ClInclude Include="InputLayout.h">
+      <Filter>Header Files\Rendering\Bindables</Filter>
+    </ClInclude>
+    <ClInclude Include="PrimitiveTopology.h">
       <Filter>Header Files\Rendering\Bindables</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,7 +5,7 @@
 
 using Microsoft::WRL::ComPtr;
 
-VertexShader::VertexShader(Graphics& gfx, const std::filesystem::path& file) {
+VertexShader::VertexShader(Graphics& gfx, const std::filesystem::path& file, ID3DBlob** ppBlob) {
 	ComPtr<ID3DBlob> pBlob;
 	
 	if (file.extension() == ".hlsl") {
@@ -15,6 +15,11 @@ VertexShader::VertexShader(Graphics& gfx, const std::filesystem::path& file) {
 	}
 	
 	tif(gfx.getDvc()->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pShader));
+
+	if (ppBlob) {
+		pBlob->AddRef();
+		*ppBlob = pBlob.Get();
+	}
 }
 
 void VertexShader::bind(Graphics& gfx) {

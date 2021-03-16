@@ -4,7 +4,8 @@
 #include "IndexBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
-#include "ConstantBuffer.h"
+#include "InputLayout.h"
+#include "PrimitiveTopology.h"
 
 #include <stdexcept>
 
@@ -82,15 +83,27 @@ Graphics::Graphics(HWND hwnd)
 		3, 5, 1, 5, 3, 7  // right    
 	};
 
+	std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+
 	std::shared_ptr<VertexBuffer> pvb = std::make_shared<VertexBuffer>(*this, vertices);
 	std::shared_ptr<IndexBuffer> pib = std::make_shared<IndexBuffer>(*this, indices);
-	std::shared_ptr<VertexShader> pvs = std::make_shared<VertexShader>(*this, "./ShaderBin/VertexShader.cso");
+
+	ComPtr<ID3DBlob> pBlob;
+	std::shared_ptr<VertexShader> pvs = std::make_shared<VertexShader>(*this, "./ShaderBin/VertexShader.cso", &pBlob);
 	std::shared_ptr<PixelShader> pps = std::make_shared<PixelShader>(*this, "./ShaderBin/PixelShader.cso");
+
+	std::shared_ptr<InputLayout> pil = std::make_shared<InputLayout>(*this, inputElements, pBlob.Get());
+	std::shared_ptr<PrimitiveTopology> ppt = std::make_shared<PrimitiveTopology>(*this, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	cube.addBindable(pvb);
 	cube.addBindable(pib);
 	cube.addBindable(pvs);
 	cube.addBindable(pps);
+	cube.addBindable(pil);
+	cube.addBindable(ppt);
 
 	return;
 }
@@ -161,20 +174,6 @@ void Graphics::beginFrame()
 	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1, 0);
 	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), pDSV.Get());
 
-	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	ComPtr<ID3DBlob> pBlob;
-	tif(D3DReadFileToBlob(L"./ShaderBin/VertexShader.cso", &pBlob));
-	
-	D3D11_INPUT_ELEMENT_DESC inputElements[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-
-	ComPtr<ID3D11InputLayout> pLayout;
-	tif(pDevice->CreateInputLayout(inputElements, std::size(inputElements), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pLayout));
-
-	pContext->IASetInputLayout(pLayout.Get());
 
 	static uint32_t frameCount = 0;
 	frameCount++;

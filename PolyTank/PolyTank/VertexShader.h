@@ -10,7 +10,7 @@
 class VertexShader : public IBindable {
 public:
 	VertexShader() = default;
-	VertexShader(Graphics& gfx, const std::filesystem::path& file);
+	VertexShader(Graphics& gfx, const std::filesystem::path& file, ID3DBlob** ppBlob = nullptr);
 
 	void bind(Graphics& gfx) override;
 
