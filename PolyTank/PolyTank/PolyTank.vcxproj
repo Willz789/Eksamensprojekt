@@ -142,9 +142,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="Interaction.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PixelShader.cpp" />
@@ -155,10 +157,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="IBindable.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="InputLayout.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="ShaderCommon.h" />
     <ClInclude Include="Interaction.h" />

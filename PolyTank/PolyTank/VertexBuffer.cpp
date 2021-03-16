@@ -1,4 +1,5 @@
 #include "VertexBuffer.h"
+#include "Graphics.h"
 #include "Util.h"
 
 VertexBuffer::VertexBuffer(Graphics& gfx, const std::vector<Vertex>& vertices) {

@@ -6,6 +6,7 @@
 #include <wrl.h>
 
 #include "Drawable.h"
+#include "ConstantBuffer.h"
 
 class Graphics
 {
@@ -24,9 +25,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext;
 
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRTV;
-
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
 
 	Drawable cube;
+	
+	VSConstantBuffer perFrameCBuf;
+
 };
 

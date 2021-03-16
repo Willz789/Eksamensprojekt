@@ -1,6 +1,10 @@
-cbuffer Transform : register(b0) {
+
+cbuffer PerFrame : register(b0) {
+    float4x4 cameraProjection;
+};
+
+cbuffer PerObject : register(b1) {
     float4x4 transform;
-    float4x4 projection;
 };
 
 struct Input
@@ -19,7 +23,7 @@ Output main(Input input)
 {    
     Output output;
     output.pos = mul(float4(input.pos, 1.0f), transform);
-    output.pos = mul(output.pos, projection);
+    output.pos = mul(output.pos, cameraProjection);
     output.color = input.color;
     
     return output;

@@ -1,4 +1,5 @@
 #include "IndexBuffer.h"
+#include "Graphics.h"
 #include "Util.h"
 
 #include <assert.h>

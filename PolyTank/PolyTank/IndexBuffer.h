@@ -1,7 +1,9 @@
 #pragma once
 
 #include "IBindable.h"
-#include "Graphics.h"
+
+#include <d3d11.h>
+#include <wrl.h>
 
 #include <stdint.h>
 #include <vector>

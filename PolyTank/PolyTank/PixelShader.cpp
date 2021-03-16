@@ -1,4 +1,5 @@
 #include "PixelShader.h"
+#include "Graphics.h"
 #include "Util.h"
 #include "ShaderCommon.h"
 

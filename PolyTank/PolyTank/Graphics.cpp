@@ -4,6 +4,7 @@
 #include "IndexBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "ConstantBuffer.h"
 
 #include <stdexcept>
 
@@ -55,9 +56,12 @@ Graphics::Graphics(HWND hwnd)
 		nullptr,
 		&pContext
 	);
+
 	if (hRes != S_OK) {
 		throw std::runtime_error("Failed to create device and swapchain");
 	}
+
+	perFrameCBuf = VSConstantBuffer(*this, 0, sizeof(XMMATRIX));
 
 	std::vector<Vertex> vertices = {
 		{ { +1.0f, +1.0f, +1.0f }, { 1.0f, 1.0f, 1.0f } },
@@ -175,29 +179,14 @@ void Graphics::beginFrame()
 	static uint32_t frameCount = 0;
 	frameCount++;
 
-	struct {
-		XMMATRIX transform = XMMatrixTranspose(XMMatrixRotationY(frameCount * 0.001) * XMMatrixTranslation(0, 0, -5));
-		XMMATRIX projection = XMMatrixTranspose(XMMatrixPerspectiveFovRH(1.05, 1.77777, 0.01, 1000));
-	} dMatrix;
-
-	D3D11_BUFFER_DESC cbDesc;
-	cbDesc.ByteWidth = sizeof(dMatrix);
-	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cbDesc.MiscFlags = 0;
-	cbDesc.StructureByteStride = 0;
-
-	ComPtr<ID3D11Buffer> pcBuff;
-	tif(pDevice->CreateBuffer(&cbDesc, nullptr, &pcBuff));
-
-	D3D11_MAPPED_SUBRESOURCE map;
-
-	pContext->Map(pcBuff.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-
-	memcpy(map.pData, &dMatrix, sizeof(dMatrix));
-	pContext->Unmap(pcBuff.Get(), 0);
-	pContext->VSSetConstantBuffers(0, 1, pcBuff.GetAddressOf());
+	XMMATRIX projection = XMMatrixTranspose(XMMatrixPerspectiveFovRH(1.05, 1.77777, 0.01, 1000));
+	perFrameCBuf.update(*this, projection);
+	perFrameCBuf.bind(*this);
+	
+	XMMATRIX transform = XMMatrixTranspose(XMMatrixRotationY(frameCount * 0.001) * XMMatrixTranslation(0, 0, -5));
+	VSConstantBuffer vcb(*this, 1, sizeof(transform));
+	vcb.update(*this, transform);
+	vcb.bind(*this);
 
 	cube.draw(*this);
 }
