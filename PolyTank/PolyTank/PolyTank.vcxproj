@@ -145,6 +145,7 @@
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="Interaction.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="ShaderCommon.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="ShaderCommon.h" />
+    <ClInclude Include="Interaction.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexShader.h" />

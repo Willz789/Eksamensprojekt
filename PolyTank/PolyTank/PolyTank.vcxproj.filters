@@ -59,6 +59,8 @@
     </ClCompile>
     <ClCompile Include="PixelShader.cpp">
       <Filter>Source Files\Rendering\Bindables</Filter>
+    <ClCompile Include="Interaction.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +96,8 @@
     </ClInclude>
     <ClInclude Include="PixelShader.h">
       <Filter>Header Files\Rendering\Bindables</Filter>
+    <ClInclude Include="Interaction.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

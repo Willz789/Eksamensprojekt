@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Interaction.h"
+
 #include <string>
 #include <stdint.h>
 #include <unordered_map>
@@ -29,6 +31,7 @@ private:
 
 private:
 	HWND hWnd;
+	Interaction interaction;
 
 	static std::unordered_map<HWND, Window*> hWndToWnd;
 	static constexpr char wndClsName[] = "PolyTankWndCls";
