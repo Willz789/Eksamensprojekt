@@ -2,6 +2,8 @@
 #include "Util.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexShader.h"
+#include "PixelShader.h"
 
 #include <stdexcept>
 
@@ -67,9 +69,6 @@ Graphics::Graphics(HWND hwnd)
 		{ { +1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f } },
 		{ { -1.0f, -1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f } }
 	};
-
-	std::shared_ptr<VertexBuffer> pvb = std::make_shared<VertexBuffer>(*this, vertices);
-
 	std::vector<Index> indices = {
 		2, 1, 0, 1, 2, 3, // front
 		5, 6, 4, 6, 5, 7, // back
@@ -79,10 +78,15 @@ Graphics::Graphics(HWND hwnd)
 		3, 5, 1, 5, 3, 7  // right    
 	};
 
+	std::shared_ptr<VertexBuffer> pvb = std::make_shared<VertexBuffer>(*this, vertices);
 	std::shared_ptr<IndexBuffer> pib = std::make_shared<IndexBuffer>(*this, indices);
+	std::shared_ptr<VertexShader> pvs = std::make_shared<VertexShader>(*this, "./ShaderBin/VertexShader.cso");
+	std::shared_ptr<PixelShader> pps = std::make_shared<PixelShader>(*this, "./ShaderBin/PixelShader.cso");
 
 	cube.addBindable(pvb);
 	cube.addBindable(pib);
+	cube.addBindable(pvs);
+	cube.addBindable(pps);
 
 	return;
 }
@@ -153,17 +157,11 @@ void Graphics::beginFrame()
 	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1, 0);
 	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), pDSV.Get());
 
-	
 	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 
 	ComPtr<ID3DBlob> pBlob;
 	tif(D3DReadFileToBlob(L"./ShaderBin/VertexShader.cso", &pBlob));
-	ComPtr<ID3D11VertexShader> pVertexShader;
-	tif(pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
-	pContext->VSSetShader(pVertexShader.Get(), nullptr, 0);
-
-
+	
 	D3D11_INPUT_ELEMENT_DESC inputElements[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
@@ -174,30 +172,24 @@ void Graphics::beginFrame()
 
 	pContext->IASetInputLayout(pLayout.Get());
 
-	tif(D3DReadFileToBlob(L"./ShaderBin/PixelShader.cso", &pBlob));
-	ComPtr<ID3D11PixelShader> pPixelShader;
-	tif(pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
-	pContext->PSSetShader(pPixelShader.Get(), nullptr, 0);
+	static uint32_t frameCount = 0;
+	frameCount++;
+
+	struct {
+		XMMATRIX transform = XMMatrixTranspose(XMMatrixRotationY(frameCount * 0.001) * XMMatrixTranslation(0, 0, -5));
+		XMMATRIX projection = XMMatrixTranspose(XMMatrixPerspectiveFovRH(1.05, 1.77777, 0.01, 1000));
+	} dMatrix;
 
 	D3D11_BUFFER_DESC cbDesc;
-	cbDesc.ByteWidth = sizeof(float) * 16*2;
+	cbDesc.ByteWidth = sizeof(dMatrix);
 	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
 	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	cbDesc.MiscFlags = 0;
 	cbDesc.StructureByteStride = 0;
 
-
 	ComPtr<ID3D11Buffer> pcBuff;
 	tif(pDevice->CreateBuffer(&cbDesc, nullptr, &pcBuff));
-
-	static uint32_t frameCount = 0;
-	frameCount++;
-
-	struct {
-		XMMATRIX transform = XMMatrixTranspose(XMMatrixRotationY(frameCount*0.001)*XMMatrixTranslation(0, 0, -5));
-		XMMATRIX projection = XMMatrixTranspose(XMMatrixPerspectiveFovRH(1.05, 1.77777, 0.01, 1000));
-	} dMatrix ;
 
 	D3D11_MAPPED_SUBRESOURCE map;
 

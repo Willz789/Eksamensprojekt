@@ -51,6 +51,15 @@
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>Source Files\Rendering\Bindables</Filter>
     </ClCompile>
+    <ClCompile Include="VertexShader.cpp">
+      <Filter>Source Files\Rendering\Bindables</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderCommon.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="PixelShader.cpp">
+      <Filter>Source Files\Rendering\Bindables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -75,6 +84,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IndexBuffer.h">
+      <Filter>Header Files\Rendering\Bindables</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>Header Files\Rendering\Bindables</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCommon.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelShader.h">
       <Filter>Header Files\Rendering\Bindables</Filter>
     </ClInclude>
   </ItemGroup>
