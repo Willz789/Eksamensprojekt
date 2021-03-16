@@ -21,5 +21,7 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRTV;
 
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
+
 };
 

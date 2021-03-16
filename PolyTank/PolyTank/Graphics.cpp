@@ -78,10 +78,31 @@ void Graphics::resize()
 
 	tif(pDevice->CreateRenderTargetView(pBackBuffer.Get(), &rtvDesc, &pRTV));
 	
-
 	DXGI_SWAP_CHAIN_DESC swapDesc;
 	pSwapChain->GetDesc(&swapDesc);
 
+	ComPtr<ID3D11Texture2D> pText;
+	D3D11_TEXTURE2D_DESC textDesc;
+	textDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	textDesc.ArraySize = 1;
+	textDesc.MipLevels = 1;
+	textDesc.Usage = D3D11_USAGE_DEFAULT;
+	textDesc.SampleDesc.Count = 1;
+	textDesc.SampleDesc.Quality = 0;
+	textDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	textDesc.CPUAccessFlags = 0;
+	textDesc.MiscFlags = 0;
+	textDesc.Width = swapDesc.BufferDesc.Width;
+	textDesc.Height = swapDesc.BufferDesc.Height;
+	tif(pDevice->CreateTexture2D(&textDesc, nullptr, &pText));
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	dsvDesc.Texture2D.MipSlice = 0;
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.Flags = 0;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+	tif(pDevice->CreateDepthStencilView(pText.Get(), &dsvDesc, &pDSV));
 
 	D3D11_VIEWPORT viewport;
 	viewport.TopLeftX = 0;
@@ -104,7 +125,8 @@ void Graphics::beginFrame()
 	};
 
 	pContext->ClearRenderTargetView(pRTV.Get(), colArr);
-	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), nullptr);
+	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1, 0);
+	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), pDSV.Get());
 
 	
 	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
