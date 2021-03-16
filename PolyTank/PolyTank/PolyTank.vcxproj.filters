@@ -51,6 +51,9 @@
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>Source Files\Rendering\Bindables</Filter>
     </ClCompile>
+    <ClCompile Include="Interaction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -76,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="IndexBuffer.h">
       <Filter>Header Files\Rendering\Bindables</Filter>
+    </ClInclude>
+    <ClInclude Include="Interaction.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

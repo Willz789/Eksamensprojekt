@@ -143,6 +143,7 @@
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="Interaction.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="IBindable.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="Interaction.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Window.h" />
