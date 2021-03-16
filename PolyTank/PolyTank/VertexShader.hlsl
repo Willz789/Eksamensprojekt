@@ -1,3 +1,8 @@
+cbuffer Transform : register(b0) {
+    float4x4 transform;
+    float4x4 projection;
+};
+
 struct Input
 {
     float3 pos : POSITION;
@@ -13,7 +18,8 @@ struct Output
 Output main(Input input) 
 {    
     Output output;
-    output.pos = float4(input.pos, 1.0f);
+    output.pos = mul(float4(input.pos, 1.0f), transform);
+    output.pos = mul(output.pos, projection);
     output.color = input.color;
     
     return output;

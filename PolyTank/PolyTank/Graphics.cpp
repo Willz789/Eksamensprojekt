@@ -3,12 +3,15 @@
 
 #include <d3dcompiler.h>
 
+#include <DirectXMath.h>
+
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
 
 using Microsoft::WRL::ComPtr;
+using namespace DirectX;
 
 void tif(HRESULT hres) {
 	if (hres != S_OK) {
@@ -103,8 +106,6 @@ void Graphics::beginFrame()
 	pContext->ClearRenderTargetView(pRTV.Get(), colArr);
 	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), nullptr);
 
-
-
 	
 	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -113,19 +114,24 @@ void Graphics::beginFrame()
 		float r, g, b;
 	};
 
+	Vertex vertices[] = {
+		{ +1.0f, +1.0f, +1.0f, 1.0f, 1.0f, 1.0f },
+		{ -1.0f, +1.0f, +1.0f, 0.0f, 1.0f, 1.0f },
+		{ +1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 1.0f },
+		{ -1.0f, -1.0f, +1.0f, 0.0f, 0.0f, 1.0f },
+		{ +1.0f, +1.0f, -1.0f, 1.0f, 1.0f, 0.0f },
+		{ -1.0f, +1.0f, -1.0f, 0.0f, 1.0f, 0.0f },
+		{ +1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f },
+		{ -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f }
+	};
+
 	D3D11_BUFFER_DESC vbDesc;
-	vbDesc.ByteWidth = sizeof(Vertex) * 3;
+	vbDesc.ByteWidth = sizeof(Vertex) * std::size(vertices);
 	vbDesc.Usage = D3D11_USAGE_DEFAULT;
 	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDesc.CPUAccessFlags = 0;
 	vbDesc.MiscFlags = 0;
 	vbDesc.StructureByteStride = 0;
-
-	Vertex vertices[] = {
-		{ 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f },
-		{ 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
-		{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f }
-	};
 
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = vertices;
@@ -139,6 +145,34 @@ void Graphics::beginFrame()
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	pContext->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &stride, &offset);
+
+	// 
+	uint32_t indices[] = {
+		2, 1, 0, 1, 2, 3, // front
+		5, 6, 4, 6, 5, 7, // back
+		6, 3, 2, 3, 6, 7, // bottom
+		1, 4, 0, 4, 1, 5, // top
+		4, 2, 0, 2, 4, 6, // left
+		3, 5, 1, 5, 3, 7  // right    
+	};
+
+	D3D11_BUFFER_DESC ibDesc;
+	ibDesc.ByteWidth = sizeof(UINT32) * std::size(indices);
+	ibDesc.Usage = D3D11_USAGE_DEFAULT;
+	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibDesc.CPUAccessFlags = 0;
+	ibDesc.MiscFlags = 0;
+	ibDesc.StructureByteStride = 0;
+
+	data.pSysMem = indices;
+	data.SysMemPitch = 0;
+	data.SysMemSlicePitch = 0;
+
+	ComPtr<ID3D11Buffer> pIndexBuffer;
+
+	tif(pDevice->CreateBuffer(&ibDesc, &data, &pIndexBuffer));
+	pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
 
 
 	ComPtr<ID3DBlob> pBlob;
@@ -163,7 +197,34 @@ void Graphics::beginFrame()
 	tif(pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
 	pContext->PSSetShader(pPixelShader.Get(), nullptr, 0);
 
-	pContext->Draw(3, 0);
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(float) * 16*2;
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	ComPtr<ID3D11Buffer> pcBuff;
+	tif(pDevice->CreateBuffer(&cbDesc, &data, &pcBuff));
+
+	static uint32_t frameCount = 0;
+	frameCount++;
+
+	struct {
+		XMMATRIX transform = XMMatrixTranspose(XMMatrixRotationY(frameCount*0.001)*XMMatrixTranslation(0, 0, -5));
+		XMMATRIX projection = XMMatrixTranspose(XMMatrixPerspectiveFovRH(1.05, 1.77777, 0.01, 1000));
+	} dMatrix ;
+
+	D3D11_MAPPED_SUBRESOURCE map;
+
+	pContext->Map(pcBuff.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+
+	memcpy(map.pData, &dMatrix, sizeof(dMatrix));
+	pContext->Unmap(pcBuff.Get(), 0);
+	pContext->VSSetConstantBuffers(0, 1, pcBuff.GetAddressOf());
+
+	pContext->DrawIndexed(std::size(indices), 0, 0);
 }
 
 void Graphics::endFrame()
