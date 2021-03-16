@@ -1,8 +1,11 @@
 #include "Graphics.h"
+#include "Util.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+
 #include <stdexcept>
 
 #include <d3dcompiler.h>
-
 #include <DirectXMath.h>
 
 #pragma comment(lib, "d3d11.lib")
@@ -12,12 +15,6 @@
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
-
-void tif(HRESULT hres) {
-	if (hres != S_OK) {
-		throw std::runtime_error("Bad HRESULT");
-	}
-}
 
 Graphics::Graphics(HWND hwnd)
 {
@@ -59,6 +56,34 @@ Graphics::Graphics(HWND hwnd)
 	if (hRes != S_OK) {
 		throw std::runtime_error("Failed to create device and swapchain");
 	}
+
+	std::vector<Vertex> vertices = {
+		{ { +1.0f, +1.0f, +1.0f }, { 1.0f, 1.0f, 1.0f } },
+		{ { -1.0f, +1.0f, +1.0f }, { 0.0f, 1.0f, 1.0f } },
+		{ { +1.0f, -1.0f, +1.0f }, { 1.0f, 0.0f, 1.0f } },
+		{ { -1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f, 1.0f } },
+		{ { +1.0f, +1.0f, -1.0f }, { 1.0f, 1.0f, 0.0f } },
+		{ { -1.0f, +1.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
+		{ { +1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f } },
+		{ { -1.0f, -1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f } }
+	};
+
+	std::shared_ptr<VertexBuffer> pvb = std::make_shared<VertexBuffer>(*this, vertices);
+
+	std::vector<Index> indices = {
+		2, 1, 0, 1, 2, 3, // front
+		5, 6, 4, 6, 5, 7, // back
+		6, 3, 2, 3, 6, 7, // bottom
+		1, 4, 0, 4, 1, 5, // top
+		4, 2, 0, 2, 4, 6, // left
+		3, 5, 1, 5, 3, 7  // right    
+	};
+
+	std::shared_ptr<IndexBuffer> pib = std::make_shared<IndexBuffer>(*this, indices);
+
+	cube.addBindable(pvb);
+	cube.addBindable(pib);
+
 	return;
 }
 
@@ -131,71 +156,6 @@ void Graphics::beginFrame()
 	
 	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	struct Vertex {
-		float x, y, z;
-		float r, g, b;
-	};
-
-	Vertex vertices[] = {
-		{ +1.0f, +1.0f, +1.0f, 1.0f, 1.0f, 1.0f },
-		{ -1.0f, +1.0f, +1.0f, 0.0f, 1.0f, 1.0f },
-		{ +1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 1.0f },
-		{ -1.0f, -1.0f, +1.0f, 0.0f, 0.0f, 1.0f },
-		{ +1.0f, +1.0f, -1.0f, 1.0f, 1.0f, 0.0f },
-		{ -1.0f, +1.0f, -1.0f, 0.0f, 1.0f, 0.0f },
-		{ +1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f },
-		{ -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f }
-	};
-
-	D3D11_BUFFER_DESC vbDesc;
-	vbDesc.ByteWidth = sizeof(Vertex) * std::size(vertices);
-	vbDesc.Usage = D3D11_USAGE_DEFAULT;
-	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbDesc.CPUAccessFlags = 0;
-	vbDesc.MiscFlags = 0;
-	vbDesc.StructureByteStride = 0;
-
-	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = vertices;
-	data.SysMemPitch = 0;
-	data.SysMemSlicePitch = 0;
-
-	ComPtr<ID3D11Buffer> pVertexBuffer;
-
-	tif(pDevice->CreateBuffer(&vbDesc, &data, &pVertexBuffer));
-
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	pContext->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &stride, &offset);
-
-	// 
-	uint32_t indices[] = {
-		2, 1, 0, 1, 2, 3, // front
-		5, 6, 4, 6, 5, 7, // back
-		6, 3, 2, 3, 6, 7, // bottom
-		1, 4, 0, 4, 1, 5, // top
-		4, 2, 0, 2, 4, 6, // left
-		3, 5, 1, 5, 3, 7  // right    
-	};
-
-	D3D11_BUFFER_DESC ibDesc;
-	ibDesc.ByteWidth = sizeof(UINT32) * std::size(indices);
-	ibDesc.Usage = D3D11_USAGE_DEFAULT;
-	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibDesc.CPUAccessFlags = 0;
-	ibDesc.MiscFlags = 0;
-	ibDesc.StructureByteStride = 0;
-
-	data.pSysMem = indices;
-	data.SysMemPitch = 0;
-	data.SysMemSlicePitch = 0;
-
-	ComPtr<ID3D11Buffer> pIndexBuffer;
-
-	tif(pDevice->CreateBuffer(&ibDesc, &data, &pIndexBuffer));
-	pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
-
 
 	ComPtr<ID3DBlob> pBlob;
 	tif(D3DReadFileToBlob(L"./ShaderBin/VertexShader.cso", &pBlob));
@@ -227,8 +187,9 @@ void Graphics::beginFrame()
 	cbDesc.MiscFlags = 0;
 	cbDesc.StructureByteStride = 0;
 
+
 	ComPtr<ID3D11Buffer> pcBuff;
-	tif(pDevice->CreateBuffer(&cbDesc, &data, &pcBuff));
+	tif(pDevice->CreateBuffer(&cbDesc, nullptr, &pcBuff));
 
 	static uint32_t frameCount = 0;
 	frameCount++;
@@ -246,10 +207,18 @@ void Graphics::beginFrame()
 	pContext->Unmap(pcBuff.Get(), 0);
 	pContext->VSSetConstantBuffers(0, 1, pcBuff.GetAddressOf());
 
-	pContext->DrawIndexed(std::size(indices), 0, 0);
+	cube.draw(*this);
 }
 
 void Graphics::endFrame()
 {
 	pSwapChain->Present(0, 0);
+}
+
+ID3D11Device* Graphics::getDvc() {
+	return pDevice.Get();
+}
+
+ID3D11DeviceContext* Graphics::getCtx() {
+	return pContext.Get();
 }

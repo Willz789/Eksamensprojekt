@@ -5,6 +5,7 @@
 #include <d3d11_4.h>
 #include <wrl.h>
 
+#include "Drawable.h"
 
 class Graphics
 {
@@ -13,6 +14,9 @@ public:
 	void resize();
 	void beginFrame();
 	void endFrame();
+
+	ID3D11Device* getDvc();
+	ID3D11DeviceContext* getCtx();
 
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain;
@@ -23,5 +27,6 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
 
+	Drawable cube;
 };
 
