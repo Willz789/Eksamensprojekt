@@ -1,11 +1,12 @@
 #pragma once
 
 #include <Windows.h>
+#include <wrl.h>
 #include <dxgi1_6.h>
 #include <d3d11_4.h>
-#include <wrl.h>
+#include <DirectXMath.h>
 
-#include "Drawable.h"
+#include "BindableManager.h"
 #include "ConstantBuffer.h"
 
 class Graphics
@@ -15,9 +16,11 @@ public:
 	void resize();
 	void beginFrame();
 	void endFrame();
+	void drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform);
 
 	ID3D11Device* getDvc();
 	ID3D11DeviceContext* getCtx();
+	BindableManager* getBindMgr();
 
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain;
@@ -27,9 +30,10 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRTV;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
 
-	Drawable cube;
+	BindableManager bindMgr;
 	
 	VSConstantBuffer perFrameCBuf;
+	VSConstantBuffer perObjectCBuf;
 
 };
 

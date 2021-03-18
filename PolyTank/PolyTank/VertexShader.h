@@ -14,6 +14,8 @@ public:
 
 	void bind(Graphics& gfx) override;
 
+	static std::string uid(const std::filesystem::path& file, ID3DBlob** ppBlob = nullptr);
+
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> pShader;
 

@@ -7,3 +7,7 @@ PrimitiveTopology::PrimitiveTopology(Graphics& gfx, D3D11_PRIMITIVE_TOPOLOGY top
 void PrimitiveTopology::bind(Graphics& gfx) {
 	gfx.getCtx()->IASetPrimitiveTopology(topology);
 }
+
+std::string PrimitiveTopology::uid(D3D11_PRIMITIVE_TOPOLOGY topology) {
+	return "PT:" + std::to_string(topology);
+}

@@ -13,6 +13,8 @@ public:
 
 	void bind(Graphics& gfx) override;
 
+	static std::string uid(const std::filesystem::path& file);
+
 private:
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pShader;
 

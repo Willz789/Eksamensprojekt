@@ -72,6 +72,9 @@
     <ClCompile Include="PrimitiveTopology.cpp">
       <Filter>Source Files\Rendering\Bindables</Filter>
     </ClCompile>
+    <ClCompile Include="BindableManager.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -118,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="PrimitiveTopology.h">
       <Filter>Header Files\Rendering\Bindables</Filter>
+    </ClInclude>
+    <ClInclude Include="BindableManager.h">
+      <Filter>Header Files\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

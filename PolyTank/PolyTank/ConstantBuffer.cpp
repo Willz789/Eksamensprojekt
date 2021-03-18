@@ -2,6 +2,8 @@
 #include "Graphics.h"
 #include "Util.h"
 
+#include <sstream>
+
 ConstantBuffer::ConstantBuffer(Graphics& gfx, uint32_t slot, size_t byteSize) : slot(slot) {
 	
 	D3D11_BUFFER_DESC desc;
@@ -22,9 +24,13 @@ void ConstantBuffer::update(Graphics& gfx, const void* pValue, size_t valueSize)
 	gfx.getCtx()->Unmap(pBuf.Get(), 0);
 }
 
-#define IMPL_CBUF(SS)													\
-void SS##ConstantBuffer::bind(Graphics& gfx) {							\
-	gfx.getCtx()->SS##SetConstantBuffers(slot, 1, pBuf.GetAddressOf());	\
+#define IMPL_CBUF(SS)															\
+void SS##ConstantBuffer::bind(Graphics& gfx) {									\
+	gfx.getCtx()->SS##SetConstantBuffers(slot, 1, pBuf.GetAddressOf());			\
+}																				\
+																				\
+std::string SS##ConstantBuffer::uid(uint32_t slot, size_t byteSize) {			\
+	return (std::stringstream("CB("#SS"):") << slot << ";" << byteSize).str();	\
 }
 
 IMPL_CBUF(VS)

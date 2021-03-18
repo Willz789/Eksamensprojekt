@@ -2,6 +2,8 @@
 #include "IndexBuffer.h"
 #include "Graphics.h"
 
+using namespace DirectX;
+
 void Drawable::addBindable(std::shared_ptr<IBindable> bindable) {
 
 	std::shared_ptr<IndexBuffer> pib = std::dynamic_pointer_cast<IndexBuffer>(bindable);
@@ -12,12 +14,11 @@ void Drawable::addBindable(std::shared_ptr<IBindable> bindable) {
 	bindables.push_back(bindable);
 }
 
-void Drawable::draw(Graphics& gfx) const {
+void Drawable::draw(Graphics& gfx, FXMMATRIX transform) const {
 	
 	for (const auto& pb : bindables) {
 		pb->bind(gfx);
 	}
 
-	gfx.getCtx()->DrawIndexed(indexBufferSize, 0, 0);
-
+	gfx.drawIndexed(indexBufferSize, transform);
 }

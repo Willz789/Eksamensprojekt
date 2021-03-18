@@ -1,11 +1,5 @@
 #include "Graphics.h"
 #include "Util.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexShader.h"
-#include "PixelShader.h"
-#include "InputLayout.h"
-#include "PrimitiveTopology.h"
 
 #include <stdexcept>
 
@@ -15,13 +9,14 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "dxguid.lib")
 
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
-Graphics::Graphics(HWND hwnd)
-{
+Graphics::Graphics(HWND hwnd) :
+	bindMgr(*this) {
 	D3D_FEATURE_LEVEL fLevels[] = {
 		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0
@@ -63,49 +58,7 @@ Graphics::Graphics(HWND hwnd)
 	}
 
 	perFrameCBuf = VSConstantBuffer(*this, 0, sizeof(XMMATRIX));
-
-	std::vector<Vertex> vertices = {
-		{ { +1.0f, +1.0f, +1.0f }, { 1.0f, 1.0f, 1.0f } },
-		{ { -1.0f, +1.0f, +1.0f }, { 0.0f, 1.0f, 1.0f } },
-		{ { +1.0f, -1.0f, +1.0f }, { 1.0f, 0.0f, 1.0f } },
-		{ { -1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f, 1.0f } },
-		{ { +1.0f, +1.0f, -1.0f }, { 1.0f, 1.0f, 0.0f } },
-		{ { -1.0f, +1.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
-		{ { +1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f, 0.0f } },
-		{ { -1.0f, -1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f } }
-	};
-	std::vector<Index> indices = {
-		2, 1, 0, 1, 2, 3, // front
-		5, 6, 4, 6, 5, 7, // back
-		6, 3, 2, 3, 6, 7, // bottom
-		1, 4, 0, 4, 1, 5, // top
-		4, 2, 0, 2, 4, 6, // left
-		3, 5, 1, 5, 3, 7  // right    
-	};
-
-	std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-
-	std::shared_ptr<VertexBuffer> pvb = std::make_shared<VertexBuffer>(*this, vertices);
-	std::shared_ptr<IndexBuffer> pib = std::make_shared<IndexBuffer>(*this, indices);
-
-	ComPtr<ID3DBlob> pBlob;
-	std::shared_ptr<VertexShader> pvs = std::make_shared<VertexShader>(*this, "./ShaderBin/VertexShader.cso", &pBlob);
-	std::shared_ptr<PixelShader> pps = std::make_shared<PixelShader>(*this, "./ShaderBin/PixelShader.cso");
-
-	std::shared_ptr<InputLayout> pil = std::make_shared<InputLayout>(*this, inputElements, pBlob.Get());
-	std::shared_ptr<PrimitiveTopology> ppt = std::make_shared<PrimitiveTopology>(*this, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	cube.addBindable(pvb);
-	cube.addBindable(pib);
-	cube.addBindable(pvs);
-	cube.addBindable(pps);
-	cube.addBindable(pil);
-	cube.addBindable(ppt);
-
-	return;
+	perObjectCBuf = VSConstantBuffer(*this, 1, sizeof(XMMATRIX));
 }
 
 void Graphics::resize()
@@ -174,25 +127,23 @@ void Graphics::beginFrame()
 	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1, 0);
 	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), pDSV.Get());
 
-
-	static uint32_t frameCount = 0;
-	frameCount++;
-
 	XMMATRIX projection = XMMatrixTranspose(XMMatrixPerspectiveFovRH(1.05, 1.77777, 0.01, 1000));
 	perFrameCBuf.update(*this, projection);
-	perFrameCBuf.bind(*this);
-	
-	XMMATRIX transform = XMMatrixTranspose(XMMatrixRotationY(frameCount * 0.001) * XMMatrixTranslation(0, 0, -5));
-	VSConstantBuffer vcb(*this, 1, sizeof(transform));
-	vcb.update(*this, transform);
-	vcb.bind(*this);
-
-	cube.draw(*this);
 }
 
 void Graphics::endFrame()
 {
 	pSwapChain->Present(0, 0);
+}
+
+void Graphics::drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform) {
+	
+	perObjectCBuf.update(*this, XMMatrixTranspose(transform));
+	
+	perObjectCBuf.bind(*this);
+	perFrameCBuf.bind(*this);
+
+	pContext->DrawIndexed(indexCount, 0, 0);
 }
 
 ID3D11Device* Graphics::getDvc() {
@@ -201,4 +152,8 @@ ID3D11Device* Graphics::getDvc() {
 
 ID3D11DeviceContext* Graphics::getCtx() {
 	return pContext.Get();
+}
+
+BindableManager* Graphics::getBindMgr() {
+	return &bindMgr;
 }

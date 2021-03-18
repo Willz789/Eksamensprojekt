@@ -17,11 +17,19 @@ VertexShader::VertexShader(Graphics& gfx, const std::filesystem::path& file, ID3
 	tif(gfx.getDvc()->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pShader));
 
 	if (ppBlob) {
-		pBlob->AddRef();
-		*ppBlob = pBlob.Get();
+		*ppBlob = pBlob.Detach();
 	}
+
+#ifdef _DEBUG
+	std::string thisuid = uid(file, ppBlob);
+	tif(pShader->SetPrivateData(WKPDID_D3DDebugObjectName, thisuid.size(), thisuid.c_str()));
+#endif
 }
 
 void VertexShader::bind(Graphics& gfx) {
 	gfx.getCtx()->VSSetShader(pShader.Get(), nullptr, 0);
+}
+
+std::string VertexShader::uid(const std::filesystem::path& file, ID3DBlob** ppBlob) {
+	return "VS:" + file.string();
 }

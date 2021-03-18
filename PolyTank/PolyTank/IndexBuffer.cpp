@@ -4,8 +4,7 @@
 
 #include <assert.h>
 
-IndexBuffer::IndexBuffer(Graphics& gfx, const std::vector<Index>& indices) {
-	
+IndexBuffer::IndexBuffer(Graphics& gfx, const std::string& name, const std::vector<Index>& indices) {
 	D3D11_BUFFER_DESC ibDesc;
 	ibDesc.ByteWidth = sizeof(Index) * indices.size();
 	ibDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -20,6 +19,11 @@ IndexBuffer::IndexBuffer(Graphics& gfx, const std::vector<Index>& indices) {
 	data.SysMemSlicePitch = 0;
 
 	tif(gfx.getDvc()->CreateBuffer(&ibDesc, &data, &pBuf));
+
+#ifdef _DEBUG
+	std::string thisuid = uid(name, indices);
+	tif(pBuf->SetPrivateData(WKPDID_D3DDebugObjectName, thisuid.size(), thisuid.c_str()));
+#endif
 }
 
 void IndexBuffer::bind(Graphics& gfx) {
@@ -35,4 +39,8 @@ size_t IndexBuffer::getSize() const {
 
 	return desc.ByteWidth / sizeof(Index);
 
+}
+
+std::string IndexBuffer::uid(const std::string& name, const std::vector<Index>& indices) {
+	return "IB:" + name;
 }

@@ -3,7 +3,9 @@
 #include "IBindable.h"
 #include <d3d11.h>
 #include <wrl.h>
+
 #include <stdint.h>
+#include <string>
 
 class ConstantBuffer : public IBindable {
 public:
@@ -24,12 +26,13 @@ void ConstantBuffer::update(Graphics& gfx, const T& value) {
 	update(gfx, &value, sizeof(T));
 }
 
-#define DECL_CBUF(SS)								\
-class SS##ConstantBuffer : public ConstantBuffer {	\
-public:												\
-	using ConstantBuffer::ConstantBuffer;			\
-													\
-	void bind(Graphics& gfx) override;				\
+#define DECL_CBUF(SS)																	\
+class SS##ConstantBuffer : public ConstantBuffer {										\
+public:																					\
+	using ConstantBuffer::ConstantBuffer;												\
+																						\
+	void bind(Graphics& gfx) override;													\
+	static std::string uid(uint32_t slot, size_t byteSize);	\
 };													
 
 DECL_CBUF(VS)

@@ -2,8 +2,7 @@
 #include "Graphics.h"
 #include "Util.h"
 
-VertexBuffer::VertexBuffer(Graphics& gfx, const std::vector<Vertex>& vertices) {
-	
+VertexBuffer::VertexBuffer(Graphics& gfx, const std::string& name, const std::vector<Vertex>& vertices) {
 	D3D11_BUFFER_DESC vbDesc;
 	vbDesc.ByteWidth = sizeof(Vertex) * vertices.size();
 	vbDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -18,6 +17,12 @@ VertexBuffer::VertexBuffer(Graphics& gfx, const std::vector<Vertex>& vertices) {
 	data.SysMemSlicePitch = 0;
 
 	tif(gfx.getDvc()->CreateBuffer(&vbDesc, &data, &pBuf));
+
+#ifdef _DEBUG
+	std::string thisuid = uid(name, vertices);
+	tif(pBuf->SetPrivateData(WKPDID_D3DDebugObjectName, thisuid.size(), thisuid.c_str()));
+#endif
+
 }
 
 void VertexBuffer::bind(Graphics& gfx) {
@@ -25,4 +30,8 @@ void VertexBuffer::bind(Graphics& gfx) {
 	UINT offset = 0;
 
 	gfx.getCtx()->IASetVertexBuffers(0, 1, pBuf.GetAddressOf(), &stride, &offset);
+}
+
+std::string VertexBuffer::uid(const std::string& name, const std::vector<Vertex>& vertices) {
+	return "VB:" + name;
 }
