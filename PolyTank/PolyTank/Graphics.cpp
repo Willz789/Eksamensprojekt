@@ -128,7 +128,7 @@ void Graphics::beginFrame()
 	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), pDSV.Get());
 
 	XMMATRIX projection = XMMatrixTranspose(
-		XMMatrixLookAtRH(XMVectorSet(0, 0, 5.0f, 1.0f), XMVectorSet(0,0,0,1), XMVectorSet(0,1,0,0)) *
+		XMMatrixLookAtRH(XMVectorSet(0, 1.0f, 5.0f, 1.0f), XMVectorSet(0,0,0,1), XMVectorSet(0,1,0,0)) *
 		XMMatrixPerspectiveFovRH(1.05, 1.77777, 0.01, 1000)
 	);
 	perFrameCBuf.update(*this, projection);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Util.h"
 #include "Interaction.h"
 
 #include <string>
@@ -7,7 +8,6 @@
 #include <unordered_map>
 #include <functional>
 
-#include <Windows.h>
 
 class Window {
 public:
