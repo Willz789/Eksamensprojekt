@@ -106,8 +106,8 @@ void Graphics::resize()
 	D3D11_VIEWPORT viewport;
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = swapDesc.BufferDesc.Width;
-	viewport.Height = swapDesc.BufferDesc.Height;
+	viewport.Width = float(swapDesc.BufferDesc.Width);
+	viewport.Height = float(swapDesc.BufferDesc.Height);
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = D3D11_MAX_DEPTH;
 
@@ -117,10 +117,10 @@ void Graphics::resize()
 void Graphics::beginFrame()
 {
 	float colArr[] = {
-		0.5,
-		0.7,
-		0.4,
-		1
+		0.5f,
+		0.7f,
+		0.4f,
+		1.0f
 	};
 
 	pContext->ClearRenderTargetView(pRTV.Get(), colArr);
@@ -128,8 +128,8 @@ void Graphics::beginFrame()
 	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), pDSV.Get());
 
 	XMMATRIX projection = XMMatrixTranspose(
-		XMMatrixLookAtRH(XMVectorSet(0, 1.0f, 5.0f, 1.0f), XMVectorSet(0,0,0,1), XMVectorSet(0,1,0,0)) *
-		XMMatrixPerspectiveFovRH(1.05, 1.77777, 0.01, 1000)
+		XMLoadFloat4x4(&viewMatrix) *
+		XMMatrixPerspectiveFovRH(1.05f, 1.77777f, 0.01f, 1000.0f)
 	);
 	perFrameCBuf.update(*this, projection);
 }
@@ -147,6 +147,10 @@ void Graphics::drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform) {
 	perFrameCBuf.bind(*this);
 
 	pContext->DrawIndexed(indexCount, 0, 0);
+}
+
+void Graphics::setCamera(DirectX::FXMMATRIX cameraTransform) {
+	XMStoreFloat4x4(&viewMatrix, cameraTransform);
 }
 
 ID3D11Device* Graphics::getDvc() {

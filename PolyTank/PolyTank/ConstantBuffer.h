@@ -9,7 +9,7 @@
 
 class ConstantBuffer : public IBindable {
 public:
-	ConstantBuffer() = default;
+	ConstantBuffer();
 	ConstantBuffer(Graphics& gfx, uint32_t slot, size_t byteSize);
 
 	void update(Graphics& gfx, const void* pValue, size_t valueSize);

@@ -19,6 +19,7 @@ Application::Application() :
 		this->gfx.resize();
 	});
 
+	gfx.setCamera(XMMatrixLookAtRH(XMVectorSet(0, 1.0f, 5.0f, 1.0f), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, scene.getRoot());
 }
 
@@ -35,8 +36,8 @@ void Application::run() {
 		static uint32_t frameCount = 0;
 		frameCount++;
 
-		scene.getRoot()->getChild(0)->rotate(XMQuaternionRotationAxis(XMVectorSet(0,1,0,0), 0.0001));
-		scene.getRoot()->getChild(0)->getChild(13)->rotate(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), 0.001));
+		scene.getRoot()->getChild(0)->rotate(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), 0.0001f));
+		scene.getRoot()->getChild(0)->getChild(13)->rotate(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), 0.001f));
 		scene.draw(gfx);
 
 		gfx.endFrame();

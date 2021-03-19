@@ -12,6 +12,7 @@ public:
 	void beginFrame();
 	void endFrame();
 	void drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform);
+	void setCamera(DirectX::FXMMATRIX cameraTransform);
 
 	ID3D11Device* getDvc();
 	ID3D11DeviceContext* getCtx();
@@ -29,6 +30,8 @@ private:
 	
 	VSConstantBuffer perFrameCBuf;
 	VSConstantBuffer perObjectCBuf;
+
+	DirectX::XMFLOAT4X4 viewMatrix;
 
 };
 

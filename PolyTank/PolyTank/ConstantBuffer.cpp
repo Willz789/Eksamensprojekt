@@ -4,7 +4,11 @@
 
 #include <sstream>
 
-ConstantBuffer::ConstantBuffer(Graphics& gfx, uint32_t slot, size_t byteSize) : slot(slot) {
+ConstantBuffer::ConstantBuffer() 
+	: slot(0) {}
+
+ConstantBuffer::ConstantBuffer(Graphics& gfx, uint32_t slot, size_t byteSize) 
+	: slot(slot) {
 	
 	D3D11_BUFFER_DESC desc;
 	desc.ByteWidth = byteSize;
