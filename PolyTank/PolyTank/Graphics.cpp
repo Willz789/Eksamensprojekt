@@ -127,7 +127,10 @@ void Graphics::beginFrame()
 	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1, 0);
 	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), pDSV.Get());
 
-	XMMATRIX projection = XMMatrixTranspose(XMMatrixPerspectiveFovRH(1.05, 1.77777, 0.01, 1000));
+	XMMATRIX projection = XMMatrixTranspose(
+		XMMatrixLookAtRH(XMVectorSet(0, 0, 5.0f, 1.0f), XMVectorSet(0,0,0,1), XMVectorSet(0,1,0,0)) *
+		XMMatrixPerspectiveFovRH(1.05, 1.77777, 0.01, 1000)
+	);
 	perFrameCBuf.update(*this, projection);
 }
 

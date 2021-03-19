@@ -2,7 +2,7 @@
 
 #include "Window.h"
 #include "Graphics.h"
-#include "Drawable.h"
+#include "Scene.h"
 
 class Application {
 public:
@@ -13,8 +13,7 @@ public:
 private:
 	Window wnd;
 	Graphics gfx;
-
-	Drawable cube;
+	Scene scene;
 
 };
 

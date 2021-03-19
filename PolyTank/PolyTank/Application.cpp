@@ -52,12 +52,17 @@ Application::Application() :
 	std::shared_ptr<InputLayout> pil = gfx.getBindMgr()->get<InputLayout>(inputElements, pBlob.Get());
 	std::shared_ptr<PrimitiveTopology> ppt = gfx.getBindMgr()->get<PrimitiveTopology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	Drawable cube;
+
 	cube.addBindable(pvb);
 	cube.addBindable(pib);
 	cube.addBindable(pvs);
 	cube.addBindable(pps);
 	cube.addBindable(pil);
 	cube.addBindable(ppt);
+
+	scene.getRoot()->addChild()->getMesh()->addDrawable(std::move(cube));
+
 }
 
 void Application::run() {
@@ -73,8 +78,9 @@ void Application::run() {
 		static uint32_t frameCount = 0;
 		frameCount++;
 
-		XMMATRIX transform = XMMatrixRotationY(frameCount * 0.001) * XMMatrixTranslation(0, 0, -5);
-		cube.draw(gfx, transform);
+		scene.getRoot()->rotate(XMQuaternionRotationAxis(XMVectorSet(0,1,0,0), 0.001));
+		scene.getRoot()->getChild(0)->rotate(XMQuaternionRotationAxis(XMVectorSet(1, 0, 0, 0), 0.0001));
+		scene.draw(gfx);
 
 		gfx.endFrame();
 	}
