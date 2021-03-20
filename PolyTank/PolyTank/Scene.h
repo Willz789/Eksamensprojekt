@@ -9,7 +9,7 @@
 class SceneNode
 {
 public:
-	SceneNode();
+	SceneNode(SceneNode* pParent);
 
 	void draw(Graphics& gfx, DirectX::XMMATRIX parentTransform);
 
@@ -18,11 +18,15 @@ public:
 	Mesh* getMesh();
 	SceneNode* getChild(size_t index);
 
+	DirectX::XMMATRIX localToParent() const;
+	DirectX::XMMATRIX localToWorld() const;
+
 	void translate(DirectX::XMVECTOR delta);
 	void rotate(DirectX::XMVECTOR rotation);
 	void scale(DirectX::XMVECTOR factor);
 
 private:
+	SceneNode* pParent;
 	std::vector<SceneNode> children;
 	Mesh mesh;
 
@@ -34,8 +38,9 @@ private:
 class Scene
 {
 public:
-	void draw(Graphics& gfx);
+	Scene();
 
+	void draw(Graphics& gfx);
 	SceneNode* getRoot();
 
 private:

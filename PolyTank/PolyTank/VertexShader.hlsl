@@ -1,10 +1,11 @@
 
 cbuffer PerFrame : register(b0) {
-    float4x4 cameraProjection;
+    float4x4 projection;
 };
 
 cbuffer PerObject : register(b1) {
     float4x4 transform;
+    float4x4 normalTransform;
 };
 
 struct Input
@@ -30,7 +31,7 @@ Output main(Input input)
     output.pos = mul(float4(input.pos, 1.0f), transform).xyz;
     
     output.normal = normalize(
-        mul(float4(input.normal, 0.0f), transform).xyz
+        mul(float4(input.normal, 0.0f), normalTransform).xyz
     );
     
     output.tangent = float4(normalize(
@@ -39,7 +40,7 @@ Output main(Input input)
     
     output.texcoord = input.texcoord;
     
-    output.svpos = mul(float4(output.pos, 1.0f), cameraProjection);
+    output.svpos = mul(float4(output.pos, 1.0f), projection);
     
     return output;
 }

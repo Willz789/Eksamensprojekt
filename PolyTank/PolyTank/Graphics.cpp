@@ -15,6 +15,11 @@
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
+struct ModelTransforms {
+	XMFLOAT4X4 transform;
+	XMFLOAT4X4 normalTransform;
+};
+
 Graphics::Graphics(HWND hwnd) :
 	bindMgr(*this) {
 	D3D_FEATURE_LEVEL fLevels[] = {
@@ -58,7 +63,7 @@ Graphics::Graphics(HWND hwnd) :
 	}
 
 	perFrameCBuf = VSConstantBuffer(*this, 0, sizeof(XMMATRIX));
-	perObjectCBuf = VSConstantBuffer(*this, 1, sizeof(XMMATRIX));
+	perObjectCBuf = VSConstantBuffer(*this, 1, sizeof(ModelTransforms));
 }
 
 void Graphics::resize()
@@ -128,7 +133,6 @@ void Graphics::beginFrame()
 	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), pDSV.Get());
 
 	XMMATRIX projection = XMMatrixTranspose(
-		XMLoadFloat4x4(&viewMatrix) *
 		XMMatrixPerspectiveFovRH(1.05f, 1.77777f, 0.01f, 1000.0f)
 	);
 	perFrameCBuf.update(*this, projection);
@@ -140,8 +144,18 @@ void Graphics::endFrame()
 }
 
 void Graphics::drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform) {
-	
-	perObjectCBuf.update(*this, XMMatrixTranspose(transform));
+
+
+	XMMATRIX viewTransform = transform * XMLoadFloat4x4(&viewMatrix);
+	ModelTransforms modelTransforms;
+
+	XMStoreFloat4x4(&modelTransforms.transform, XMMatrixTranspose(viewTransform));
+	XMStoreFloat4x4(
+		&modelTransforms.normalTransform,
+		XMMatrixInverse(nullptr, viewTransform)
+	);
+
+	perObjectCBuf.update(*this, modelTransforms);
 	
 	perObjectCBuf.bind(*this);
 	perFrameCBuf.bind(*this);
