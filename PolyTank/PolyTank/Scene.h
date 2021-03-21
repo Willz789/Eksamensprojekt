@@ -1,15 +1,18 @@
 #pragma once
 
-#include <vector>
+#include <list>
 #include "Graphics.h"
 #include "Mesh.h"
-
-
 
 class SceneNode
 {
 public:
 	SceneNode(SceneNode* pParent);
+	SceneNode(const SceneNode&) = delete;
+	SceneNode(SceneNode&&) = default;
+
+	SceneNode& operator=(const SceneNode&) = delete;
+	SceneNode& operator=(SceneNode&&) = default;
 
 	void draw(Graphics& gfx, DirectX::XMMATRIX parentTransform);
 
@@ -27,7 +30,7 @@ public:
 
 private:
 	SceneNode* pParent;
-	std::vector<SceneNode> children;
+	std::list<SceneNode> children;
 	Mesh mesh;
 
 	DirectX::XMFLOAT3 translation;

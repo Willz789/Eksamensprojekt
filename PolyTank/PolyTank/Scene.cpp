@@ -19,8 +19,8 @@ void SceneNode::draw(Graphics& gfx, XMMATRIX parentTransform)
 	);
 	XMMATRIX thisTransform = thisToParent * parentTransform;
 	mesh.draw(gfx, thisTransform);
-	for (size_t i = 0; i < children.size(); i++) {
-		children[i].draw(gfx, thisTransform);
+	for (SceneNode& child : children) {
+		child.draw(gfx, thisTransform);
 	}
 }
 
@@ -37,7 +37,11 @@ Mesh* SceneNode::getMesh()
 
 SceneNode* SceneNode::getChild(size_t index)
 {
-	return &children[index];
+	auto it = children.begin();
+	for (size_t i = 0; i < index; i++) {
+		it++;
+	}
+	return &*it;
 }
 
 DirectX::XMMATRIX SceneNode::localToParent() const {

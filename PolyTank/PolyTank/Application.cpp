@@ -21,6 +21,8 @@ Application::Application() :
 
 	gfx.setCamera(XMMatrixLookAtRH(XMVectorSet(0, 1.0f, 5.0f, 1.0f), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, scene.getRoot());
+	GLTF::Loader("./Models/ground/ground.gltf").getScene(gfx, scene.getRoot());
+
 }
 
 void Application::run() {
