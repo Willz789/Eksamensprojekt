@@ -42,5 +42,9 @@ size_t IndexBuffer::getSize() const {
 }
 
 std::string IndexBuffer::uid(const std::string& name, const std::vector<Index>& indices) {
-	return "IB:" + name;
+	if (name.empty()) {
+		return std::string();
+	} else {
+		return "IB:" + name;
+	}
 }

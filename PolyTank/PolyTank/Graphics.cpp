@@ -15,9 +15,14 @@
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
+struct PassTransforms {
+	XMFLOAT4X4 projection;
+	XMFLOAT4X4 view;
+};
+
 struct ModelTransforms {
-	XMFLOAT4X4 transform;
-	XMFLOAT4X4 normalTransform;
+	XMFLOAT4X4 world;
+	XMFLOAT4X4 normalsWorld;
 };
 
 Graphics::Graphics(HWND hwnd) :
@@ -62,7 +67,7 @@ Graphics::Graphics(HWND hwnd) :
 		throw std::runtime_error("Failed to create device and swapchain");
 	}
 
-	perFrameCBuf = VSConstantBuffer(*this, 0, sizeof(XMMATRIX));
+	perFrameCBuf = VSConstantBuffer(*this, 0, sizeof(PassTransforms));
 	perObjectCBuf = VSConstantBuffer(*this, 1, sizeof(ModelTransforms));
 }
 
@@ -132,10 +137,11 @@ void Graphics::beginFrame()
 	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1, 0);
 	pContext->OMSetRenderTargets(1, pRTV.GetAddressOf(), pDSV.Get());
 
-	XMMATRIX projection = XMMatrixTranspose(
-		XMMatrixPerspectiveFovRH(1.05f, 1.77777f, 0.01f, 1000.0f)
-	);
-	perFrameCBuf.update(*this, projection);
+	PassTransforms passTransforms;
+	XMStoreFloat4x4(&passTransforms.projection, XMMatrixTranspose(XMMatrixPerspectiveFovRH(1.05f, 1.77777f, 0.01f, 100.0f)));
+	XMStoreFloat4x4(&passTransforms.view, XMMatrixTranspose(XMLoadFloat4x4(&cameraMatrix)));
+
+	perFrameCBuf.update(*this, passTransforms);
 }
 
 void Graphics::endFrame()
@@ -144,16 +150,17 @@ void Graphics::endFrame()
 }
 
 void Graphics::drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform) {
-
-
-	XMMATRIX viewTransform = transform * XMLoadFloat4x4(&viewMatrix);
 	ModelTransforms modelTransforms;
 
-	XMStoreFloat4x4(&modelTransforms.transform, XMMatrixTranspose(viewTransform));
+	XMStoreFloat4x4(&modelTransforms.world, XMMatrixTranspose(transform));
 	XMStoreFloat4x4(
-		&modelTransforms.normalTransform,
-		XMMatrixInverse(nullptr, viewTransform)
+		&modelTransforms.normalsWorld,
+		XMMatrixInverse(nullptr, transform)
 	);
+
+	modelTransforms.normalsWorld._41 = 0.0f;
+	modelTransforms.normalsWorld._42 = 0.0f;
+	modelTransforms.normalsWorld._43 = 0.0f;
 
 	perObjectCBuf.update(*this, modelTransforms);
 	
@@ -164,7 +171,7 @@ void Graphics::drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform) {
 }
 
 void Graphics::setCamera(DirectX::FXMMATRIX cameraTransform) {
-	XMStoreFloat4x4(&viewMatrix, cameraTransform);
+	XMStoreFloat4x4(&cameraMatrix, cameraTransform);
 }
 
 ID3D11Device* Graphics::getDvc() {

@@ -31,7 +31,7 @@ private:
 	VSConstantBuffer perFrameCBuf;
 	VSConstantBuffer perObjectCBuf;
 
-	DirectX::XMFLOAT4X4 viewMatrix;
+	DirectX::XMFLOAT4X4 cameraMatrix;
 
 };
 

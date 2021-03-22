@@ -189,7 +189,6 @@ Drawable GLTF::Loader::parsePrimitive(Graphics& gfx, const nlohmann::json& jprim
 	std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
@@ -227,20 +226,18 @@ std::shared_ptr<IBindable> GLTF::Loader::readVertexBuffer(Graphics& gfx, const s
 
 	const Accessor* pPositionAccessor = &accessors[jattributes["POSITION"]];
 	const Accessor* pNormalAccessor = &accessors[jattributes["NORMAL"]];
-	//const Accessor* pTangentAccessor = &accessors[jattributes["TANGENT"]];
 	const Accessor* pTexcoordAccessor = &accessors[jattributes["TEXCOORD_0"]];
 
 	if (pNormalAccessor->elementCount != pPositionAccessor->elementCount ||
-		//pTangentAccessor->elementCount != pPositionAccessor->elementCount ||
 		pTexcoordAccessor->elementCount != pPositionAccessor->elementCount) {
 		throw std::runtime_error("invalid gltf file");
 	}
 
-	std::vector<Vertex> vertices(pPositionAccessor->elementCount);
+	std::vector<DefaultVertex> vertices(pPositionAccessor->elementCount);
 
-	pPositionAccessor->readElements(&vertices[0].position, sizeof(Vertex));
-	pNormalAccessor->readElements(&vertices[0].normal, sizeof(Vertex));
-	pTexcoordAccessor->readElements(&vertices[0].texcoord, sizeof(Vertex));
+	pPositionAccessor->readElements(&vertices[0].position, sizeof(DefaultVertex));
+	pNormalAccessor->readElements(&vertices[0].normal, sizeof(DefaultVertex));
+	pTexcoordAccessor->readElements(&vertices[0].texcoord, sizeof(DefaultVertex));
 	
 	return gfx.getBindMgr()->get<VertexBuffer>(name, vertices);
 }
