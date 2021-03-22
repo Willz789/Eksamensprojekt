@@ -10,6 +10,7 @@
 #include "PixelShader.h"
 #include "InputLayout.h"
 #include "PrimitiveTopology.h"
+#include "GLTFMaterial.h"
 
 using nlohmann::json;
 using namespace DirectX;
@@ -198,6 +199,7 @@ Drawable GLTF::Loader::parsePrimitive(Graphics& gfx, const nlohmann::json& jprim
 	drawable.addBindable(gfx.getBindMgr()->get<PixelShader>("./ShaderBin/PixelShader.cso"));
 	drawable.addBindable(gfx.getBindMgr()->get<InputLayout>(inputElements, pVSBlob.Get()));
 	drawable.addBindable(gfx.getBindMgr()->get<PrimitiveTopology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	drawable.addBindable(gfx.getBindMgr()->get<GLTFMaterial>());
 
 	return drawable;
 }

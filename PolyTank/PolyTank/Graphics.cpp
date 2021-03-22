@@ -174,6 +174,10 @@ void Graphics::setCamera(DirectX::FXMMATRIX cameraTransform) {
 	XMStoreFloat4x4(&cameraMatrix, cameraTransform);
 }
 
+DirectX::XMMATRIX Graphics::getCamera() {
+	return XMLoadFloat4x4(&cameraMatrix);
+}
+
 ID3D11Device* Graphics::getDvc() {
 	return pDevice.Get();
 }

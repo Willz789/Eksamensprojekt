@@ -12,7 +12,9 @@ public:
 	void beginFrame();
 	void endFrame();
 	void drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform);
+
 	void setCamera(DirectX::FXMMATRIX cameraTransform);
+	DirectX::XMMATRIX getCamera();
 
 	ID3D11Device* getDvc();
 	ID3D11DeviceContext* getCtx();

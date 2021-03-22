@@ -38,15 +38,35 @@ private:
 	DirectX::XMFLOAT3 scaling;
 };
 
+struct Lighting {
+	struct {
+		DirectX::XMFLOAT3 direction;
+		float pad0;
+		DirectX::XMFLOAT3 color;
+		float pad1;
+	} sun;
+
+	struct {
+		DirectX::XMFLOAT3 color;
+		float pad;
+	} ambient;
+};
+
 class Scene
 {
 public:
-	Scene();
+	Scene(Graphics& gfx);
 
 	void draw(Graphics& gfx);
 	SceneNode* getRoot();
+	
+
+public:
+	Lighting lighting;
 
 private:
 	SceneNode root;
+
+	PSConstantBuffer lightingCBuf;
 };
 

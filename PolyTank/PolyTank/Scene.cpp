@@ -76,12 +76,24 @@ void SceneNode::scale(DirectX::XMVECTOR factor)
 	XMStoreFloat3(&scaling, XMLoadFloat3(&scaling)*factor);
 }
 
-Scene::Scene() : 
-	root(nullptr) 
-{}
+Scene::Scene(Graphics& gfx) : 
+	root(nullptr),
+	lightingCBuf(gfx, 0, sizeof(Lighting)) {
+	
+	XMStoreFloat3(&lighting.sun.direction, XMVector3Normalize(XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f)));
+	XMStoreFloat3(&lighting.sun.color, XMVectorSet(3.0f, 3.0f, 3.0f, 0.0f));
+	XMStoreFloat3(&lighting.ambient.color, XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f));
+
+}
 
 void Scene::draw(Graphics& gfx)
 {
+	Lighting viewspaceLighting = lighting;
+	XMStoreFloat3(&viewspaceLighting.sun.direction, XMVector4Transform(XMLoadFloat3(&lighting.sun.direction), gfx.getCamera()));
+
+	lightingCBuf.update(gfx, viewspaceLighting);
+	lightingCBuf.bind(gfx);
+
 	root.draw(gfx, XMMatrixIdentity());
 }
 
