@@ -76,6 +76,18 @@ void SceneNode::scale(DirectX::XMVECTOR factor)
 	XMStoreFloat3(&scaling, XMLoadFloat3(&scaling)*factor);
 }
 
+void SceneNode::setTranslation(DirectX::XMVECTOR delta) {
+	XMStoreFloat3(&translation, delta);
+}
+
+void SceneNode::setRotation(DirectX::XMVECTOR rotation) {
+	XMStoreFloat4(&quaternion, rotation);
+}
+
+void SceneNode::setScaling(DirectX::XMVECTOR factor) {
+	XMStoreFloat3(&scaling, factor);
+}
+
 Scene::Scene(Graphics& gfx) : 
 	root(nullptr),
 	lightingCBuf(gfx, 0, sizeof(Lighting)) {

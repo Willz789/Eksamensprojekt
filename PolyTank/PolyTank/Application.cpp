@@ -34,13 +34,16 @@ void Application::run() {
 	
 	wnd.setVisible(true);
 
-	steady_clock::time_point t0 = steady_clock::now();
+
+	steady_clock::time_point tstart = steady_clock::now();
+	steady_clock::time_point t0 = tstart;
 
 	while (true) {
 		static uint32_t frameCount = 0;
 		frameCount++;
 
 		steady_clock::time_point t1 = steady_clock::now();
+		float t = std::chrono::duration<float>(t1 - tstart).count();
 		float dt = std::chrono::duration<float>(t1 - t0).count();
 		t0 = t1;
 
@@ -48,8 +51,8 @@ void Application::run() {
 			return;
 		}
 
-		scene.getRoot()->getChild(0)->rotate(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), dt));
-		scene.getRoot()->getChild(0)->getChild(13)->rotate(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -2.0f * dt));
+		scene.getRoot()->getChild(0)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), t));
+		scene.getRoot()->getChild(0)->getChild(13)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -2.0f * t));
 
 		gfx.beginFrame();
 
