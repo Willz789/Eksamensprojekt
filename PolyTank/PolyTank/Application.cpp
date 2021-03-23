@@ -48,10 +48,15 @@ void Application::run() {
 			return;
 		}
 
-		gfx.beginFrame();
-
 		scene.getRoot()->getChild(0)->rotate(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), dt));
 		scene.getRoot()->getChild(0)->getChild(13)->rotate(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -2.0f * dt));
+
+		gfx.beginFrame();
+
+		gfx.shadowPass(XMLoadFloat3(&scene.lighting.sun.direction));
+		scene.draw(gfx);
+
+		gfx.viewPass();
 		scene.draw(gfx);
 
 		gfx.endFrame();
