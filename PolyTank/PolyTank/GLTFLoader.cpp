@@ -199,9 +199,26 @@ Drawable GLTF::Loader::parsePrimitive(Graphics& gfx, const nlohmann::json& jprim
 	drawable.addBindable(gfx.getBindMgr()->get<PixelShader>("./ShaderBin/PixelShader.cso"));
 	drawable.addBindable(gfx.getBindMgr()->get<InputLayout>(inputElements, pVSBlob.Get()));
 	drawable.addBindable(gfx.getBindMgr()->get<PrimitiveTopology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-	drawable.addBindable(gfx.getBindMgr()->get<GLTFMaterial>());
+	
+	auto it = jprimitive.find("material");
+	drawable.addBindable(it == jprimitive.end() ? defaultMaterial(gfx) : parseMaterial(gfx, gltf["materials"][it->get<size_t>()]));
 
 	return drawable;
+}
+
+std::shared_ptr<IBindable> GLTF::Loader::parseMaterial(Graphics& gfx, const nlohmann::json& jmaterial) const {
+
+	std::shared_ptr<GLTFMaterial> pMaterial = gfx.getBindMgr()->get<GLTFMaterial>();
+	XMStoreFloat3(&pMaterial->factors.baseColor, parseFloat3(jmaterial["pbrMetallicRoughness"]["baseColorFactor"]));
+
+	return pMaterial;
+}
+
+std::shared_ptr<IBindable> GLTF::Loader::defaultMaterial(Graphics& gfx) const {
+	std::shared_ptr<GLTFMaterial> pMaterial = gfx.getBindMgr()->get<GLTFMaterial>();
+	pMaterial->factors.baseColor = { 1.0f, 1.0f, 1.0f };
+
+	return pMaterial;
 }
 
 std::shared_ptr<IBindable> GLTF::Loader::readIndexBuffer(Graphics& gfx, const std::string& name, const Accessor* pAccessor) const {
@@ -221,8 +238,6 @@ std::shared_ptr<IBindable> GLTF::Loader::readIndexBuffer(Graphics& gfx, const st
 
 	return gfx.getBindMgr()->get<IndexBuffer>(name, indices);
 }
-
-
 
 std::shared_ptr<IBindable> GLTF::Loader::readVertexBuffer(Graphics& gfx, const std::string& name, const json& jattributes) const {
 
