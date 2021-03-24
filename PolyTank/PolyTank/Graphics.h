@@ -28,7 +28,9 @@ public:
 	ID3D11DeviceContext* getCtx();
 	BindableManager* getBindMgr();
 
-	ID2D1RenderTarget* getRT2D();
+	ID2D1DeviceContext* getCtx2D();
+
+	IDWriteFactory* getFactoryW();
 
 private:
 	void initShadowMap();
@@ -38,9 +40,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext;
 
-	Microsoft::WRL::ComPtr<ID2D1Factory> pFactory2D;
-	Microsoft::WRL::ComPtr<ID2D1RenderTarget> pRT2D;
-
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRTV;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
 
@@ -48,6 +47,14 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pShadowSRV;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> pShadowMapSampler;
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> pShadowVS;
+
+	Microsoft::WRL::ComPtr<ID2D1Factory7> pFactory2D;
+	Microsoft::WRL::ComPtr<ID2D1Device> pDevice2D;
+	Microsoft::WRL::ComPtr<ID2D1DeviceContext> pContext2D;
+	Microsoft::WRL::ComPtr<ID2D1Bitmap1> pRT2D;
+
+	Microsoft::WRL::ComPtr<IDWriteFactory> pFactoryWrite;
+
 
 	D3D11_VIEWPORT viewport;
 	D3D11_VIEWPORT shadowViewport;

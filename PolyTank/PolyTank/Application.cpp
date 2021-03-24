@@ -14,9 +14,11 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
 Application::Application() :
-	wnd(1280, 720, "PolyTank"), 
+	wnd(1280, 720, "PolyTank"),
 	gfx(wnd.getHwnd()),
-	scene(gfx) {
+	scene(gfx),
+	menu(gfx)
+	{
 	
 	wnd.setResizeCB([this](uint32_t w, uint32_t h) -> void {
 		this->gfx.resize();
@@ -61,6 +63,8 @@ void Application::run() {
 
 		gfx.viewPass();
 		scene.draw(gfx);
+
+		menu.draw(gfx);
 
 		gfx.endFrame();
 	}

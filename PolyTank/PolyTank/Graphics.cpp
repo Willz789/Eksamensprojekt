@@ -11,6 +11,7 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -74,6 +75,9 @@ Graphics::Graphics(HWND hwnd) :
 		throw std::runtime_error("Failed to create device and swapchain");
 	}
 
+	ComPtr<IDXGIDevice> pDeviceDXGI;
+	pDevice.As(&pDeviceDXGI);
+
 	D2D1_FACTORY_OPTIONS fo2d;
 #ifdef _DEBUG
 	fo2d.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
@@ -81,6 +85,11 @@ Graphics::Graphics(HWND hwnd) :
 	fo2d.debugLevel = D2D1_DEBUG_LEVEL_NONE;
 #endif
 	tif(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(pFactory2D), &fo2d, &pFactory2D));
+
+	tif(pFactory2D->CreateDevice(pDeviceDXGI.Get(), &pDevice2D));
+	tif(pDevice2D->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &pContext2D));
+	
+	DWriteCreateFactory(DWRITE_FACTORY_TYPE_ISOLATED, __uuidof(pFactoryWrite), &pFactoryWrite);
 
 	initShadowMap();
 
@@ -90,8 +99,6 @@ Graphics::Graphics(HWND hwnd) :
 
 void Graphics::resize()
 {
-	pRTV.Reset();
-
 	tif(pSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0));
 
 	DXGI_SWAP_CHAIN_DESC swapDesc;
@@ -124,16 +131,17 @@ void Graphics::resize()
 	ComPtr<IDXGISurface> pSurface;
 	pText.As(&pSurface);
 
-	D2D1_RENDER_TARGET_PROPERTIES rtp;
-	rtp.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
-	rtp.pixelFormat.format = DXGI_FORMAT_UNKNOWN;
-	rtp.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
-	rtp.dpiX = 0.0f;
-	rtp.dpiY = 0.0f;
-	rtp.usage = D2D1_RENDER_TARGET_USAGE_NONE;
-	rtp.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
+	D2D1_BITMAP_PROPERTIES1 bp;
+	bp.pixelFormat.format = DXGI_FORMAT_UNKNOWN;
+	bp.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
+	bp.dpiX = 0.0f;
+	bp.dpiY = 0.0f;
+	bp.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
+	bp.colorContext = nullptr;
 
-	tif(pFactory2D->CreateDxgiSurfaceRenderTarget(pSurface.Get(), &rtp, &pRT2D));
+	tif(pContext2D->CreateBitmapFromDxgiSurface(pSurface.Get(), &bp, &pRT2D));
+
+	pContext2D->SetTarget(pRT2D.Get());
 
 	// depth stencil buffer init
 	textDesc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -160,7 +168,7 @@ void Graphics::resize()
 
 void Graphics::beginFrame()
 {
-	pRT2D->BeginDraw();
+	pContext2D->BeginDraw();
 }
 
 void Graphics::shadowPass(FXMVECTOR sunDir) {
@@ -218,12 +226,7 @@ void Graphics::viewPass() {
 
 void Graphics::endFrame()
 {
-	
-	ComPtr<ID2D1SolidColorBrush> pBrush;
-	pRT2D->CreateSolidColorBrush(D2D1::ColorF(0.0f, 0.0f, 1.0f), &pBrush);
-	pRT2D->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(1280 / 2, 720 / 2), 420, 69), pBrush.Get());
-
-	pRT2D->EndDraw();
+	pContext2D->EndDraw();
 
 	ComPtr<ID3D11Resource> pRenderTarget;
 	pRTV->GetResource(&pRenderTarget);
@@ -283,8 +286,13 @@ BindableManager* Graphics::getBindMgr() {
 	return &bindMgr;
 }
 
-ID2D1RenderTarget* Graphics::getRT2D() {
-	return pRT2D.Get();
+ID2D1DeviceContext* Graphics::getCtx2D() {
+	return pContext2D.Get();
+}
+
+IDWriteFactory* Graphics::getFactoryW()
+{
+	return pFactoryWrite.Get();
 }
 
 void Graphics::initShadowMap() {
