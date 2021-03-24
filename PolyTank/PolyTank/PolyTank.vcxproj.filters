@@ -16,138 +16,144 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{e03c3b05-74dc-4c84-bbcf-bf066e15d669}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Rendering">
-      <UniqueIdentifier>{c0c351fc-2cfe-440d-8f00-2ac695720a3c}</UniqueIdentifier>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{fd97b1c6-67d3-41d8-ac6c-f6b684f4edd5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Rendering">
+    <Filter Include="Header Files\Engine\Rendering">
       <UniqueIdentifier>{539d0163-8a77-4838-9a98-ebd1da9bacdb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Rendering\Bindables">
+    <Filter Include="Header Files\Engine\Rendering\Bindables">
       <UniqueIdentifier>{98c07cb7-41ec-419e-8e5c-d73b162fbdd8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Rendering\Bindables">
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{56a2733d-4a71-49ff-b2d5-0f0fbf627ad1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Rendering">
+      <UniqueIdentifier>{c0c351fc-2cfe-440d-8f00-2ac695720a3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Rendering\Bindables">
       <UniqueIdentifier>{a4e52388-5bbc-48bf-b32d-dd8772bfdf6d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Drawable.cpp">
-      <Filter>Source Files\Rendering</Filter>
+      <Filter>Source Files\Engine\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="VertexBuffer.cpp">
-      <Filter>Source Files\Rendering\Bindables</Filter>
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
     </ClCompile>
     <ClCompile Include="IndexBuffer.cpp">
-      <Filter>Source Files\Rendering\Bindables</Filter>
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
     </ClCompile>
     <ClCompile Include="VertexShader.cpp">
-      <Filter>Source Files\Rendering\Bindables</Filter>
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
     </ClCompile>
     <ClCompile Include="ShaderCommon.cpp">
-      <Filter>Source Files\Rendering</Filter>
+      <Filter>Source Files\Engine\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="PixelShader.cpp">
-      <Filter>Source Files\Rendering\Bindables</Filter>
-    </ClCompile>
-    <ClCompile Include="Interaction.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
     </ClCompile>
     <ClCompile Include="ConstantBuffer.cpp">
-      <Filter>Source Files\Rendering\Bindables</Filter>
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
     </ClCompile>
     <ClCompile Include="InputLayout.cpp">
-      <Filter>Source Files\Rendering\Bindables</Filter>
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
     </ClCompile>
     <ClCompile Include="PrimitiveTopology.cpp">
-      <Filter>Source Files\Rendering\Bindables</Filter>
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
     </ClCompile>
     <ClCompile Include="BindableManager.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="GLTFLoader.cpp">
-      <Filter>Source Files\Rendering</Filter>
+      <Filter>Source Files\Engine\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="GLTFMaterial.cpp">
-      <Filter>Source Files\Rendering\Bindables</Filter>
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Interaction.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IBindable.h">
-      <Filter>Header Files\Rendering</Filter>
+      <Filter>Header Files\Engine\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Drawable.h">
-      <Filter>Header Files\Rendering</Filter>
+      <Filter>Header Files\Engine\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="VertexBuffer.h">
-      <Filter>Header Files\Rendering\Bindables</Filter>
-    </ClInclude>
-    <ClInclude Include="Util.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
     </ClInclude>
     <ClInclude Include="IndexBuffer.h">
-      <Filter>Header Files\Rendering\Bindables</Filter>
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
     </ClInclude>
     <ClInclude Include="VertexShader.h">
-      <Filter>Header Files\Rendering\Bindables</Filter>
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCommon.h">
-      <Filter>Header Files\Rendering</Filter>
+      <Filter>Header Files\Engine\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="PixelShader.h">
-      <Filter>Header Files\Rendering\Bindables</Filter>
-    </ClInclude>
-    <ClInclude Include="Interaction.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
     </ClInclude>
     <ClInclude Include="ConstantBuffer.h">
-      <Filter>Header Files\Rendering\Bindables</Filter>
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
     </ClInclude>
     <ClInclude Include="InputLayout.h">
-      <Filter>Header Files\Rendering\Bindables</Filter>
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
     </ClInclude>
     <ClInclude Include="PrimitiveTopology.h">
-      <Filter>Header Files\Rendering\Bindables</Filter>
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
     </ClInclude>
     <ClInclude Include="BindableManager.h">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="GLTFLoader.h">
-      <Filter>Header Files\Rendering</Filter>
+      <Filter>Header Files\Engine\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="GLTFMaterial.h">
-      <Filter>Header Files\Rendering\Bindables</Filter>
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Interaction.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

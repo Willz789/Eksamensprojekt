@@ -28,6 +28,8 @@ public:
 	ID3D11DeviceContext* getCtx();
 	BindableManager* getBindMgr();
 
+	ID2D1RenderTarget* getRT2D();
+
 private:
 	void initShadowMap();
 
@@ -35,6 +37,9 @@ private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext;
+
+	Microsoft::WRL::ComPtr<ID2D1Factory> pFactory2D;
+	Microsoft::WRL::ComPtr<ID2D1RenderTarget> pRT2D;
 
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRTV;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
