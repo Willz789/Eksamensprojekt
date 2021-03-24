@@ -1,11 +1,13 @@
 #pragma once
 
+#include "Util.h"
+#include "Interaction.h"
+
 #include <string>
 #include <stdint.h>
 #include <unordered_map>
 #include <functional>
 
-#include <Windows.h>
 
 class Window {
 public:
@@ -29,6 +31,7 @@ private:
 
 private:
 	HWND hWnd;
+	Interaction interaction;
 
 	static std::unordered_map<HWND, Window*> hWndToWnd;
 	static constexpr char wndClsName[] = "PolyTankWndCls";

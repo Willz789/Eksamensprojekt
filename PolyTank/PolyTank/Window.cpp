@@ -103,6 +103,35 @@ LRESULT Window::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		getWndPtr(hWnd)->resize(LOWORD(lParam), HIWORD(lParam));
 		return 0;
 
+	case WM_LBUTTONDOWN:
+		std::cout << getWndPtr(hWnd)->interaction.keyDown('A') << "\n";
+		getWndPtr(hWnd)->interaction.lMouseClick();
+		getWndPtr(hWnd)->interaction.lMouseDown = true;
+		return 0;
+
+	case WM_LBUTTONUP:
+		getWndPtr(hWnd)->interaction.lMouseDown = false;
+		return 0;
+
+	case WM_RBUTTONDOWN:
+		getWndPtr(hWnd)->interaction.rMouseDown = true;
+		return 0;
+
+	case WM_RBUTTONUP:
+		getWndPtr(hWnd)->interaction.rMouseDown = false;
+		return 0;
+
+	case WM_KEYDOWN:
+		getWndPtr(hWnd)->interaction.keysDown[wParam] = 1;
+		return 0;
+
+	case WM_KEYUP:
+		getWndPtr(hWnd)->interaction.keysDown[wParam] = 0;
+		return 0;
+
+	case WM_MOUSEWHEEL:
+
+		return 0;
 	}
 
 	return DefWindowProcA(hWnd, uMsg, wParam, lParam);
