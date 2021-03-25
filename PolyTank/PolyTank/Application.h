@@ -11,11 +11,11 @@ public:
 
 	void run();
 
-private:
+	virtual void update(float t, float dt) = 0;
+	virtual void render() = 0;
+
+protected:
 	Window wnd;
 	Graphics gfx;
-	Scene scene;
-	Menu menu;
-
 };
 

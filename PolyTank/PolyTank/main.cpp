@@ -1,9 +1,9 @@
 
-#include "Application.h"
+#include "Polytank.h"
 
 int main() {
-	Application app;
-	app.run();
+	PolyTank game;
+	game.run();
 
 	return 0;
 }
