@@ -10,7 +10,8 @@ InputLayout::InputLayout(
 	ID3DBlob* pBlob
 ) {
 	tif(gfx.getDvc()->CreateInputLayout(
-		elements.data(), elements.size(),
+		elements.data(),
+		elements.size(),
 		pBlob->GetBufferPointer(),
 		pBlob->GetBufferSize(),
 		&pLayout

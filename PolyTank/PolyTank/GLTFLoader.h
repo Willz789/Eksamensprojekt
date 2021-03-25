@@ -26,15 +26,16 @@ namespace GLTF {
 		Loader(const std::filesystem::path& file);
 
 		void getScene(Graphics& gfx, SceneNode* pTarget, size_t sceneIdx = std::numeric_limits<size_t>::max()) const;
+		
+		static std::shared_ptr<IBindable> defaultMaterial(Graphics& gfx);
 
 	private:
 		void parseNode(Graphics& gfx, const nlohmann::json& jnode, SceneNode* pNode) const;
 		void parseMesh(Graphics& gfx, const nlohmann::json& jmesh, Mesh* pMesh) const;
-		Drawable parsePrimitive(Graphics& gfx, const nlohmann::json& jprimitive, const std::string& name) const;
 		std::shared_ptr<IBindable> parseMaterial(Graphics& gfx, const nlohmann::json& jmaterial) const;
-		std::shared_ptr<IBindable> defaultMaterial(Graphics& gfx) const;
 		std::shared_ptr<IBindable> readIndexBuffer(Graphics& gfx, const std::string& name, const Accessor* pAccessor) const;
 		std::shared_ptr<IBindable> readVertexBuffer(Graphics& gfx, const std::string& name, const nlohmann::json& jattributes) const;
+		Drawable parsePrimitive(Graphics& gfx, const nlohmann::json& jprimitive, const std::string& name) const;
 		
 	private:
 		nlohmann::json gltf;

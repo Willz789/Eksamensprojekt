@@ -153,6 +153,7 @@
     <ClCompile Include="BindableManager.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Drawable.cpp" />
+    <ClCompile Include="InstanceBuffer.cpp" />
     <ClCompile Include="GLTFLoader.cpp" />
     <ClCompile Include="GLTFMaterial.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="BindableManager.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Drawable.h" />
+    <ClInclude Include="InstanceBuffer.h" />
     <ClInclude Include="GLTFLoader.h" />
     <ClInclude Include="GLTFMaterial.h" />
     <ClInclude Include="IBindable.h" />
@@ -196,6 +198,12 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="InstanceVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

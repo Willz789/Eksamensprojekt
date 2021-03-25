@@ -105,6 +105,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
+    <ClCompile Include="InstanceBuffer.cpp">
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IBindable.h">
@@ -173,6 +176,9 @@
     <ClInclude Include="PolyTank.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
+    <ClInclude Include="InstanceBuffer.h">
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -182,6 +188,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="ShadowVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="InstanceVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

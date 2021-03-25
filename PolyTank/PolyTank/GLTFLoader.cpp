@@ -214,7 +214,7 @@ std::shared_ptr<IBindable> GLTF::Loader::parseMaterial(Graphics& gfx, const nloh
 	return pMaterial;
 }
 
-std::shared_ptr<IBindable> GLTF::Loader::defaultMaterial(Graphics& gfx) const {
+std::shared_ptr<IBindable> GLTF::Loader::defaultMaterial(Graphics& gfx) {
 	std::shared_ptr<GLTFMaterial> pMaterial = gfx.getBindMgr()->get<GLTFMaterial>();
 	pMaterial->factors.baseColor = { 1.0f, 1.0f, 1.0f };
 

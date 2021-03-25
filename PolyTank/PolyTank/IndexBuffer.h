@@ -18,7 +18,7 @@ public:
 
 	void bind(Graphics& gfx) override;
 	
-	size_t getSize() const;
+	size_t getIndexCount() const;
 
 	static std::string uid(const std::string& name, const std::vector<Index>& indices);
 

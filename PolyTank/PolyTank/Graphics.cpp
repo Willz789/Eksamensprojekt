@@ -240,9 +240,9 @@ void Graphics::endFrame()
 	pSwapChain->Present(0, 0);
 }
 
-void Graphics::drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform) {
+void Graphics::draw(size_t indexCount, size_t instanceCount, DirectX::FXMMATRIX transform) {
 	if (passType == PassType::SHADOW_PASS) {
-		pContext->VSSetShader(pShadowVS.Get(), nullptr, 0);
+		//pContext->VSSetShader(pShadowVS.Get(), nullptr, 0);
 		pContext->PSSetShader(nullptr, nullptr, 0);
 	}
 
@@ -263,7 +263,7 @@ void Graphics::drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform) {
 	perObjectCBuf.bind(*this);
 	perPassCBuf.bind(*this);
 
-	pContext->DrawIndexed(indexCount, 0, 0);
+	pContext->DrawIndexedInstanced(indexCount, instanceCount, 0, 0, 0);
 }
 
 void Graphics::setCamera(DirectX::FXMMATRIX cameraTransform) {

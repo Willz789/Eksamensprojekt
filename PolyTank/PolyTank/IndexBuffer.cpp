@@ -30,7 +30,7 @@ void IndexBuffer::bind(Graphics& gfx) {
 	gfx.getCtx()->IASetIndexBuffer(pBuf.Get(), DXGI_FORMAT_R32_UINT, 0);
 }
 
-size_t IndexBuffer::getSize() const {
+size_t IndexBuffer::getIndexCount() const {
 	
 	D3D11_BUFFER_DESC desc;
 	pBuf->GetDesc(&desc);

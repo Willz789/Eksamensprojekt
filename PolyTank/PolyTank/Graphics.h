@@ -19,7 +19,7 @@ public:
 	void viewPass();
 	void endFrame();
 
-	void drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform);
+	void draw(size_t indexCount, size_t instanceCount, DirectX::FXMMATRIX transform);
 
 	void setCamera(DirectX::FXMMATRIX cameraTransform);
 	DirectX::XMMATRIX getCamera();
