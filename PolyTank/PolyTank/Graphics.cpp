@@ -242,7 +242,6 @@ void Graphics::endFrame()
 
 void Graphics::draw(size_t indexCount, size_t instanceCount, DirectX::FXMMATRIX transform) {
 	if (passType == PassType::SHADOW_PASS) {
-		//pContext->VSSetShader(pShadowVS.Get(), nullptr, 0);
 		pContext->PSSetShader(nullptr, nullptr, 0);
 	}
 
