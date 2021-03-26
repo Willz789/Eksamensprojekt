@@ -16,9 +16,9 @@ private:
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> pRed;
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> pOrange;
 
-	D2D1_RECT_F hpBar;
-	D2D1_RECT_F ammoBar;
-	D2D1_RECT_F minimap;
+	D2D1_ROUNDED_RECT hpBar;
+	D2D1_ROUNDED_RECT ammoBar;
+	D2D1_ELLIPSE minimapFrame;
 
 	Interaction* pInteraction;
 	ResizeListener* resizeListener;
