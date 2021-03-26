@@ -37,7 +37,3 @@ size_t InstanceBuffer::getInstCount() {
 	assert(desc.ByteWidth % instSize == 0);
 	return desc.ByteWidth / instSize;
 }
-
-std::string InstanceBuffer::uid(size_t instCount, size_t instSize) {
-	return std::string();
-}

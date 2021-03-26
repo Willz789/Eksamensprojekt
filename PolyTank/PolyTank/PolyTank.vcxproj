@@ -153,6 +153,7 @@
     <ClCompile Include="BindableManager.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Drawable.cpp" />
+    <ClCompile Include="Fire.cpp" />
     <ClCompile Include="InstanceBuffer.cpp" />
     <ClCompile Include="GLTFLoader.cpp" />
     <ClCompile Include="GLTFMaterial.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="BindableManager.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Drawable.h" />
+    <ClInclude Include="Fire.h" />
     <ClInclude Include="InstanceBuffer.h" />
     <ClInclude Include="GLTFLoader.h" />
     <ClInclude Include="GLTFMaterial.h" />
@@ -186,6 +188,7 @@
     <ClInclude Include="InputLayout.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="PolyTank.h" />
     <ClInclude Include="PrimitiveTopology.h" />

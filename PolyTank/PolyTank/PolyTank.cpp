@@ -96,7 +96,7 @@ PolyTank::PolyTank() :
 	pMaterial->factors.baseColor = { 0.5f, 1.0f, 0.5f };
 	instanced.addBindable(pMaterial);
 
-	std::shared_ptr<InstanceBuffer> pInstBuf = gfx.getBindMgr()->get<InstanceBuffer>(instances.size(), sizeof(InstanceData));
+	std::shared_ptr<InstanceBuffer> pInstBuf = std::make_shared<InstanceBuffer>(gfx, instances.size(), sizeof(InstanceData));
 	pInstBuf->update(gfx, instances.data(), instances.size());
 	instanced.addBindable(pInstBuf);
 

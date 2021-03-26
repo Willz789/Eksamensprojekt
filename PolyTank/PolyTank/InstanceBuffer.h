@@ -12,8 +12,6 @@ public:
 
 	size_t getInstCount();
 
-	static std::string uid(size_t instCount, size_t instSize);
-
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pBuf;
 	size_t instSize;
