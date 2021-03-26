@@ -6,9 +6,10 @@ using namespace DirectX;
 PolyTank::PolyTank() :
 	scene(gfx),
 	menu(gfx, *this),
+	hud(gfx, wnd.getInteraction()),
 	state(State::MENU)
 	{
-	
+
 	gfx.setCamera(XMMatrixLookAtRH(XMVectorSet(0, 1.0f, 5.0f, 1.0f), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, scene.getRoot());
 	GLTF::Loader("./Models/ground/ground.gltf").getScene(gfx, scene.getRoot());
@@ -27,8 +28,11 @@ void PolyTank::render() {
 
 	gfx.viewPass();
 	scene.draw(gfx);
+	
 	if (state == State::MENU) {
 		menu.draw(gfx);
+	} else if (state == State::GAME) {
+		hud.draw(gfx);
 	}
 }
 

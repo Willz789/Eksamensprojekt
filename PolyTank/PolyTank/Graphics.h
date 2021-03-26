@@ -3,6 +3,7 @@
 #include "Util.h"
 #include "BindableManager.h"
 #include "ConstantBuffer.h"
+#include "Window.h"
 
 class Graphics
 {
@@ -11,7 +12,7 @@ class Graphics
 	};
 
 public:
-	Graphics(HWND hwnd);
+	Graphics(Window& wnd);
 	void resize();
 
 	void beginFrame();

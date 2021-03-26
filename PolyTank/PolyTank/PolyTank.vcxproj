@@ -156,6 +156,7 @@
     <ClCompile Include="GLTFLoader.cpp" />
     <ClCompile Include="GLTFMaterial.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="HUD.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="Interaction.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="GLTFLoader.h" />
     <ClInclude Include="GLTFMaterial.h" />
+    <ClInclude Include="HUD.h" />
     <ClInclude Include="IBindable.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="IndexBuffer.h" />

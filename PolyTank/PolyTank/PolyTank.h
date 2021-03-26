@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Application.h"
+#include "Menu.h"
+#include "HUD.h"
 
 class PolyTank : public Application {
 	enum class State {
@@ -23,6 +25,8 @@ private:
 	
 	Scene scene;
 	Menu menu;
+
+	HUD hud;
 
 };
 

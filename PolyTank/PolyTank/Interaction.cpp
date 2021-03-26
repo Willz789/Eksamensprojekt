@@ -39,6 +39,21 @@ void Interaction::rMouseClick(uint32_t x, uint32_t y)
 	}
 }
 
+void Interaction::resize(uint32_t w, uint32_t h) {
+	ResizeEvent e;
+	e.width = w;
+	e.height = h;
+
+	std::queue<ResizeListener> executionQueue;
+	for (auto it = resizeListeners.begin(); it != resizeListeners.end(); it++) {
+		executionQueue.push(*it);
+	}
+	while (!executionQueue.empty()) {
+		executionQueue.front()(e);
+		executionQueue.pop();
+	}
+}
+
 void Interaction::keyClick(char key)
 {
 	KeyEvent e;
@@ -65,6 +80,11 @@ KeyListener* Interaction::addListener(KeyListener kl)
 	return &keyListeners.back();
 }
 
+ResizeListener* Interaction::addListener(ResizeListener rl) {
+	resizeListeners.push_back(rl);
+	return &resizeListeners.back();
+}
+
 void Interaction::removeListener(MouseListener* pml)
 {
 	for (auto it = mouseListeners.begin(); it != mouseListeners.end(); it++) {
@@ -72,7 +92,6 @@ void Interaction::removeListener(MouseListener* pml)
 			mouseListeners.erase(it);
 			break;
 		}
-		
 	}
 }
 
@@ -83,6 +102,14 @@ void Interaction::removeListener(KeyListener* pkl)
 			keyListeners.erase(it);
 			break;
 		}
+	}
+}
 
+void Interaction::removeListener(ResizeListener* prl) {
+	for (auto it = resizeListeners.begin(); it != resizeListeners.end(); it++) {
+		if (&*it == prl) {
+			resizeListeners.erase(it);
+			break;
+		}
 	}
 }

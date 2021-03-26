@@ -71,11 +71,6 @@ bool Window::isVisible() const {
 	return IsWindowVisible(hWnd);
 }
 
-void Window::setResizeCB(std::function<void(uint32_t, uint32_t)> CB)
-{
-	resizeCB = CB;
-}
-
 bool Window::handleMessages() {
 	MSG msg;
 
@@ -100,7 +95,7 @@ LRESULT Window::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		return 0;
 
 	case WM_SIZE:
-		getWndPtr(hWnd)->resize(LOWORD(lParam), HIWORD(lParam));
+		getWndPtr(hWnd)->interaction.resize(LOWORD(lParam), HIWORD(lParam));
 		return 0;
 
 	case WM_LBUTTONDOWN:
@@ -150,10 +145,4 @@ Interaction* Window::getInteraction()
 void Window::exit()
 {
 	PostQuitMessage(0);
-}
-
-void Window::resize(uint32_t w, uint32_t h) {
-	if (resizeCB) {
-		resizeCB(w, h);
-	}
 }

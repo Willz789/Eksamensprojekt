@@ -28,8 +28,9 @@ struct ModelTransforms {
 	XMFLOAT4X4 normalsWorld;
 };
 
-Graphics::Graphics(HWND hwnd) :
+Graphics::Graphics(Window& wnd) :
 	bindMgr(*this) {
+
 	D3D_FEATURE_LEVEL fLevels[] = {
 		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0
@@ -46,7 +47,7 @@ Graphics::Graphics(HWND hwnd) :
 	swapDesc.SampleDesc.Quality = 0;
 	swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapDesc.BufferCount = 2;
-	swapDesc.OutputWindow = hwnd;
+	swapDesc.OutputWindow = wnd.getHwnd();
 	swapDesc.Windowed = true;
 	swapDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swapDesc.Flags = 0;
@@ -90,6 +91,10 @@ Graphics::Graphics(HWND hwnd) :
 	tif(pDevice2D->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &pContext2D));
 	
 	DWriteCreateFactory(DWRITE_FACTORY_TYPE_ISOLATED, __uuidof(pFactoryWrite), &pFactoryWrite);
+
+	wnd.getInteraction()->addListener([this](const ResizeEvent&) -> void {
+		this->resize();
+	});
 
 	initShadowMap();
 

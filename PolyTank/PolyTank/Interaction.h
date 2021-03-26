@@ -19,8 +19,13 @@ struct KeyEvent {
 	char key;
 };
 
+struct ResizeEvent {
+	uint32_t width, height;
+};
+
 using MouseListener = std::function<void(const MouseEvent&)>;
 using KeyListener = std::function<void(const KeyEvent&)>;
+using ResizeListener = std::function<void(const ResizeEvent&)>;
 
 class Interaction
 {
@@ -35,19 +40,25 @@ public:
 
 	MouseListener* addListener(MouseListener ml);
 	KeyListener* addListener(KeyListener kl);
+	ResizeListener* addListener(ResizeListener rl);
 
 	void removeListener(MouseListener* pml);
 	void removeListener(KeyListener* pkl);
-
+	void removeListener(ResizeListener* prl);
 	
 private:
-	std::list<MouseListener> mouseListeners;
+
 	void lMouseClick(uint32_t x, uint32_t y);
 	void rMouseClick(uint32_t x, uint32_t y);
+	void resize(uint32_t w, uint32_t h);
 
-	std::list<KeyListener> keyListeners;
 	void keyClick(char key);
 
+
+private:
+	std::list<MouseListener> mouseListeners;
+	std::list<KeyListener> keyListeners;
+	std::list<ResizeListener> resizeListeners;
 
 };
 
