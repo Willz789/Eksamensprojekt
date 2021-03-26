@@ -25,6 +25,10 @@ public:
 	static LRESULT wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static Window* getWndPtr(HWND hWnd);
 
+	Interaction* getInteraction();
+
+	void exit();
+
 private:
 	void resize(uint32_t w, uint32_t h);
 	

@@ -54,3 +54,8 @@ void Application::run() {
 		gfx.endFrame();
 	}
 }
+
+Window* Application::getWnd()
+{
+	return &wnd;
+}

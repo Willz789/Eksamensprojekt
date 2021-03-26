@@ -88,6 +88,20 @@ void SceneNode::setScaling(DirectX::XMVECTOR factor) {
 	XMStoreFloat3(&scaling, factor);
 }
 
+void SceneNode::reset()
+{
+	clear();
+	translation = { 0,0,0 };
+	quaternion = { 0,0,0,1 };
+	scaling = { 1,1,1 };
+}
+
+void SceneNode::clear()
+{
+	children.clear();
+	mesh.reset();
+}
+
 Scene::Scene(Graphics& gfx) : 
 	root(nullptr),
 	lightingCBuf(gfx, 0, sizeof(Lighting)) {

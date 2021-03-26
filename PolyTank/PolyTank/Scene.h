@@ -32,6 +32,9 @@ public:
 	void setRotation(DirectX::XMVECTOR rotation);
 	void setScaling(DirectX::XMVECTOR factor);
 
+	void reset();
+	void clear();
+
 private:
 	SceneNode* pParent;
 	std::list<SceneNode> children;

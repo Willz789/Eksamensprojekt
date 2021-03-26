@@ -104,8 +104,7 @@ LRESULT Window::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		return 0;
 
 	case WM_LBUTTONDOWN:
-		std::cout << getWndPtr(hWnd)->interaction.keyDown('A') << "\n";
-		getWndPtr(hWnd)->interaction.lMouseClick();
+		getWndPtr(hWnd)->interaction.lMouseClick(LOWORD(lParam), HIWORD(lParam));
 		getWndPtr(hWnd)->interaction.lMouseDown = true;
 		return 0;
 
@@ -114,6 +113,7 @@ LRESULT Window::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		return 0;
 
 	case WM_RBUTTONDOWN:
+		getWndPtr(hWnd)->interaction.rMouseClick(LOWORD(lParam), HIWORD(lParam));
 		getWndPtr(hWnd)->interaction.rMouseDown = true;
 		return 0;
 
@@ -122,6 +122,7 @@ LRESULT Window::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		return 0;
 
 	case WM_KEYDOWN:
+		getWndPtr(hWnd)->interaction.keyClick(wParam);
 		getWndPtr(hWnd)->interaction.keysDown[wParam] = 1;
 		return 0;
 
@@ -139,6 +140,16 @@ LRESULT Window::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 Window* Window::getWndPtr(HWND hWnd) {
 	return hWndToWnd[hWnd];
+}
+
+Interaction* Window::getInteraction()
+{
+	return &interaction;
+}
+
+void Window::exit()
+{
+	PostQuitMessage(0);
 }
 
 void Window::resize(uint32_t w, uint32_t h) {

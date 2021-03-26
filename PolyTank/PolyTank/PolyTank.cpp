@@ -5,7 +5,9 @@ using namespace DirectX;
 
 PolyTank::PolyTank() :
 	scene(gfx),
-	menu(gfx) {
+	menu(gfx, *this),
+	state(State::MENU)
+	{
 	
 	gfx.setCamera(XMMatrixLookAtRH(XMVectorSet(0, 1.0f, 5.0f, 1.0f), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, scene.getRoot());
@@ -13,8 +15,10 @@ PolyTank::PolyTank() :
 }
 
 void PolyTank::update(float t, float dt) {
-	scene.getRoot()->getChild(0)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), t));
-	scene.getRoot()->getChild(0)->getChild(13)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -2.0f * t));
+	if (state==State::MENU) {
+		scene.getRoot()->getChild(0)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), t));
+		scene.getRoot()->getChild(0)->getChild(13)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -2.0f * t));
+	}
 }
 
 void PolyTank::render() {
@@ -23,6 +27,13 @@ void PolyTank::render() {
 
 	gfx.viewPass();
 	scene.draw(gfx);
+	if (state == State::MENU) {
+		menu.draw(gfx);
+	}
+}
 
-	menu.draw(gfx);
+void PolyTank::startGame()
+{
+	state = State::GAME;
+	scene.getRoot()->reset();
 }

@@ -1,9 +1,16 @@
 #include "Menu.h"
+#include "PolyTank.h"
+
+#include <iostream>
 
 using namespace D2D1;
 using Microsoft::WRL::ComPtr;
 
-Menu::Menu(Graphics& gfx)
+inline bool isPointIn(D2D1_POINT_2F p, D2D1_RECT_F r) {
+	return p.x > r.left && p.x < r.right&& p.y > r.top && p.y < r.bottom;
+}
+
+Menu::Menu(Graphics& gfx, PolyTank& polyTank)
 {
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(1.0f, 1.0f, 1.0f), &pWhiteBrush));
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(0.0f, 0.0f, 0.0f), &pBlackBrush));
@@ -31,6 +38,20 @@ Menu::Menu(Graphics& gfx)
 		&pWTFTitle
 	);
 	pWTFTitle->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+	
+	buttonListener = polyTank.getWnd()->getInteraction()->addListener([&polyTank, this](const MouseEvent& e)->void {
+		D2D1_RECT_F startGameRect = RectF(200, 450, 550, 550);
+		D2D1_RECT_F endGameRect = RectF(1280 - 550, 450, 1280 - 200, 550);
+		D2D1_POINT_2F mouseLocation = Point2F(e.mousex, e.mousey);
+		if (isPointIn(mouseLocation, startGameRect)) {
+			polyTank.getWnd()->getInteraction()->removeListener(buttonListener);
+			polyTank.startGame();
+		}
+		else if (isPointIn(mouseLocation, endGameRect)) {
+			polyTank.getWnd()->exit();
+		}
+	});
 }
 
 void Menu::draw(Graphics& gfx)

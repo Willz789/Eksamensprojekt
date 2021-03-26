@@ -10,6 +10,8 @@ public:
 	void draw(Graphics& gfx, DirectX::XMMATRIX transform);
 	void addDrawable(Drawable&& drawable);
 
+	void reset();
+
 private:
 	std::vector<Drawable> drawables;
 
