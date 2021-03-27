@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Application.h"
+#include "Fire.h"
 
 class PolyTank : public Application {
 public:
@@ -12,6 +13,6 @@ public:
 private:
 	Scene scene;
 	Menu menu;
-
+	Fire fire;
 };
 

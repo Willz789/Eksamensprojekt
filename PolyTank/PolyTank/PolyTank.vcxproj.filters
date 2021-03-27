@@ -182,11 +182,11 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\Engine\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Fire.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ParticleSystem.h">
       <Filter>Header Files\Engine\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Fire.h">
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +200,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="InstanceVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="FireVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="FirePS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

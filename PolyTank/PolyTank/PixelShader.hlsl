@@ -13,13 +13,13 @@ cbuffer Lighting : register(b0)
     } ambient;
 };
 
+Texture2D shadowMap : register(t0);
+SamplerState shadowSampler : register(s0);
+
 cbuffer Material : register(b1)
 {
     float3 base_color;
 }
-
-Texture2D shadowMap : register(t0);
-SamplerState shadowSampler : register(s0);
 
 struct Input
 {

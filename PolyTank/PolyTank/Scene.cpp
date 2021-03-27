@@ -95,7 +95,6 @@ Scene::Scene(Graphics& gfx) :
 	XMStoreFloat3(&lighting.sun.direction, XMVector3Normalize(XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f)));
 	XMStoreFloat3(&lighting.sun.color, XMVectorSet(3.0f, 3.0f, 3.0f, 0.0f));
 	XMStoreFloat3(&lighting.ambient.color, XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f));
-
 }
 
 void Scene::draw(Graphics& gfx)

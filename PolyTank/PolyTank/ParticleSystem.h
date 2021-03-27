@@ -8,20 +8,23 @@
 
 template<typename Particle>
 class ParticleSystem {
+	using InstData = typename Particle::DrawData;
 public:
 	ParticleSystem(Graphics& gfx, size_t particleCount);
 	
-	void update(float t, float dt);
+	void update(Graphics& gfx, float t, float dt);
 	std::shared_ptr<InstanceBuffer> getInstBuf() const;
 
 protected:
 	virtual Particle generateParticle() = 0;
-	virtual Particle::DrawData updateParticle(Particle& p, float dt) = 0;
+	virtual InstData updateParticle(Particle& p, float dt) = 0;
+
+protected:
+	std::shared_ptr<InstanceBuffer> pInstBuf;
 
 private:
 	std::vector<Particle> particles;
-	std::vector<Particle::DrawData> instData;
-	std::shared_ptr<InstanceBuffer> pInstBuf;
+	std::vector<InstData> instData;
 };
 
 
@@ -32,10 +35,11 @@ inline ParticleSystem<Particle>::ParticleSystem(Graphics& gfx, size_t particleCo
 	pInstBuf(std::make_shared<InstanceBuffer>(gfx, particleCount, sizeof(Particle::DrawData))) {}
 
 template<typename Particle>
-inline void ParticleSystem<Particle>::update(float t, float dt) {
+inline void ParticleSystem<Particle>::update(Graphics& gfx, float t, float dt) {
 	for (size_t i = 0; i < particles.size(); i++) {
 		instData[i] = updateParticle(particles[i], dt);
 	}
+	pInstBuf->update(gfx, instData.data(), instData.size());
 }
 
 template<typename Particle>

@@ -9,6 +9,7 @@ struct FireParticle {
 
 	struct DrawData {
 		DirectX::XMFLOAT3 pos;
+		float radius;
 		DirectX::XMFLOAT4 col;
 	};
 
@@ -17,14 +18,17 @@ struct FireParticle {
 	float lifetime;
 };
 
-class Fire : public ParticleSystem<FireParticle>, public Drawable {
+class Fire : public ParticleSystem<FireParticle> {
 public:
 	Fire(Graphics& gfx, float spawnRadius, size_t particleCount);
 
 	FireParticle generateParticle() override;
 	FireParticle::DrawData updateParticle(FireParticle& p, float dt) override;
 
+	Drawable makeDrawable(Graphics& gfx);
+
 private:
 	float radius;
+	bool stopped;
 
 };

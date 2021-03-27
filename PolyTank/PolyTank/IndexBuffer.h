@@ -15,12 +15,14 @@ class IndexBuffer : public IBindable {
 public:
 	IndexBuffer() = default;
 	IndexBuffer(Graphics& gfx, const std::string& name, const std::vector<Index>& indices);
+	IndexBuffer(Graphics& gfx, const std::string& name, const Index* pData, size_t indexCount);
 
 	void bind(Graphics& gfx) override;
 	
 	size_t getIndexCount() const;
 
 	static std::string uid(const std::string& name, const std::vector<Index>& indices);
+	static std::string uid(const std::string& name, const Index* pData, size_t indexCount);
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pBuf;
