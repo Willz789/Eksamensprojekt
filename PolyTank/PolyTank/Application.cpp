@@ -15,12 +15,8 @@ using namespace DirectX;
 
 Application::Application() :
 	wnd(1280, 720, "PolyTank"),
-	gfx(wnd.getHwnd())
+	gfx(wnd)
 	{
-	
-	wnd.setResizeCB([this](uint32_t w, uint32_t h) -> void {
-		this->gfx.resize();
-	});
 
 }
 
@@ -53,4 +49,9 @@ void Application::run() {
 		render();
 		gfx.endFrame();
 	}
+}
+
+Window* Application::getWnd()
+{
+	return &wnd;
 }

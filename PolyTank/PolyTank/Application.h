@@ -3,7 +3,6 @@
 #include "Window.h"
 #include "Graphics.h"
 #include "Scene.h"
-#include "Menu.h"
 
 class Application {
 public:
@@ -13,9 +12,12 @@ public:
 
 	virtual void update(float t, float dt) = 0;
 	virtual void render() = 0;
+	
+	Window* getWnd();
 
 protected:
 	Window wnd;
 	Graphics gfx;
 };
+
 

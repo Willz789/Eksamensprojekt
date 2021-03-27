@@ -1,9 +1,17 @@
 #include "Menu.h"
+#include "PolyTank.h"
+
+#include <iostream>
 
 using namespace D2D1;
 using Microsoft::WRL::ComPtr;
 
-Menu::Menu(Graphics& gfx)
+inline bool isPointIn(D2D1_POINT_2F p, D2D1_RECT_F r) {
+	return p.x > r.left && p.x < r.right&& p.y > r.top && p.y < r.bottom;
+}
+
+Menu::Menu(Graphics& gfx, PolyTank& polyTank) :
+	interaction(polyTank.getWnd()->getInteraction())
 {
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(1.0f, 1.0f, 1.0f), &pWhiteBrush));
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(0.0f, 0.0f, 0.0f), &pBlackBrush));
@@ -31,12 +39,50 @@ Menu::Menu(Graphics& gfx)
 		&pWTFTitle
 	);
 	pWTFTitle->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+	buttonListener = interaction->addListener([&polyTank, this](const MouseEvent& e)->void {
+		D2D1_POINT_2F mouseLocation = Point2F(e.mousex, e.mousey);
+		if (isPointIn(mouseLocation, startGameRect)) {
+			interaction->removeListener(buttonListener);
+			polyTank.startGame();
+		}
+		else if (isPointIn(mouseLocation, endGameRect)) {
+			polyTank.getWnd()->exit();
+		}
+	});
+
+	resizeListener = interaction->addListener([this](const ResizeEvent& e) -> void {
+		this->resize(e.width, e.height);
+	});
+
+}
+
+Menu::~Menu() {
+	interaction->removeListener(buttonListener);
+	interaction->removeListener(resizeListener);
+}
+
+void Menu::resize(uint32_t w, uint32_t h) {
+
+	startGameRect.left = w * 4.0f / 24.0f;
+	startGameRect.right = w * 10.0f / 24.0f;
+	startGameRect.top = h * 15.0f / 24.0f;
+	startGameRect.bottom = h * 18.0f / 24.0f;
+
+	endGameRect.left = w * 14.0f / 24.0f;
+	endGameRect.right = w * 20.0f / 24.0f;
+	endGameRect.top = h * 15.0f / 24.0f;
+	endGameRect.bottom = h * 18.0f / 24.0f;
+
+	titleRect.left = 0.0f;
+	titleRect.right = w;
+	titleRect.top = h * 2.0f / 24.0f;
+	titleRect.bottom = h * 5.0f / 24.0f;
 }
 
 void Menu::draw(Graphics& gfx)
 {
-	D2D1_RECT_F startGameRect = RectF(200, 450, 550, 550);
-	D2D1_RECT_F endGameRect = RectF(1280 - 550, 450, 1280 - 200, 550);
+
 	gfx.getCtx2D()->FillRoundedRectangle(RoundedRect(startGameRect, 10, 10), pWhiteBrush.Get());
 	gfx.getCtx2D()->FillRoundedRectangle(RoundedRect(endGameRect, 10, 10), pWhiteBrush.Get());	
 	gfx.getCtx2D()->DrawRoundedRectangle(RoundedRect(startGameRect, 10, 10), pBlackBrush.Get(), 3.0f);
@@ -54,6 +100,7 @@ void Menu::draw(Graphics& gfx)
 		startGameRect.bottom - startGameRect.top, 
 		&pWTL
 	);
+
 	pWTL->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 	gfx.getCtx2D()->DrawTextLayout(Point2F(startGameRect.left, startGameRect.top), pWTL.Get(), pBlackBrush.Get());
 
@@ -64,11 +111,11 @@ void Menu::draw(Graphics& gfx)
 		endGameRect.bottom - endGameRect.top,
 		&pWTL
 	);
+
 	pWTL->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 	gfx.getCtx2D()->DrawTextLayout(Point2F(endGameRect.left, endGameRect.top), pWTL.Get(), pBlackBrush.Get());
 
 	std::wstring titleString(L"Polytank");
-	D2D1_RECT_F titleRect = RectF(1280/2-400, 50, 1280/2+400, 150);
 	gfx.getFactoryW()->CreateTextLayout(
 		titleString.c_str(),
 		titleString.size(), pWTFTitle.Get(),
