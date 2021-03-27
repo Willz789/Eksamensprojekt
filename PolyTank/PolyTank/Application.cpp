@@ -16,9 +16,7 @@ using namespace DirectX;
 Application::Application() :
 	wnd(1280, 720, "PolyTank"),
 	gfx(wnd)
-	{
-
-}
+	{}
 
 using std::chrono::steady_clock;
 

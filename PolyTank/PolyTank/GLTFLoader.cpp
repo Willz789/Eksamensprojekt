@@ -159,7 +159,7 @@ void GLTF::Loader::parseNode(Graphics& gfx, const json& jnode, SceneNode* pNode)
 
 	it = jnode.find("mesh");
 	if (it != jnode.end()) {
-		parseMesh(gfx, jmeshes[it->get<size_t>()], pNode->getMesh());
+		parseMesh(gfx, jmeshes[it->get<size_t>()], pNode);
 	}
 
 	it = jnode.find("children");
@@ -170,20 +170,20 @@ void GLTF::Loader::parseNode(Graphics& gfx, const json& jnode, SceneNode* pNode)
 	}
 }
 
-void GLTF::Loader::parseMesh(Graphics& gfx, const nlohmann::json& jmesh, Mesh* pMesh) const {
+void GLTF::Loader::parseMesh(Graphics& gfx, const nlohmann::json& jmesh, SceneNode* pNode) const {
 	std::string meshName = jmesh["name"];
 
 	const json& jprimitives = jmesh["primitives"];
 
 	for (size_t i = 0; i < jprimitives.size(); i++) {
 		std::string primitiveName = (std::stringstream() << meshName << "_" << i).str();
-		pMesh->addDrawable(std::move(parsePrimitive(gfx, jprimitives[i], primitiveName)));
+		pNode->addDrawable(std::move(parsePrimitive(gfx, jprimitives[i], primitiveName)));
 	}
 
 }
 
-Drawable GLTF::Loader::parsePrimitive(Graphics& gfx, const nlohmann::json& jprimitive, const std::string& name) const {
-	Drawable drawable;	
+std::unique_ptr<IDrawable> GLTF::Loader::parsePrimitive(Graphics& gfx, const nlohmann::json& jprimitive, const std::string& name) const {
+	std::unique_ptr<Mesh> pMesh = std::make_unique<Mesh>();
 
 	Microsoft::WRL::ComPtr<ID3DBlob> pVSBlob;
 	
@@ -193,17 +193,17 @@ Drawable GLTF::Loader::parsePrimitive(Graphics& gfx, const nlohmann::json& jprim
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
-	drawable.addBindable(readIndexBuffer(gfx, name, &accessors[jprimitive["indices"]]));
-	drawable.addBindable(readVertexBuffer(gfx, name, jprimitive["attributes"]));
-	drawable.addBindable(gfx.getBindMgr()->get<VertexShader>("./ShaderBin/VertexShader.cso", &pVSBlob));
-	drawable.addBindable(gfx.getBindMgr()->get<PixelShader>("./ShaderBin/PixelShader.cso"));
-	drawable.addBindable(gfx.getBindMgr()->get<InputLayout>(inputElements, pVSBlob.Get()));
-	drawable.addBindable(gfx.getBindMgr()->get<PrimitiveTopology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	pMesh->addBindable(readIndexBuffer(gfx, name, &accessors[jprimitive["indices"]]));
+	pMesh->addBindable(readVertexBuffer(gfx, name, jprimitive["attributes"]));
+	pMesh->addBindable(gfx.getBindMgr()->get<VertexShader>("./ShaderBin/VertexShader.cso", &pVSBlob));
+	pMesh->addBindable(gfx.getBindMgr()->get<PixelShader>("./ShaderBin/PixelShader.cso"));
+	pMesh->addBindable(gfx.getBindMgr()->get<InputLayout>(inputElements, pVSBlob.Get()));
+	pMesh->addBindable(gfx.getBindMgr()->get<PrimitiveTopology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	
 	auto it = jprimitive.find("material");
-	drawable.addBindable(it == jprimitive.end() ? defaultMaterial(gfx) : parseMaterial(gfx, gltf["materials"][it->get<size_t>()]));
+	pMesh->addBindable(it == jprimitive.end() ? defaultMaterial(gfx) : parseMaterial(gfx, gltf["materials"][it->get<size_t>()]));
 
-	return drawable;
+	return pMesh;
 }
 
 std::shared_ptr<IBindable> GLTF::Loader::parseMaterial(Graphics& gfx, const nlohmann::json& jmaterial) const {

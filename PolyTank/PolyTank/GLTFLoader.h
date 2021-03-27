@@ -31,11 +31,11 @@ namespace GLTF {
 
 	private:
 		void parseNode(Graphics& gfx, const nlohmann::json& jnode, SceneNode* pNode) const;
-		void parseMesh(Graphics& gfx, const nlohmann::json& jmesh, Mesh* pMesh) const;
+		void parseMesh(Graphics& gfx, const nlohmann::json& jmesh, SceneNode* pNode) const;
 		std::shared_ptr<IBindable> parseMaterial(Graphics& gfx, const nlohmann::json& jmaterial) const;
 		std::shared_ptr<IBindable> readIndexBuffer(Graphics& gfx, const std::string& name, const Accessor* pAccessor) const;
 		std::shared_ptr<IBindable> readVertexBuffer(Graphics& gfx, const std::string& name, const nlohmann::json& jattributes) const;
-		Drawable parsePrimitive(Graphics& gfx, const nlohmann::json& jprimitive, const std::string& name) const;
+		std::unique_ptr<IDrawable> parsePrimitive(Graphics& gfx, const nlohmann::json& jprimitive, const std::string& name) const;
 		
 	private:
 		nlohmann::json gltf;

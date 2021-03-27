@@ -5,6 +5,7 @@
 
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
+#include <dxgidebug.h>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -100,6 +101,35 @@ Graphics::Graphics(Window& wnd) :
 
 	perPassCBuf = VSConstantBuffer(*this, 0, sizeof(PassTransforms));
 	perObjectCBuf = VSConstantBuffer(*this, 1, sizeof(ModelTransforms));
+}
+
+Graphics::~Graphics() {
+	
+	pFactoryWrite.Reset();
+	
+	pRT2D.Reset();
+	pContext2D.Reset();
+	pDevice2D.Reset();
+	pFactory2D.Reset();
+
+	pShadowVS.Reset();
+	pShadowMapSampler.Reset();
+	pShadowSRV.Reset();
+	pShadowDSV.Reset();
+
+	pDSV.Reset();
+	pRTV.Reset();
+
+	pContext.Reset();
+	pDevice.Reset();
+
+	pSwapChain.Reset();
+
+#ifdef _DEBUG
+	Microsoft::WRL::ComPtr<IDXGIDebug> pDebug;
+	tif(DXGIGetDebugInterface1(0, __uuidof(pDebug), &pDebug));
+	tif(pDebug->ReportLiveObjects(DXGI_DEBUG_DX, DXGI_DEBUG_RLO_DETAIL));
+#endif
 }
 
 void Graphics::resize()
@@ -245,29 +275,14 @@ void Graphics::endFrame()
 	pSwapChain->Present(0, 0);
 }
 
-void Graphics::draw(size_t indexCount, size_t instanceCount, DirectX::FXMMATRIX transform) {
-	if (passType == PassType::SHADOW_PASS) {
-		pContext->PSSetShader(nullptr, nullptr, 0);
-	}
+void Graphics::drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform) {
+	setTransform(transform);
+	pContext->DrawIndexed(indexCount, 0, 0);
+}
 
-	ModelTransforms modelTransforms;
-
-	XMStoreFloat4x4(&modelTransforms.world, XMMatrixTranspose(transform));
-	XMStoreFloat4x4(
-		&modelTransforms.normalsWorld,
-		XMMatrixInverse(nullptr, transform)
-	);
-
-	modelTransforms.normalsWorld._41 = 0.0f;
-	modelTransforms.normalsWorld._42 = 0.0f;
-	modelTransforms.normalsWorld._43 = 0.0f;
-
-	perObjectCBuf.update(*this, modelTransforms);
-	
-	perObjectCBuf.bind(*this);
-	perPassCBuf.bind(*this);
-
-	pContext->DrawIndexedInstanced(indexCount, instanceCount, 0, 0, 0);
+void Graphics::drawInstanced(size_t vertexCount, size_t instanceCount, DirectX::FXMMATRIX transform) {
+	setTransform(transform);
+	pContext->DrawInstanced(vertexCount, instanceCount, 0, 0);
 }
 
 void Graphics::setCamera(DirectX::FXMMATRIX cameraTransform) {
@@ -360,4 +375,27 @@ void Graphics::initShadowMap() {
 	ComPtr<ID3DBlob> pVSBlob;
 	tif(D3DReadFileToBlob(L"./ShaderBin/ShadowVS.cso", &pVSBlob));
 	tif(pDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &pShadowVS));
+}
+
+void Graphics::setTransform(DirectX::FXMMATRIX transform) {
+	if (passType == PassType::SHADOW_PASS) {
+		pContext->PSSetShader(nullptr, nullptr, 0);
+	}
+
+	ModelTransforms modelTransforms;
+
+	XMStoreFloat4x4(&modelTransforms.world, XMMatrixTranspose(transform));
+	XMStoreFloat4x4(
+		&modelTransforms.normalsWorld,
+		XMMatrixInverse(nullptr, transform)
+	);
+
+	modelTransforms.normalsWorld._41 = 0.0f;
+	modelTransforms.normalsWorld._42 = 0.0f;
+	modelTransforms.normalsWorld._43 = 0.0f;
+
+	perObjectCBuf.update(*this, modelTransforms);
+
+	perObjectCBuf.bind(*this);
+	perPassCBuf.bind(*this);
 }

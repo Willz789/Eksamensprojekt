@@ -17,9 +17,10 @@ public:
 	void draw(Graphics& gfx, DirectX::XMMATRIX parentTransform);
 
 	SceneNode* addChild();
-
-	Mesh* getMesh();
 	SceneNode* getChild(size_t index);
+
+	IDrawable* addDrawable(std::unique_ptr<IDrawable>&& pDrawable);
+	void removeDrawable(IDrawable* pDrawable);
 
 	DirectX::XMMATRIX localToParent() const;
 	DirectX::XMMATRIX localToWorld() const;
@@ -38,7 +39,7 @@ public:
 private:
 	SceneNode* pParent;
 	std::list<SceneNode> children;
-	Mesh mesh;
+	std::vector<std::unique_ptr<IDrawable>> drawables;
 
 	DirectX::XMFLOAT3 translation;
 	DirectX::XMFLOAT4 quaternion;

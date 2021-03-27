@@ -18,7 +18,11 @@ void SceneNode::draw(Graphics& gfx, XMMATRIX parentTransform)
 		XMLoadFloat3(&translation)
 	);
 	XMMATRIX thisTransform = thisToParent * parentTransform;
-	mesh.draw(gfx, thisTransform);
+	
+	for (auto& pDrawable : drawables) {
+		pDrawable->draw(gfx, thisTransform);
+	}
+
 	for (SceneNode& child : children) {
 		child.draw(gfx, thisTransform);
 	}
@@ -30,11 +34,6 @@ SceneNode* SceneNode::addChild()
 	return &children.back();
 }
 
-Mesh* SceneNode::getMesh()
-{
-	return &mesh;
-}
-
 SceneNode* SceneNode::getChild(size_t index)
 {
 	auto it = children.begin();
@@ -42,6 +41,19 @@ SceneNode* SceneNode::getChild(size_t index)
 		it++;
 	}
 	return &*it;
+}
+
+IDrawable* SceneNode::addDrawable(std::unique_ptr<IDrawable>&& pDrawable) {
+	drawables.push_back(std::move(pDrawable));
+	return drawables.back().get();
+}
+
+void SceneNode::removeDrawable(IDrawable* pDrawable) {
+	for (auto it = drawables.begin(); it != drawables.end(); it++) {
+		if (it->get() == pDrawable) {
+			
+		}
+	}
 }
 
 DirectX::XMMATRIX SceneNode::localToParent() const {
@@ -99,7 +111,7 @@ void SceneNode::reset()
 void SceneNode::clear()
 {
 	children.clear();
-	mesh.reset();
+	drawables.clear();
 }
 
 Scene::Scene(Graphics& gfx) : 

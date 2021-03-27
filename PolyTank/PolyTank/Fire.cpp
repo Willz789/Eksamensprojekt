@@ -13,84 +13,17 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-Fire::Fire(Graphics& gfx, float spawnRadius, size_t particleCount) :
-	ParticleSystem<FireParticle>(gfx, particleCount),
-	radius(spawnRadius) {}
-
-XMVECTOR pointInUnitBall() {
-
-	static std::random_device rd;
-	static std::default_random_engine rng(rd());
-	static std::uniform_real_distribution dist(-1.0f, 1.0f);
-
-	XMVECTOR p;
-	
-	do {
-		p = XMVectorSet(dist(rng), dist(rng), dist(rng), 0.0f);
-	} while (XMVector3LengthSq(p).m128_f32[0] > 1.0f);
-
-	return p;
-}
-
-XMVECTOR pointOnUnitSphere() {
-	return XMVector3Normalize(pointInUnitBall());
-}
-
-FireParticle Fire::generateParticle() {
-
-	static std::random_device rd;
-	static std::default_random_engine rng(rd());
-	static std::uniform_real_distribution dist(4.0f, 6.0f);
-
-	FireParticle p;
-	XMStoreFloat3(&p.pos, radius * pointInUnitBall() + XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f));
-	XMStoreFloat3(&p.vel, 0.1f * pointOnUnitSphere());
-	p.lifetime = dist(rng);
-
-	return p;
-}
-
-FireParticle::DrawData Fire::updateParticle(FireParticle& p, float dt) {
-	p.lifetime -= dt;
-	XMStoreFloat3(&p.pos, XMLoadFloat3(&p.pos) + dt * XMLoadFloat3(&p.vel));
-
-	if (p.lifetime < 0) {
-		p = generateParticle();
-	}
-	
-	FireParticle::DrawData drawData;
-	drawData.pos = p.pos;
-	drawData.radius = -0.05f * p.lifetime * std::log((1.0f / 6.0f) * p.lifetime);
-
-	drawData.col = { 
-		(1.0f / 6.0f) * p.lifetime * p.lifetime,
-		(0.5f / 6.0f) * p.lifetime * p.lifetime,
-		(0.25f / 6.0f ) * p.lifetime * p.lifetime,
-		std::min(1.0f, p.lifetime) };
-
-	return drawData;
-}
-
-Drawable Fire::makeDrawable(Graphics& gfx) {
-	Drawable drawable;
-
-	struct ParticleVertex {
-		XMFLOAT2 pos;
-		XMFLOAT2 texcoord;
-	};
-
-	ParticleVertex vertices[] = {
+void FireParticle::getBindables(Graphics& gfx, ParticleSystem<FireParticle>& ps) {
+	constexpr Vertex vertices[] = {
 		{ { -1.0f, -1.0f }, { 0.0f, 0.0f } },
 		{ { -1.0f, +1.0f }, { 0.0f, 1.0f } },
 		{ { +1.0f, -1.0f }, { 1.0f, 0.0f } },
-		{ { +1.0f, +1.0f }, { 1.0f, 1.0f } }
+		{ { +1.0f, +1.0f }, { 1.0f, 1.0f } },
+		{ { +1.0f, -1.0f }, { 1.0f, 0.0f } },
+		{ { -1.0f, +1.0f }, { 0.0f, 1.0f } }
 	};
 
-	Index indices[] = {
-		0, 1, 2, 3, 2, 1
-	};
-
-	std::vector<D3D11_INPUT_ELEMENT_DESC> ies = {
+	constexpr D3D11_INPUT_ELEMENT_DESC inputElements[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "INST_POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
@@ -100,14 +33,70 @@ Drawable Fire::makeDrawable(Graphics& gfx) {
 
 	ComPtr<ID3DBlob> pVSBlob;
 
-	drawable.addBindable(gfx.getBindMgr()->get<VertexBuffer>("fireParticle", vertices, std::size(vertices), sizeof(ParticleVertex)));
-	drawable.addBindable(gfx.getBindMgr()->get<IndexBuffer>("fireParticle", indices, std::size(indices)));
-	drawable.addBindable(gfx.getBindMgr()->get<VertexShader>("./ShaderBin/FireVS.cso", &pVSBlob));
-	drawable.addBindable(gfx.getBindMgr()->get<PixelShader>("./ShaderBin/FirePS.cso"));
-	drawable.addBindable(gfx.getBindMgr()->get<InputLayout>(ies, pVSBlob.Get()));
-	drawable.addBindable(gfx.getBindMgr()->get<PrimitiveTopology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-	drawable.addBindable(pInstBuf);
-
-	return drawable;
+	ps.addBindable(gfx.getBindMgr()->get<VertexBuffer>("fireParticle", vertices, std::size(vertices), sizeof(Vertex)));
+	ps.addBindable(gfx.getBindMgr()->get<VertexShader>("./ShaderBin/FireVS.cso", &pVSBlob));
+	ps.addBindable(gfx.getBindMgr()->get<PixelShader>("./ShaderBin/FirePS.cso"));
+	ps.addBindable(gfx.getBindMgr()->get<InputLayout>(inputElements, std::size(inputElements), pVSBlob.Get()));
+	ps.addBindable(gfx.getBindMgr()->get<PrimitiveTopology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 }
+
+Fire::Fire(Graphics& gfx, SceneNode* pEmitter, DirectX::FXMVECTOR emissionPos) :
+	ParticleSystem<FireParticle>(gfx, 256),
+	pEmitter(pEmitter) {
+
+	XMStoreFloat3(&this->emissionPos, emissionPos);
+}
+
+FireParticle Fire::generateParticle() {
+
+	static std::random_device rd;
+	static std::default_random_engine rng(rd());
+	
+	FireParticle p;
+	
+	XMVECTOR emitPos = XMVectorSetW(XMLoadFloat3(&emissionPos), 1.0f);
+
+	XMStoreFloat3(&p.pos, XMVector4Transform(emitPos, pEmitter->localToWorld()));
+
+	constexpr float pi = 3.14159265359f;
+	float theta = std::uniform_real_distribution(0.0f, 2.0f * pi)(rng);
+	float r = std::sqrtf(std::uniform_real_distribution(0.0f, 0.1f * 0.1f)(rng));
+
+	XMStoreFloat3(&p.vel, XMVectorSet(
+		r * std::sinf(theta),
+		std::uniform_real_distribution(0.2f, 0.4f)(rng),
+		r * std::cosf(theta),
+		0.0f
+	));
+	p.lifetime = std::uniform_real_distribution(4.0f, 6.0f)(rng);
+
+	return p;
+}
+
+void Fire::updateParticle(FireParticle& p, float dt) {
+	p.lifetime -= dt;
+
+	XMStoreFloat3(&p.pos, XMLoadFloat3(&p.pos) + dt * XMLoadFloat3(&p.vel));
+	
+	if (p.lifetime < 0) {
+		p = generateParticle();
+	}
+}
+
+FireParticle::Instance Fire::getInstance(const FireParticle& p) const {
+	FireParticle::Instance drawData;
+	drawData.pos = p.pos;
+	drawData.radius = -0.04f * p.lifetime * std::log((1.0f / 6.0f) * p.lifetime);
+	
+	float lifetime3 = (p.lifetime * p.lifetime * p.lifetime) / (5.0f * 5.0f * 5.0f);
+
+	drawData.col = {
+		4.0f * lifetime3,
+		2.0f * lifetime3,
+		1.0f * lifetime3,
+		std::min(1.0f, p.lifetime) };
+
+	return drawData;
+}
+
 

@@ -13,6 +13,8 @@ class Graphics
 
 public:
 	Graphics(Window& wnd);
+	~Graphics();
+
 	void resize();
 
 	void beginFrame();
@@ -20,7 +22,8 @@ public:
 	void viewPass();
 	void endFrame();
 
-	void draw(size_t indexCount, size_t instanceCount, DirectX::FXMMATRIX transform);
+	void drawIndexed(size_t indexCount, DirectX::FXMMATRIX transform);
+	void drawInstanced(size_t vertexCount, size_t instanceCount, DirectX::FXMMATRIX transform);
 
 	void setCamera(DirectX::FXMMATRIX cameraTransform);
 	DirectX::XMMATRIX getCamera();
@@ -35,6 +38,8 @@ public:
 
 private:
 	void initShadowMap();
+
+	void setTransform(DirectX::FXMMATRIX transform);
 
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain;
@@ -55,7 +60,6 @@ private:
 	Microsoft::WRL::ComPtr<ID2D1Bitmap1> pRT2D;
 
 	Microsoft::WRL::ComPtr<IDWriteFactory> pFactoryWrite;
-
 
 	D3D11_VIEWPORT viewport;
 	D3D11_VIEWPORT shadowViewport;

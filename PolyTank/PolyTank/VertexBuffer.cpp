@@ -36,6 +36,14 @@ void VertexBuffer::bind(Graphics& gfx) {
 	gfx.getCtx()->IASetVertexBuffers(0, 1, pBuf.GetAddressOf(), &stride, &offset);
 }
 
+size_t VertexBuffer::getVertexCount() {
+	D3D11_BUFFER_DESC desc;
+	pBuf->GetDesc(&desc);
+
+	assert(desc.ByteWidth % vertexSize == 0);
+	return desc.ByteWidth / vertexSize;
+}
+
 std::string VertexBuffer::uid(const std::string& name, const std::vector<DefaultVertex>& vertices) {
 	return "VB:" + name;
 }

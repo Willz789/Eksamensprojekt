@@ -1,18 +1,22 @@
 #pragma once
 
 #include "Graphics.h"
-#include "Drawable.h"
-#include <vector>
+#include "IDrawable.h"
+#include "IBindable.h"
 
-class Mesh
+#include <vector>
+#include <memory>
+
+
+class Mesh : public IDrawable
 {
 public:
-	void draw(Graphics& gfx, DirectX::XMMATRIX transform);
-	void addDrawable(Drawable&& drawable);
-
-	void reset();
+	void draw(Graphics& gfx, DirectX::XMMATRIX transform) const override;
+	
+	void addBindable(std::shared_ptr<IBindable> pBindable);
 
 private:
-	std::vector<Drawable> drawables;
-
+	std::vector<std::shared_ptr<IBindable>> bindables;
+	
+	size_t indexCount;
 };

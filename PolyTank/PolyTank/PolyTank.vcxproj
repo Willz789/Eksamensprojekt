@@ -152,7 +152,6 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BindableManager.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
-    <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Fire.cpp" />
     <ClCompile Include="InstanceBuffer.cpp" />
     <ClCompile Include="GLTFLoader.cpp" />
@@ -178,7 +177,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="BindableManager.h" />
     <ClInclude Include="ConstantBuffer.h" />
-    <ClInclude Include="Drawable.h" />
+    <ClInclude Include="IDrawable.h" />
     <ClInclude Include="Fire.h" />
     <ClInclude Include="InstanceBuffer.h" />
     <ClInclude Include="GLTFLoader.h" />

@@ -7,11 +7,18 @@ class Fire;
 
 struct FireParticle {
 
-	struct DrawData {
+	struct Vertex {
+		DirectX::XMFLOAT2 pos;
+		DirectX::XMFLOAT2 tex;
+	};
+
+	struct Instance {
 		DirectX::XMFLOAT3 pos;
 		float radius;
 		DirectX::XMFLOAT4 col;
 	};
+
+	static void getBindables(Graphics& gfx, ParticleSystem<FireParticle>& ps);
 
 	DirectX::XMFLOAT3 pos;
 	DirectX::XMFLOAT3 vel;
@@ -20,15 +27,14 @@ struct FireParticle {
 
 class Fire : public ParticleSystem<FireParticle> {
 public:
-	Fire(Graphics& gfx, float spawnRadius, size_t particleCount);
+	Fire(Graphics& gfx, SceneNode* pEmitter, DirectX::FXMVECTOR emissionPos = { 0.0f, 0.0f, 0.0f, 1.0f });
 
+protected:
 	FireParticle generateParticle() override;
-	FireParticle::DrawData updateParticle(FireParticle& p, float dt) override;
-
-	Drawable makeDrawable(Graphics& gfx);
-
+	void updateParticle(FireParticle& p, float dt) override;
+	FireParticle::Instance getInstance(const FireParticle& p) const override;
+	
 private:
-	float radius;
-	bool stopped;
-
+	SceneNode* pEmitter;
+	DirectX::XMFLOAT3 emissionPos;
 };

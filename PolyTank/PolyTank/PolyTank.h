@@ -28,7 +28,6 @@ private:
 	Menu menu;
 	HUD hud;
 
-	Fire fire;
-
+	Fire* pFire;
 };
 
