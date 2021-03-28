@@ -7,7 +7,6 @@
 #include <vector>
 #include <memory>
 
-
 class Mesh : public IDrawable
 {
 public:

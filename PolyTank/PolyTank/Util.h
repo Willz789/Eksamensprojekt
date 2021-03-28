@@ -7,6 +7,9 @@
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
+#undef OPAQUE
+
 #include <wrl.h>
 #include <dxgi1_6.h>
 #include <d3d11_4.h>
@@ -21,3 +24,9 @@ inline void tif(HRESULT hres) {
 		throw std::runtime_error("Bad HRESULT");
 	}
 }
+
+template<typename Enum>
+std::underlying_type_t<Enum> toInteger(const Enum value) {
+	return static_cast<std::underlying_type_t<Enum>>(value);
+}
+

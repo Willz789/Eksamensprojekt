@@ -11,6 +11,8 @@
 #include "InputLayout.h"
 #include "PrimitiveTopology.h"
 #include "GLTFMaterial.h"
+#include "BlendState.h"
+#include "DepthState.h"
 
 using nlohmann::json;
 using namespace DirectX;
@@ -199,6 +201,8 @@ std::unique_ptr<IDrawable> GLTF::Loader::parsePrimitive(Graphics& gfx, const nlo
 	pMesh->addBindable(gfx.getBindMgr()->get<PixelShader>("./ShaderBin/PixelShader.cso"));
 	pMesh->addBindable(gfx.getBindMgr()->get<InputLayout>(inputElements, pVSBlob.Get()));
 	pMesh->addBindable(gfx.getBindMgr()->get<PrimitiveTopology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	pMesh->addBindable(gfx.getBindMgr()->get<BlendState>(BlendState::Mode::OPAQUE));
+	pMesh->addBindable(gfx.getBindMgr()->get<DepthState>(true));
 	
 	auto it = jprimitive.find("material");
 	pMesh->addBindable(it == jprimitive.end() ? defaultMaterial(gfx) : parseMaterial(gfx, gltf["materials"][it->get<size_t>()]));

@@ -6,6 +6,8 @@
 #include "PixelShader.h"
 #include "InputLayout.h"
 #include "PrimitiveTopology.h"
+#include "BlendState.h"
+#include "DepthState.h"
 
 #include <random>
 #include <set>
@@ -38,10 +40,12 @@ void FireParticle::getBindables(Graphics& gfx, ParticleSystem<FireParticle>& ps)
 	ps.addBindable(gfx.getBindMgr()->get<PixelShader>("./ShaderBin/FirePS.cso"));
 	ps.addBindable(gfx.getBindMgr()->get<InputLayout>(inputElements, std::size(inputElements), pVSBlob.Get()));
 	ps.addBindable(gfx.getBindMgr()->get<PrimitiveTopology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	ps.addBindable(gfx.getBindMgr()->get<BlendState>(BlendState::Mode::BLEND));
+	ps.addBindable(gfx.getBindMgr()->get<DepthState>(true));
 }
 
 Fire::Fire(Graphics& gfx, SceneNode* pEmitter, DirectX::FXMVECTOR emissionPos) :
-	ParticleSystem<FireParticle>(gfx, 256),
+	ParticleSystem<FireParticle>(gfx, 128),
 	pEmitter(pEmitter) {
 
 	XMStoreFloat3(&this->emissionPos, emissionPos);
@@ -86,15 +90,16 @@ void Fire::updateParticle(FireParticle& p, float dt) {
 FireParticle::Instance Fire::getInstance(const FireParticle& p) const {
 	FireParticle::Instance drawData;
 	drawData.pos = p.pos;
-	drawData.radius = -0.04f * p.lifetime * std::log((1.0f / 6.0f) * p.lifetime);
-	
+	//drawData.radius = -0.04f * p.lifetime * std::log((1.0f / 6.0f) * p.lifetime);
+	drawData.radius = 0.1f * std::min(1.0f, p.lifetime);
+
 	float lifetime3 = (p.lifetime * p.lifetime * p.lifetime) / (5.0f * 5.0f * 5.0f);
 
 	drawData.col = {
-		4.0f * lifetime3,
-		2.0f * lifetime3,
-		1.0f * lifetime3,
-		std::min(1.0f, p.lifetime) };
+		2.5f * lifetime3 + 0.02f,
+		1.25f * lifetime3 + 0.02f,
+		0.75f * lifetime3 + 0.02f,
+		1.0f };
 
 	return drawData;
 }

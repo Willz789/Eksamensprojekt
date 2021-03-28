@@ -40,6 +40,15 @@
     <Filter Include="Source Files\Game">
       <UniqueIdentifier>{083f1343-ff77-4e3a-91dc-5ff4f5ace82b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\ParticleEffects">
+      <UniqueIdentifier>{996dffcf-d3cc-45b4-9cc9-8a09449dbda4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\ParticleEffects">
+      <UniqueIdentifier>{80be1afd-4460-4b43-b53b-bf56d28a2fd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\ParticleEffects">
+      <UniqueIdentifier>{02434b29-cbc5-4414-9ddd-c4a8e6c24be9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VertexBuffer.cpp">
@@ -105,11 +114,17 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files\Engine\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Fire.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="HUD.cpp">
       <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Fire.cpp">
+      <Filter>Source Files\Game\ParticleEffects</Filter>
+    </ClCompile>
+    <ClCompile Include="BlendState.cpp">
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthState.cpp">
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,9 +194,6 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\Engine\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Fire.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="HUD.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
@@ -190,6 +202,15 @@
     </ClInclude>
     <ClInclude Include="IDrawable.h">
       <Filter>Header Files\Engine\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Fire.h">
+      <Filter>Header Files\Game\ParticleEffects</Filter>
+    </ClInclude>
+    <ClInclude Include="BlendState.h">
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthState.h">
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -205,11 +226,11 @@
     <FxCompile Include="InstanceVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="FireVS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="FirePS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\ParticleEffects</Filter>
+    </FxCompile>
+    <FxCompile Include="FireVS.hlsl">
+      <Filter>Shaders\ParticleEffects</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

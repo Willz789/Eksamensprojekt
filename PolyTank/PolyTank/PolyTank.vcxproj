@@ -151,7 +151,9 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BindableManager.cpp" />
+    <ClCompile Include="BlendState.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="DepthState.cpp" />
     <ClCompile Include="Fire.cpp" />
     <ClCompile Include="InstanceBuffer.cpp" />
     <ClCompile Include="GLTFLoader.cpp" />
@@ -176,7 +178,9 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="BindableManager.h" />
+    <ClInclude Include="BlendState.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="DepthState.h" />
     <ClInclude Include="IDrawable.h" />
     <ClInclude Include="Fire.h" />
     <ClInclude Include="InstanceBuffer.h" />
