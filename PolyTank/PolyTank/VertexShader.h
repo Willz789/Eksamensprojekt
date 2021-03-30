@@ -6,6 +6,7 @@
 #include <wrl.h>
 
 #include <filesystem>
+#include <unordered_map>
 
 class VertexShader : public IBindable {
 public:
@@ -17,6 +18,8 @@ public:
 	static std::string uid(const std::filesystem::path& file, ID3DBlob** ppBlob = nullptr);
 
 private:
+	static std::unordered_map<size_t, Microsoft::WRL::ComPtr<ID3DBlob>> blobs;
+
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> pShader;
 
 };

@@ -30,7 +30,7 @@ public:
 	Fire(Graphics& gfx, SceneNode* pEmitter, DirectX::FXMVECTOR emissionPos = { 0.0f, 0.0f, 0.0f, 1.0f });
 
 protected:
-	FireParticle generateParticle() override;
+	void newParticle(FireParticle& p) override;
 	void updateParticle(FireParticle& p, float dt) override;
 	FireParticle::Instance getInstance(const FireParticle& p) const override;
 	

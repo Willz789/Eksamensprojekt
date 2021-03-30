@@ -24,7 +24,9 @@ public:
 	void addBindable(std::shared_ptr<IBindable> pBindable);
 
 protected:
-	virtual Particle generateParticle() = 0;
+	void resetParticles();
+
+	virtual void newParticle(Particle& p) = 0;
 	virtual void updateParticle(Particle& p, float dt) = 0;
 	virtual Instance getInstance(const Particle& p) const = 0;
 
@@ -43,12 +45,13 @@ inline ParticleSystem<Particle>::ParticleSystem(Graphics& gfx, size_t particleCo
 	particleCount(particleCount),
 	particles(new Particle[particleCount]),
 	instData(new Instance[particleCount]) {
-	
-	auto pInstBuf = std::make_shared<InstanceBuffer>(gfx, particleCount, sizeof(Particle::Instance));
+
+	auto pInstBuf = std::make_shared<InstanceBuffer>(gfx, particleCount, sizeof(Instance));
 	this->pInstBuf = pInstBuf.get();
 
 	addBindable(pInstBuf);
 	Particle::getBindables(gfx, *this);
+
 }
 
 template<typename Particle>
@@ -86,4 +89,11 @@ inline void ParticleSystem<Particle>::addBindable(std::shared_ptr<IBindable> pBi
 	}
 
 	bindables.push_back(pBindable);
+}
+
+template<typename Particle>
+inline void ParticleSystem<Particle>::resetParticles() {
+	for (size_t i = 0; i < particleCount; i++) {
+		newParticle(particles[i]);
+	}
 }

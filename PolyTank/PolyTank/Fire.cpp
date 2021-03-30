@@ -49,17 +49,15 @@ Fire::Fire(Graphics& gfx, SceneNode* pEmitter, DirectX::FXMVECTOR emissionPos) :
 	pEmitter(pEmitter) {
 
 	XMStoreFloat3(&this->emissionPos, emissionPos);
+
+	resetParticles();
 }
 
-FireParticle Fire::generateParticle() {
-
+void Fire::newParticle(FireParticle& p) {
 	static std::random_device rd;
 	static std::default_random_engine rng(rd());
-	
-	FireParticle p;
-	
-	XMVECTOR emitPos = XMVectorSetW(XMLoadFloat3(&emissionPos), 1.0f);
 
+	XMVECTOR emitPos = XMVectorSetW(XMLoadFloat3(&emissionPos), 1.0f);
 	XMStoreFloat3(&p.pos, XMVector4Transform(emitPos, pEmitter->localToWorld()));
 
 	constexpr float pi = 3.14159265359f;
@@ -73,8 +71,6 @@ FireParticle Fire::generateParticle() {
 		0.0f
 	));
 	p.lifetime = std::uniform_real_distribution(4.0f, 6.0f)(rng);
-
-	return p;
 }
 
 void Fire::updateParticle(FireParticle& p, float dt) {
@@ -83,7 +79,7 @@ void Fire::updateParticle(FireParticle& p, float dt) {
 	XMStoreFloat3(&p.pos, XMLoadFloat3(&p.pos) + dt * XMLoadFloat3(&p.vel));
 	
 	if (p.lifetime < 0) {
-		p = generateParticle();
+		newParticle(p);
 	}
 }
 

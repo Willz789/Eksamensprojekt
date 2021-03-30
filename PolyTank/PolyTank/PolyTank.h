@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Application.h"
-#include "Fire.h"
 #include "Menu.h"
 #include "HUD.h"
+
+#include "Fire.h"
+#include "Explosion.h"
 
 class PolyTank : public Application {
 	enum class State {
@@ -29,5 +31,9 @@ private:
 	HUD hud;
 
 	Fire* pFire;
+	Explosion* pExplosion;
+	SceneNode* pExplosionNode;
+
+	KeyListener* pListener;
 };
 

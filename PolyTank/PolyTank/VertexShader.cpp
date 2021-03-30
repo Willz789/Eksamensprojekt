@@ -5,6 +5,8 @@
 
 using Microsoft::WRL::ComPtr;
 
+decltype(VertexShader::blobs) VertexShader::blobs;
+
 VertexShader::VertexShader(Graphics& gfx, const std::filesystem::path& file, ID3DBlob** ppBlob) {
 	ComPtr<ID3DBlob> pBlob;
 	
@@ -13,7 +15,8 @@ VertexShader::VertexShader(Graphics& gfx, const std::filesystem::path& file, ID3
 	} else {
 		Shader::read(file, &pBlob);
 	}
-	
+	blobs[std::filesystem::hash_value(file)] = pBlob;
+
 	tif(gfx.getDvc()->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pShader));
 
 	if (ppBlob) {
@@ -31,5 +34,10 @@ void VertexShader::bind(Graphics& gfx) {
 }
 
 std::string VertexShader::uid(const std::filesystem::path& file, ID3DBlob** ppBlob) {
+	auto it = blobs.find(std::filesystem::hash_value(file));
+	if (it != blobs.end()) {
+		it->second.CopyTo(ppBlob);
+	}
+
 	return "VS:" + file.string();
 }
