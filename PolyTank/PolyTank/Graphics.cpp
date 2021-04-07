@@ -10,7 +10,8 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
-
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -27,8 +28,9 @@ struct ModelTransforms {
 	XMFLOAT4X4 normalsWorld;
 };
 
-Graphics::Graphics(HWND hwnd) :
+Graphics::Graphics(Window& wnd) :
 	bindMgr(*this) {
+
 	D3D_FEATURE_LEVEL fLevels[] = {
 		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0
@@ -38,23 +40,28 @@ Graphics::Graphics(HWND hwnd) :
 	swapDesc.BufferDesc.Width = 0;
 	swapDesc.BufferDesc.Height = 0;
 	swapDesc.BufferDesc.RefreshRate = {0,0};
-	swapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapDesc.BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	swapDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	swapDesc.SampleDesc.Count = 1;
 	swapDesc.SampleDesc.Quality = 0;
 	swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapDesc.BufferCount = 2;
-	swapDesc.OutputWindow = hwnd;
+	swapDesc.OutputWindow = wnd.getHwnd();
 	swapDesc.Windowed = true;
 	swapDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swapDesc.Flags = 0;
+
+	UINT flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+#ifdef _DEBUG
+	flags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
 	HRESULT hRes = D3D11CreateDeviceAndSwapChain(
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
-		D3D11_CREATE_DEVICE_DEBUG,
+		flags,
 		fLevels,
 		2,
 		D3D11_SDK_VERSION,
@@ -69,6 +76,26 @@ Graphics::Graphics(HWND hwnd) :
 		throw std::runtime_error("Failed to create device and swapchain");
 	}
 
+	ComPtr<IDXGIDevice> pDeviceDXGI;
+	pDevice.As(&pDeviceDXGI);
+
+	D2D1_FACTORY_OPTIONS fo2d;
+#ifdef _DEBUG
+	fo2d.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
+#else
+	fo2d.debugLevel = D2D1_DEBUG_LEVEL_NONE;
+#endif
+	tif(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(pFactory2D), &fo2d, &pFactory2D));
+
+	tif(pFactory2D->CreateDevice(pDeviceDXGI.Get(), &pDevice2D));
+	tif(pDevice2D->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &pContext2D));
+	
+	DWriteCreateFactory(DWRITE_FACTORY_TYPE_ISOLATED, __uuidof(pFactoryWrite), &pFactoryWrite);
+
+	wnd.getInteraction()->addListener([this](const ResizeEvent&) -> void {
+		this->resize();
+	});
+
 	initShadowMap();
 
 	perPassCBuf = VSConstantBuffer(*this, 0, sizeof(PassTransforms));
@@ -77,43 +104,60 @@ Graphics::Graphics(HWND hwnd) :
 
 void Graphics::resize()
 {
-	pRTV.Reset();
-
 	tif(pSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0));
 
-	ComPtr<ID3D11Resource> pBackBuffer;
-	tif(pSwapChain->GetBuffer(0, __uuidof(pBackBuffer), &pBackBuffer));
-
-	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	rtvDesc.Texture2D.MipSlice = 0;
-
-	tif(pDevice->CreateRenderTargetView(pBackBuffer.Get(), &rtvDesc, &pRTV));
-	
 	DXGI_SWAP_CHAIN_DESC swapDesc;
 	pSwapChain->GetDesc(&swapDesc);
 
-	ComPtr<ID3D11Texture2D> pText;
 	D3D11_TEXTURE2D_DESC textDesc;
-	textDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	textDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;	
 	textDesc.ArraySize = 1;
 	textDesc.MipLevels = 1;
 	textDesc.Usage = D3D11_USAGE_DEFAULT;
-	textDesc.SampleDesc.Count = 1;
+	textDesc.SampleDesc.Count = 4;
 	textDesc.SampleDesc.Quality = 0;
-	textDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	textDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
 	textDesc.CPUAccessFlags = 0;
 	textDesc.MiscFlags = 0;
 	textDesc.Width = swapDesc.BufferDesc.Width;
 	textDesc.Height = swapDesc.BufferDesc.Height;
+
+	ComPtr<ID3D11Texture2D> pText;
+	tif(pDevice->CreateTexture2D(&textDesc, nullptr, &pText));
+	
+	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
+	rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+	rtvDesc.Texture2D.MipSlice = 0;
+
+	tif(pDevice->CreateRenderTargetView(pText.Get(), &rtvDesc, &pRTV));
+
+	// Direct 2d render target init
+	ComPtr<IDXGISurface> pSurface;
+	pText.As(&pSurface);
+
+	D2D1_BITMAP_PROPERTIES1 bp;
+	bp.pixelFormat.format = DXGI_FORMAT_UNKNOWN;
+	bp.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
+	bp.dpiX = 0.0f;
+	bp.dpiY = 0.0f;
+	bp.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
+	bp.colorContext = nullptr;
+
+	tif(pContext2D->CreateBitmapFromDxgiSurface(pSurface.Get(), &bp, &pRT2D));
+
+	pContext2D->SetTarget(pRT2D.Get());
+
+	// depth stencil buffer init
+	textDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	textDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	tif(pDevice->CreateTexture2D(&textDesc, nullptr, &pText));
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	dsvDesc.Texture2D.MipSlice = 0;
 	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	dsvDesc.Flags = 0;
-	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 
 	tif(pDevice->CreateDepthStencilView(pText.Get(), &dsvDesc, &pDSV));
 
@@ -123,11 +167,13 @@ void Graphics::resize()
 	viewport.Height = float(swapDesc.BufferDesc.Height);
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = D3D11_MAX_DEPTH;
+
+	XMStoreFloat4x4(&cameraProjection, XMMatrixPerspectiveFovRH(1.05f, viewport.Width / viewport.Height, 0.01f, 100.0f));
 }
 
 void Graphics::beginFrame()
 {
-
+	pContext2D->BeginDraw();
 }
 
 void Graphics::shadowPass(FXMVECTOR sunDir) {
@@ -175,7 +221,7 @@ void Graphics::viewPass() {
 	pContext->PSSetSamplers(0, 1, pShadowMapSampler.GetAddressOf());
 
 	PassTransforms passTransforms;
-	XMStoreFloat4x4(&passTransforms.projection, XMMatrixTranspose(XMMatrixPerspectiveFovRH(1.05f, 1.77777f, 0.01f, 100.0f)));
+	XMStoreFloat4x4(&passTransforms.projection, XMMatrixTranspose(XMLoadFloat4x4(&cameraProjection)));
 	XMStoreFloat4x4(&passTransforms.view, XMMatrixTranspose(XMLoadFloat4x4(&cameraView)));
 	XMStoreFloat4x4(&passTransforms.shadowProjection, XMMatrixTranspose(XMLoadFloat4x4(&shadowProjection)));
 	XMStoreFloat4x4(&passTransforms.shadowView, XMMatrixTranspose(XMLoadFloat4x4(&shadowView)));
@@ -185,6 +231,17 @@ void Graphics::viewPass() {
 
 void Graphics::endFrame()
 {
+	pContext2D->EndDraw();
+
+	ComPtr<ID3D11Resource> pRenderTarget;
+	pRTV->GetResource(&pRenderTarget);
+	
+	ComPtr<ID3D11Resource> pBackBuffer;
+	tif(pSwapChain->GetBuffer(0, __uuidof(pBackBuffer), &pBackBuffer));
+
+
+	pContext->ResolveSubresource(pBackBuffer.Get(), 0, pRenderTarget.Get(), 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
+
 	pSwapChain->Present(0, 0);
 }
 
@@ -232,6 +289,15 @@ ID3D11DeviceContext* Graphics::getCtx() {
 
 BindableManager* Graphics::getBindMgr() {
 	return &bindMgr;
+}
+
+ID2D1DeviceContext* Graphics::getCtx2D() {
+	return pContext2D.Get();
+}
+
+IDWriteFactory* Graphics::getFactoryW()
+{
+	return pFactoryWrite.Get();
 }
 
 void Graphics::initShadowMap() {

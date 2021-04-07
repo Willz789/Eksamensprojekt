@@ -11,3 +11,8 @@ void Mesh::addDrawable(Drawable&& drawable)
 {
 	drawables.emplace_back(std::move(drawable));
 }
+
+void Mesh::reset()
+{
+	drawables.clear();
+}

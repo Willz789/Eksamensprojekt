@@ -3,6 +3,7 @@
 #include "Util.h"
 #include "BindableManager.h"
 #include "ConstantBuffer.h"
+#include "Window.h"
 
 class Graphics
 {
@@ -11,7 +12,7 @@ class Graphics
 	};
 
 public:
-	Graphics(HWND hwnd);
+	Graphics(Window& wnd);
 	void resize();
 
 	void beginFrame();
@@ -28,6 +29,10 @@ public:
 	ID3D11DeviceContext* getCtx();
 	BindableManager* getBindMgr();
 
+	ID2D1DeviceContext* getCtx2D();
+
+	IDWriteFactory* getFactoryW();
+
 private:
 	void initShadowMap();
 
@@ -43,6 +48,14 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pShadowSRV;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> pShadowMapSampler;
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> pShadowVS;
+
+	Microsoft::WRL::ComPtr<ID2D1Factory7> pFactory2D;
+	Microsoft::WRL::ComPtr<ID2D1Device> pDevice2D;
+	Microsoft::WRL::ComPtr<ID2D1DeviceContext> pContext2D;
+	Microsoft::WRL::ComPtr<ID2D1Bitmap1> pRT2D;
+
+	Microsoft::WRL::ComPtr<IDWriteFactory> pFactoryWrite;
+
 
 	D3D11_VIEWPORT viewport;
 	D3D11_VIEWPORT shadowViewport;

@@ -1,9 +1,35 @@
 #pragma once
 
 #include <bitset>
+#include <list>
+#include <functional>
+
+struct MouseEvent {
+	enum class Button{
+		LEFT,
+		RIGHT
+	};
+
+	uint32_t mousex, mousey;
+
+	Button button;
+};
+
+struct KeyEvent {
+	char key;
+};
+
+struct ResizeEvent {
+	uint32_t width, height;
+};
+
+using MouseListener = std::function<void(const MouseEvent&)>;
+using KeyListener = std::function<void(const KeyEvent&)>;
+using ResizeListener = std::function<void(const ResizeEvent&)>;
 
 class Interaction
 {
+	friend class Window;
 public:
 	Interaction() = default;
 	bool lMouseDown;
@@ -12,8 +38,27 @@ public:
 	std::bitset<256> keysDown;
 	bool keyDown(char key);
 
-	void lMouseClick();
-	void rMouseClick();
+	MouseListener* addListener(MouseListener ml);
+	KeyListener* addListener(KeyListener kl);
+	ResizeListener* addListener(ResizeListener rl);
+
+	void removeListener(MouseListener* pml);
+	void removeListener(KeyListener* pkl);
+	void removeListener(ResizeListener* prl);
 	
+private:
+
+	void lMouseClick(uint32_t x, uint32_t y);
+	void rMouseClick(uint32_t x, uint32_t y);
+	void resize(uint32_t w, uint32_t h);
+
+	void keyClick(char key);
+
+
+private:
+	std::list<MouseListener> mouseListeners;
+	std::list<KeyListener> keyListeners;
+	std::list<ResizeListener> resizeListeners;
+
 };
 
