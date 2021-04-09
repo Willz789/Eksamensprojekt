@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Menu.h"
 #include "HUD.h"
+#include "Level.h"
 
 #include "Fire.h"
 #include "Explosion.h"
@@ -24,16 +25,20 @@ public:
 
 private:
 
+	DirectX::XMFLOAT4 cameraPos;
+
 	State state;
 	
 	Scene scene;
 	Menu menu;
 	HUD hud;
 
-	Fire* pFire;
+	//Fire* pFire;
 	Explosion* pExplosion;
 	SceneNode* pExplosionNode;
 
 	KeyListener* pListener;
+
+	Level level;
 };
 

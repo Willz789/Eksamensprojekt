@@ -164,6 +164,7 @@
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="Interaction.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ParticleSystem.h" />

@@ -54,6 +54,22 @@ void Interaction::resize(uint32_t w, uint32_t h) {
 	}
 }
 
+void Interaction::mouseMove(uint32_t x, uint32_t y)
+{
+	MouseEvent e;
+	e.button = MouseEvent::Button::MOVE;
+	e.mousex = x;
+	e.mousey = y;
+	std::queue<MouseListener> executionQueue;
+	for (auto it = mouseListeners.begin(); it != mouseListeners.end(); it++) {
+		executionQueue.push(*it);
+	}
+	while (!executionQueue.empty()) {
+		executionQueue.front()(e);
+		executionQueue.pop();
+	}
+}
+
 void Interaction::keyClick(char key)
 {
 	KeyEvent e;

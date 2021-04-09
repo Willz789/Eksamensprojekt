@@ -129,6 +129,9 @@
     <ClCompile Include="Explosion.cpp">
       <Filter>Source Files\Game\ParticleEffects</Filter>
     </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IBindable.h">
@@ -217,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="Explosion.h">
       <Filter>Header Files\Game\ParticleEffects</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

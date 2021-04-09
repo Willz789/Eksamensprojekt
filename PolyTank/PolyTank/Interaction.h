@@ -7,7 +7,8 @@
 struct MouseEvent {
 	enum class Button{
 		LEFT,
-		RIGHT
+		RIGHT,
+		MOVE
 	};
 
 	uint32_t mousex, mousey;
@@ -51,6 +52,8 @@ private:
 	void lMouseClick(uint32_t x, uint32_t y);
 	void rMouseClick(uint32_t x, uint32_t y);
 	void resize(uint32_t w, uint32_t h);
+
+	void mouseMove(uint32_t x, uint32_t y);
 
 	void keyClick(char key);
 

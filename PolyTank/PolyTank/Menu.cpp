@@ -41,13 +41,15 @@ Menu::Menu(Graphics& gfx, PolyTank& polyTank) :
 	pWTFTitle->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
 	buttonListener = interaction->addListener([&polyTank, this](const MouseEvent& e)->void {
-		D2D1_POINT_2F mouseLocation = Point2F(e.mousex, e.mousey);
-		if (isPointIn(mouseLocation, startGameRect)) {
-			interaction->removeListener(buttonListener);
-			polyTank.startGame();
-		}
-		else if (isPointIn(mouseLocation, endGameRect)) {
-			polyTank.getWnd()->exit();
+		if (e.button == MouseEvent::Button::LEFT) {
+			D2D1_POINT_2F mouseLocation = Point2F(e.mousex, e.mousey);
+			if (isPointIn(mouseLocation, startGameRect)) {
+				interaction->removeListener(buttonListener);
+				polyTank.startGame();
+			}
+			else if (isPointIn(mouseLocation, endGameRect)) {
+				polyTank.getWnd()->exit();
+			}
 		}
 	});
 

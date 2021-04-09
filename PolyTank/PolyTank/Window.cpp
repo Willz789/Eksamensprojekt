@@ -128,7 +128,13 @@ LRESULT Window::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_MOUSEWHEEL:
 
 		return 0;
+
+	case WM_MOUSEMOVE:
+		getWndPtr(hWnd)->interaction.mouseMove(LOWORD(lParam), HIWORD(lParam));
+		return 0;
+
 	}
+
 
 	return DefWindowProcA(hWnd, uMsg, wParam, lParam);
 }
