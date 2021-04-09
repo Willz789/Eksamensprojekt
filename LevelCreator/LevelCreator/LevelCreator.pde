@@ -38,18 +38,35 @@ void setup() {
 
   tools = new ArrayList<Tool>();
 
-  tools.add(new SetBlockTool((byte)0));
-  tools.add(new SetBlockTool((byte)1));
+  tools.add(new SetBlockTool((byte)0)); // Air
+  tools.add(new SetBlockTool((byte)1)); // Cube
+  tools.add(new SetBlockTool((byte)2)); // Bridge
+  tools.add(new SetBlockTool((byte)3)); // RampBottom
+  tools.add(new SetBlockTool((byte)4)); // RampTop
+  tools.add(new SetBlockTool((byte)5)); // Rotate
 }
 
 
 color blockColor(byte block) {
-  switch(block) {
+  int blockId = (block & 0xff)%64;
+  switch(blockId) {
   case 1:
-    return color(255);
+    return color(255); // Cube
+    
+  case 2:
+    return color(255, 0, 0); // Bridge
+    
+  case 3:
+    return color(0,255,0); // RampBottom
+    
+  case 4:
+    return color(0,0,255); // RampTop
+    
+  case 5:
+    return color(255); // Rotate
 
   default:
-    return color(0);
+    return color(0); // Air
   }
 }
 
@@ -61,8 +78,18 @@ void draw() {
     for (int k = 0; k < w; k++) {
       byte block = blocks.get(selectedy)[j * w + k];
       fill(blockColor(block));
-      stroke(0, 0);
+      stroke(0,0);
       rect(k * cellSize, j * cellSize, cellSize, cellSize);
+      fill(50);
+      textSize(15);
+      textAlign(CENTER);
+      pushMatrix();
+      translate(k*cellSize+cellSize/2, j*cellSize+cellSize/2);
+      int rotateTimes = floor((block&0xff)/64);
+      rotate(rotateTimes*PI/2);
+      text("R", 0, 0);
+      popMatrix();
+      
     }
   }
 
@@ -70,7 +97,7 @@ void draw() {
     tools.get(i).draw(w, i);
   }
 
-  stroke(0);
+  stroke(50);
   strokeWeight(1);
   for (int i = 0; i <= w; i++) {
     line(i * cellSize, 0, i * cellSize, cellSize * d);
@@ -135,8 +162,7 @@ void mouseReleased(MouseEvent e) {
         selectedTool.use(i, j);
       }
     }
-  }
-
+  } 
 
   selectedx = -1;
   selectedz = -1;
@@ -163,5 +189,5 @@ void exit() {
   }
   
   
-  saveBytes("level.bin", bb.array());
+  saveBytes("level1.bin", bb.array());
 }
