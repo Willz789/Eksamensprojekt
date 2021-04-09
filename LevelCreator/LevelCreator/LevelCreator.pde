@@ -52,16 +52,16 @@ color blockColor(byte block) {
   switch(blockId) {
   case 1:
     return color(255); // Cube
-    
+
   case 2:
     return color(255, 0, 0); // Bridge
-    
+
   case 3:
-    return color(0,255,0); // RampBottom
-    
+    return color(0, 255, 0); // RampBottom
+
   case 4:
-    return color(0,0,255); // RampTop
-    
+    return color(0, 200, 0); // RampTop
+
   case 5:
     return color(255); // Rotate
 
@@ -78,18 +78,28 @@ void draw() {
     for (int k = 0; k < w; k++) {
       byte block = blocks.get(selectedy)[j * w + k];
       fill(blockColor(block));
-      stroke(0,0);
+      stroke(0, 0);
       rect(k * cellSize, j * cellSize, cellSize, cellSize);
-      fill(50);
-      textSize(15);
-      textAlign(CENTER);
-      pushMatrix();
-      translate(k*cellSize+cellSize/2, j*cellSize+cellSize/2);
-      int rotateTimes = floor((block&0xff)/64);
-      rotate(rotateTimes*PI/2);
-      text("R", 0, 0);
-      popMatrix();
-      
+      if (selectedy != 0 && block == 0) {
+        byte blockBelow = blocks.get(selectedy-1)[j * w + k];
+
+        if (blockBelow != 0) {
+          println(blockBelow);
+          fill(blockColor(blockBelow), 50);
+          rect(k * cellSize, j * cellSize, cellSize, cellSize);
+        }
+      }
+      if ((block&0xff)%64 == 3 || (block&0xff)%64 == 4) {
+        fill(50);
+        textSize(15);
+        textAlign(CENTER);
+        pushMatrix();
+        translate(k*cellSize+cellSize/2, j*cellSize+cellSize/2);
+        int rotateTimes = floor((block&0xff)/64);
+        rotate(rotateTimes*PI/2);
+        text("R", 0, 0);
+        popMatrix();
+      }
     }
   }
 
@@ -119,6 +129,12 @@ void draw() {
     fill(0, 0);
     rect(w * cellSize, tools.indexOf(selectedTool) * cellSize, cellSize, cellSize);
   }
+
+  textSize(13);
+  textAlign(CENTER);
+  fill(0);
+  String layerText = "y" + selectedy;
+  text(layerText, width-cellSize/2, height-cellSize/2);
 }
 
 void keyPressed(KeyEvent e) {
@@ -187,7 +203,7 @@ void exit() {
       }
     }
   }
-  
-  
+
+
   saveBytes("level1.bin", bb.array());
 }
