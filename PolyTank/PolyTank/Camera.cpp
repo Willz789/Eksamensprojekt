@@ -35,7 +35,7 @@ Camera::~Camera() {
 
 DirectX::FXMMATRIX Camera::viewMatrix() {
 	XMMATRIX turretToWorld = pTank->turretToWorld();
-	XMVECTOR eyePos = XMVector4Transform(4.0f * XMVectorSet(0.0f, sin(pitch), cos(pitch), 0.0f), turretToWorld);
+	XMVECTOR eyePos = XMVector4Transform(XMVectorSet(0.0f, 5.0f * sin(pitch), 5.0f * cos(pitch), 1.0f), turretToWorld);
 
 	return XMMatrixLookAtRH(eyePos, XMVector4Transform(XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), turretToWorld), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 }
