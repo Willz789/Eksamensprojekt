@@ -23,7 +23,6 @@ class SetBlockTool extends Tool {
         blocks.get(selectedy)[y * d + x] += 64;
         
       }
-      println(blocks.get(selectedy)[y * d + x] & 0xff);
     }
   }
 

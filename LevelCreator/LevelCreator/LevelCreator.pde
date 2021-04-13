@@ -1,9 +1,8 @@
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-final int w = 32, h = 4, d = 32;
-final float cellSize = 900 / (float)w;
+int w = 32, h = 4, d = 32;
+float cellSize;
 
 ArrayList<byte[]> blocks;
 ArrayList<Tool> tools;
@@ -13,28 +12,32 @@ int selectedx = -1, selectedy = 0, selectedz = -1;
 
 
 void settings() {
-  size((int)(cellSize * (w + 1)), (int)(cellSize * d));
+  size(900, 800);
 }
 
 void setup() {
 
   blocks = new ArrayList<byte[]>();
 
-  for (int i = 0; i < h; i++) {
-    blocks.add(new byte[w * d]);
+  if (loadBuild() == false) {
+    for (int i = 0; i < h; i++) {
+      blocks.add(new byte[w * d]);
+
+      for (int j = 0; j < d; j++) {
+        for (int k = 0; k < w; k++) {
+          blocks.get(i)[j * w + k] = 0;
+        }
+      }
+    }
 
     for (int j = 0; j < d; j++) {
       for (int k = 0; k < w; k++) {
-        blocks.get(i)[j * w + k] = 0;
+        blocks.get(0)[j * w + k] = 1;
       }
     }
   }
 
-  for (int j = 0; j < d; j++) {
-    for (int k = 0; k < w; k++) {
-      blocks.get(0)[j * w + k] = 1;
-    }
-  }
+  cellSize  = (width-100) / (float)w;
 
   tools = new ArrayList<Tool>();
 
@@ -84,7 +87,6 @@ void draw() {
         byte blockBelow = blocks.get(selectedy-1)[j * w + k];
 
         if (blockBelow != 0) {
-          println(blockBelow);
           fill(blockColor(blockBelow), 50);
           rect(k * cellSize, j * cellSize, cellSize, cellSize);
         }
@@ -138,7 +140,9 @@ void draw() {
 }
 
 void keyPressed(KeyEvent e) {
-  if (selectedx == -1) return;
+  if(e.getKey() == 's'){
+    saveBuild();
+  }
 }
 
 
@@ -189,7 +193,32 @@ void mouseWheel(MouseEvent e) {
   selectedy = constrain(selectedy, 0, h - 1);
 }
 
-void exit() {
+boolean loadBuild() {
+  String filename = "level1.bin";
+  File f = new File(sketchPath(filename));
+  if (f.exists()) {
+    byte[] bytes = loadBytes("level1.bin");
+    ByteBuffer bb = ByteBuffer.wrap(bytes);
+    bb.order(ByteOrder.LITTLE_ENDIAN);
+    w = bb.getInt(0);
+    h = bb.getInt(4);
+    d = bb.getInt(8);
+    
+    for (int i = 0; i < h; i++) {
+      blocks.add(new byte[w*d]);
+      for (int j = 0; j < w*d; j++) {
+        blocks.get(i)[j] = bb.get(j+i*w*d+12);
+      }
+    }
+    return true;
+  }
+  w = 32;
+  h = 4;
+  d = 32;
+  return false;
+}
+
+void saveBuild(){
   ByteBuffer bb = ByteBuffer.allocate(12 + w * h * d);
   bb.order(ByteOrder.LITTLE_ENDIAN);
   bb.putInt(w);
@@ -204,6 +233,9 @@ void exit() {
     }
   }
 
-
   saveBytes("level1.bin", bb.array());
+}
+
+void exit() {
+  saveBuild();
 }
