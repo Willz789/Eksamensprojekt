@@ -22,18 +22,24 @@ Level::Level(Graphics& gfx, const std::filesystem::path& file, Scene& scene)
 	ifs.read(reinterpret_cast<char*>(&d), sizeof(d));
 	std::vector<uint8_t> blocks(w*d);
 
+	const XMVECTOR colors[] = {
+		XMVectorSet(0.8f, 0.2f, 0.2f, 0.0f),
+		XMVectorSet(0.2f, 0.8f, 0.2f, 0.0f),
+		XMVectorSet(0.2f, 0.2f, 0.8f, 0.0f),
+	};
+
 	for (uint32_t i = 0; i < h; i++) {
 		ifs.read(reinterpret_cast<char*>(blocks.data()), blocks.size());
 		if (!ifs.good()) throw std::runtime_error("");
 
 		SceneNode* pLayerNode = scene.getRoot()->addChild();
 		pLayerNode->translate(XMVectorSet(0, i, 0, 0));
-		layers.emplace_back(gfx, d, w, blocks, pLayerNode);
+		layers.emplace_back(gfx, d, w, blocks, pLayerNode, colors[i % std::size(colors)]);
 	}
 
 }
 
-Layer::Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode)
+Layer::Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color)
 {
 	this->blocks = blocks;
 	d = depth;
@@ -83,7 +89,7 @@ Layer::Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>
 	pMesh->addBindable(gfx.getBindMgr()->get<DepthState>(true));
 
 	std::shared_ptr<GLTFMaterial> pMaterial = std::make_shared<GLTFMaterial>(gfx);
-	pMaterial->factors.baseColor = { 0.8f, 0.8f, 0.8f };
+	DirectX::XMStoreFloat3(&pMaterial->factors.baseColor, color);
 	pMesh->addBindable(pMaterial);
 
 	this->pMesh = dynamic_cast<Mesh*>(pNode->addDrawable(std::move(pMesh)));
@@ -320,12 +326,12 @@ inline Block makeRamp2Block() {
 	return b;
 }
 
-float scuffedSin(uint8_t id) {
-	return float(0x1 & id) * ((id >> 1) & 0x1 ? -1.0f : 1.0f);
+int8_t intSin(uint8_t id) {
+	return (0x1 & id) * ((0x2 & id) ? 0xff : 0x01);
 }
 
-float scuffedCos(uint8_t id) {
-	return scuffedSin(id + 1);
+int8_t intCos(uint8_t id) {
+	return intSin(id + 1);
 }
 
 Block Layer::getBlock(uint8_t id) {
@@ -341,9 +347,9 @@ Block Layer::getBlock(uint8_t id) {
 	uint8_t idRot = id >> 6;
 
 	XMMATRIX rotation = XMMatrixSet(
- 		 scuffedCos(idRot), 0.0f, scuffedSin(idRot), 0.0f,
+ 		 intCos(idRot), 0.0f, intSin(idRot), 0.0f,
 					  0.0f, 1.0f,			   0.0f, 0.0f,
-		-scuffedSin(idRot), 0.0f, scuffedCos(idRot), 0.0f,
+		-intSin(idRot), 0.0f, intCos(idRot), 0.0f,
 					  0.0f, 0.0f,			   0.0f, 1.0f
 	);
 

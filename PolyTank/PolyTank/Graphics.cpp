@@ -216,7 +216,7 @@ void Graphics::shadowPass(FXMVECTOR sunDir) {
 	pContext->OMSetRenderTargets(0, nullptr, pShadowDSV.Get());
 	pContext->RSSetViewports(1, &shadowViewport);
 
-	float shadowMapSize = 20.0f;
+	float shadowMapSize = 40.0f;
 	float shadowMapDepth = 100.0f;
 	XMMATRIX sunProjection = XMMatrixOrthographicRH(shadowMapSize, shadowMapSize, 0.0f, shadowMapDepth);
 

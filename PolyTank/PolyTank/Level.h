@@ -18,7 +18,7 @@ struct Block
 class Layer
 {
 public:
-	Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode);
+	Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color);
 
 	static Block getBlock(uint8_t id);
 
