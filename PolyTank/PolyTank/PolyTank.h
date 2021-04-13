@@ -5,8 +5,8 @@
 #include "HUD.h"
 #include "Level.h"
 
-#include "Fire.h"
-#include "Explosion.h"
+#include "Tank.h"
+#include "Camera.h"
 
 class PolyTank : public Application {
 	enum class State {
@@ -33,12 +33,10 @@ private:
 	Menu menu;
 	HUD hud;
 
-	//Fire* pFire;
-	Explosion* pExplosion;
-	SceneNode* pExplosionNode;
-
 	KeyListener* pListener;
 
 	Level level;
+	Tank tank;
+	Camera camera;
 };
 

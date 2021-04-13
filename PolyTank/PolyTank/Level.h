@@ -20,6 +20,9 @@ class Layer
 public:
 	Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color);
 
+	SceneNode* getNode();
+
+private:
 	static Block getBlock(uint8_t id);
 
 private:
@@ -28,6 +31,7 @@ private:
 	uint32_t d;
 
 	Mesh* pMesh;
+	SceneNode* pNode;
 };
 
 class Level
@@ -35,6 +39,10 @@ class Level
 public:
 	Level() = default;
 	Level(Graphics& gfx, const std::filesystem::path& file, Scene& scene);
+
+	Layer* getLayer(size_t idx);
+	Layer* getLayer(DirectX::FXMVECTOR position);
+	
 
 private:
 	std::vector<Layer> layers;

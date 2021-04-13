@@ -39,7 +39,19 @@ Level::Level(Graphics& gfx, const std::filesystem::path& file, Scene& scene)
 
 }
 
-Layer::Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color)
+Layer* Level::getLayer(size_t idx) {
+	return &layers[idx];
+}
+
+Layer* Level::getLayer(DirectX::FXMVECTOR position) {
+	
+	float y = XMVectorGetY(position);
+	
+	return &layers[std::clamp(static_cast<size_t>(y - 1.0f), 0ui64, layers.size() - 1)];
+}
+
+Layer::Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color) :
+	pNode(pNode)
 {
 	this->blocks = blocks;
 	d = depth;
@@ -93,6 +105,10 @@ Layer::Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>
 	pMesh->addBindable(pMaterial);
 
 	this->pMesh = dynamic_cast<Mesh*>(pNode->addDrawable(std::move(pMesh)));
+}
+
+SceneNode* Layer::getNode() {
+	return pNode;
 }
 
 inline Block makeEmptyBlock() 

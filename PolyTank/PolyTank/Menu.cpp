@@ -56,7 +56,6 @@ Menu::Menu(Graphics& gfx, PolyTank& polyTank) :
 	resizeListener = interaction->addListener([this](const ResizeEvent& e) -> void {
 		this->resize(e.width, e.height);
 	});
-
 }
 
 Menu::~Menu() {

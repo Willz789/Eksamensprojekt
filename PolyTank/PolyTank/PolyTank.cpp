@@ -13,26 +13,14 @@ PolyTank::PolyTank() :
 	menu(gfx, *this),
 	hud(gfx, wnd.getInteraction()),
 	state(State::MENU),
-	level()
-	{
+	level(),
+	camera(wnd.getInteraction(), tank) {
+
 	cameraPos = { 0, 1.0f, 5.0f, 1.0f };
 	gfx.setCamera(XMMatrixLookAtRH(XMLoadFloat4(&cameraPos), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
 	
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, scene.getRoot());
 	GLTF::Loader("./Models/ground/ground.gltf").getScene(gfx, scene.getRoot());
-	
-	//pFire = dynamic_cast<Fire*>(scene.getRoot()->addDrawable(std::make_unique<Fire>(gfx, scene.getRoot()->getChild(4)->getChild(11))));
-	
-	pExplosionNode = scene.getRoot()->addChild();
-	pExplosion = dynamic_cast<Explosion*>(scene.getRoot()->addDrawable(std::make_unique<Explosion>(gfx, pExplosionNode)));
-	pExplosionNode->translate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
-	
-	pListener = wnd.getInteraction()->addListener([this](const KeyEvent& e) -> void {
-		if (e.key == ' ') {
-			//pExplosion->run();
-		}
-	});
-
 }
 
 void PolyTank::update(float t, float dt) {
@@ -42,6 +30,8 @@ void PolyTank::update(float t, float dt) {
 
 	}
 	else if(state==State::GAME) {
+		tank.update(level, dt);
+
 		XMMATRIX cameraInv = XMMatrixInverse(nullptr, gfx.getCamera());
 		if (wnd.getInteraction()->keyDown('A')) {
 			XMStoreFloat4(&cameraPos, dt * XMVector4Transform(XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
@@ -68,6 +58,8 @@ void PolyTank::update(float t, float dt) {
 		}
 
 		gfx.setCamera(XMMatrixLookAtRH(XMLoadFloat4(&cameraPos), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
+		
+		gfx.setCamera(camera.viewMatrix());
 	}
 }
 
@@ -89,5 +81,7 @@ void PolyTank::startGame()
 {
 	state = State::GAME;
 	scene.getRoot()->reset();
+
 	level = Level(gfx, "./Levels/level1.bin", scene);
+	tank = Tank(gfx, scene.getRoot(), { 0.0f, 0.0f, 0.0f, 0.0f });
 }

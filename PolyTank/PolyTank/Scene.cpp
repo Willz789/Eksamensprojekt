@@ -43,6 +43,10 @@ SceneNode* SceneNode::getChild(size_t index)
 	return &*it;
 }
 
+SceneNode* SceneNode::lastChild() {
+	return &children.back();
+}
+
 IDrawable* SceneNode::addDrawable(std::unique_ptr<IDrawable>&& pDrawable) {
 	drawables.push_back(std::move(pDrawable));
 	return drawables.back().get();

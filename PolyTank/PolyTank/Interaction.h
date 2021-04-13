@@ -57,7 +57,6 @@ private:
 
 	void keyClick(char key);
 
-
 private:
 	std::list<MouseListener> mouseListeners;
 	std::list<KeyListener> keyListeners;
