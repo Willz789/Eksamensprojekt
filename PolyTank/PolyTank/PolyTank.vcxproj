@@ -154,6 +154,7 @@
     <ClCompile Include="BlendState.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="ConvexShape.cpp" />
     <ClCompile Include="DepthState.cpp" />
     <ClCompile Include="Explosion.cpp" />
     <ClCompile Include="Fire.cpp" />
@@ -169,9 +170,11 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="PolyTank.cpp" />
     <ClCompile Include="PrimitiveTopology.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderCommon.cpp" />
     <ClCompile Include="Tank.cpp" />
@@ -185,6 +188,7 @@
     <ClInclude Include="BlendState.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="ConvexShape.h" />
     <ClInclude Include="DepthState.h" />
     <ClInclude Include="Explosion.h" />
     <ClInclude Include="IDrawable.h" />
@@ -201,9 +205,11 @@
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="Physics.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="PolyTank.h" />
     <ClInclude Include="PrimitiveTopology.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderCommon.h" />
     <ClInclude Include="Interaction.h" />

@@ -49,6 +49,18 @@
     <Filter Include="Shaders\ParticleEffects">
       <UniqueIdentifier>{02434b29-cbc5-4414-9ddd-c4a8e6c24be9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Physics">
+      <UniqueIdentifier>{4c0840cd-6b03-464b-9b21-3eaacd16e285}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Physics">
+      <UniqueIdentifier>{f4f3347b-8834-4796-8751-67ea1f3c6fa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Geometry">
+      <UniqueIdentifier>{7bfbc146-1120-4431-bb46-b15d5a1f8c27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Geometry">
+      <UniqueIdentifier>{09ba8b5c-087f-4eb5-a617-17578dbcf8c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VertexBuffer.cpp">
@@ -137,6 +149,15 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Source Files\Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvexShape.cpp">
+      <Filter>Source Files\Engine\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +256,15 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Header Files\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvexShape.h">
+      <Filter>Header Files\Engine\Geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
