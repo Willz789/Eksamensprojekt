@@ -28,8 +28,7 @@ void PolyTank::update(float t, float dt) {
 		scene.getRoot()->getChild(0)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), t));
 		scene.getRoot()->getChild(0)->getChild(13)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -2.0f * t));
 
-	}
-	else if(state==State::GAME) {
+	} else if(state==State::GAME) {
 		tank.update(level, dt);
 		gfx.setCamera(camera.viewMatrix());
 
