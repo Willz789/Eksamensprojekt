@@ -33,8 +33,6 @@ private:
 	Menu menu;
 	HUD hud;
 
-	KeyListener* pListener;
-
 	Level level;
 	Tank tank;
 	Camera camera;

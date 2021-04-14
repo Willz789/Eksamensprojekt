@@ -49,6 +49,8 @@ Window::Window(uint32_t width, uint32_t height, const std::string& title) {
 		throw std::runtime_error("failed to create window.");
 	}
 
+	interaction = Interaction(hWnd);
+
 	hWndToWnd[hWnd] = this;
 }
 

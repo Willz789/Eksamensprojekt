@@ -12,18 +12,11 @@ Camera::Camera(Interaction* pInteraction, Tank& tank) :
 	pListener = pInteraction->addListener([this](const MouseEvent& e) -> void {
 		if (e.button != MouseEvent::Button::MOVE) return;
 
-
-		static uint32_t oldMX = e.mousex, oldMY = e.mousey;
-		int32_t deltaX = e.mousex - oldMX;
-		int32_t deltaY = e.mousey - oldMY;
-		oldMX = e.mousex;
-		oldMY = e.mousey;
-
-		float deltaYaw = -0.005f * deltaX;
-		float deltaPitch = 0.005f * deltaY;
+		float deltaYaw = -0.004f * e.mousex;
+		float deltaPitch = 0.004f * e.mousey;
 
 		pTank->rotateTurret(deltaYaw);
-		pitch += deltaPitch;
+		pitch = std::clamp(pitch + deltaPitch, -pi / 8.0f, pi / 2.001f);
 	});
 }
 

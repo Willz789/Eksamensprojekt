@@ -31,8 +31,9 @@ void PolyTank::update(float t, float dt) {
 	}
 	else if(state==State::GAME) {
 		tank.update(level, dt);
+		gfx.setCamera(camera.viewMatrix());
 
-		XMMATRIX cameraInv = XMMatrixInverse(nullptr, gfx.getCamera());
+		/*XMMATRIX cameraInv = XMMatrixInverse(nullptr, gfx.getCamera());
 		if (wnd.getInteraction()->keyDown('A')) {
 			XMStoreFloat4(&cameraPos, dt * XMVector4Transform(XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
 		}
@@ -57,9 +58,8 @@ void PolyTank::update(float t, float dt) {
 			XMStoreFloat4(&cameraPos, dt * XMVector4Transform(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
 		}
 
-		gfx.setCamera(XMMatrixLookAtRH(XMLoadFloat4(&cameraPos), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
+		gfx.setCamera(XMMatrixLookAtRH(XMLoadFloat4(&cameraPos), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));*/
 		
-		gfx.setCamera(camera.viewMatrix());
 	}
 }
 
@@ -81,6 +81,8 @@ void PolyTank::startGame()
 {
 	state = State::GAME;
 	scene.getRoot()->reset();
+	wnd.getInteraction()->setCursorLocked(true);
+	wnd.getInteraction()->setCursorVisible(false);
 
 	level = Level(gfx, "./Levels/level1.bin", scene);
 	tank = Tank(gfx, scene.getRoot(), { 0.0f, 0.0f, 0.0f, 0.0f });
