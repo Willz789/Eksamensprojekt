@@ -30,7 +30,10 @@ void PolyTank::update(float t, float dt) {
 
 	} else if(state==State::GAME) {
 		tank.update(level, dt);
+		pcs.update(t, dt);
+		
 		gfx.setCamera(camera.viewMatrix());
+		
 
 		/*XMMATRIX cameraInv = XMMatrixInverse(nullptr, gfx.getCamera());
 		if (wnd.getInteraction()->keyDown('A')) {
@@ -84,5 +87,5 @@ void PolyTank::startGame()
 	wnd.getInteraction()->setCursorVisible(false);
 
 	level = Level(gfx, "./Levels/level1.bin", scene);
-	tank = Tank(gfx, scene.getRoot(), { 0.0f, 0.0f, 0.0f, 0.0f });
+	tank = Tank(gfx, pcs, scene.getRoot(), { 0.0f, 0.0f, 0.0f, 0.0f });
 }

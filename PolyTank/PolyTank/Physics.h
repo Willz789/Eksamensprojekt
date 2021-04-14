@@ -6,13 +6,16 @@
 
 class Physics {
 public:
-	static constexpr float g = 9.82f;
+	
+	RigidBody* addBody(std::unique_ptr<RigidBody>&& pRB);
 	void update(float t, float dt);
+	
+private:	
+	static constexpr float g = 9.82f;
+
 
 private:
-	
-private:
-	std::vector<RigidBody*> rigidBodies;
+	std::vector<std::unique_ptr<RigidBody>> rigidBodies;
 	
 };
 

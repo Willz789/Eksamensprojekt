@@ -19,10 +19,16 @@ DirectX::XMVECTOR Box::support(DirectX::FXMVECTOR dir) const {
 }
 
 DirectX::XMMATRIX Box::inertiaTensor() const {
-	return 1.0f / 12.f * XMMatrixSet(
-		h * h + d * d,			0.0f,		   0.0f, 0.0f,
-				 0.0f, w * w + d * d,		   0.0f, 0.0f,
-				 0.0f,			0.0f, w * w + h * h, 0.0f,
-				 0.0f,			0.0f,		   0.0f, 0.0f
+
+	XMMATRIX hej = 1.0f / 12.f * XMMatrixSet(
+		h * h + d * d, 0.0f, 0.0f, 0.0f,
+		0.0f, w * w + d * d, 0.0f, 0.0f,
+		0.0f, 0.0f, w * w + h * h, 0.0f,
+		0.0f, 0.0f, 0.0f, 0.0f
 	);
+
+	XMFLOAT3X3 inertia;
+	XMStoreFloat3x3(&inertia, hej);
+
+	return hej;
 }

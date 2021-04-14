@@ -2,6 +2,7 @@
 
 #include "Window.h"
 #include "Graphics.h"
+#include "Physics.h"
 #include "Scene.h"
 
 class Application {
@@ -18,6 +19,7 @@ public:
 protected:
 	Window wnd;
 	Graphics gfx;
+	Physics pcs;
 };
 
 

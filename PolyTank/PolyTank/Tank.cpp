@@ -4,22 +4,26 @@
 
 using namespace DirectX;
 
-Tank::Tank(Graphics& gfx, SceneNode* pRoot, DirectX::FXMVECTOR initPos) {
+Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos) {
+
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
 
-	XMStoreFloat3(&position, initPos);
 	turretAngle = 0.0f;
+
+	pRB = pcs.addBody(std::make_unique<RigidBody>(
+		std::make_unique<Box>(1.36f, 0.75f, 2.0f),
+		10.0f,
+		initPos,
+		XMQuaternionIdentity()));
+
+	pRB->addAngMoment(XMVectorSet(0.0f, 10.0f, 0.0f, 0.0f));
 }
 
 void Tank::update(Level& lvl, float dt) {
-	XMStoreFloat3(&position, XMLoadFloat3(&position) + XMVectorSet(dt, 0.0f, 0.0f, 0.0f));
-
-
-	pNode->setTranslation(XMLoadFloat3(&position));
+	pNode->setTranslation(pRB->getPosition() - XMVectorSet(0.0f, 0.75f / 2.0f, 0.0f, 0.0f));
+	pNode->setRotation(pRB->getRotation());
 	pNode->getChild(turretNodeIdx)->setRotation(XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), turretAngle));
-	
-
 }
 
 void Tank::rotateTurret(float angle) {

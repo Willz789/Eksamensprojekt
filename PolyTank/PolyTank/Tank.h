@@ -10,8 +10,7 @@
 class Tank {
 public:
 	Tank() = default;
-
-	Tank(Graphics& gfx, SceneNode* pRoot, DirectX::FXMVECTOR initPos);
+	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos);
 
 	void update(Level& lvl, float dt);
 	
@@ -21,10 +20,11 @@ public:
 	DirectX::XMMATRIX turretToWorld();
 	
 private:
+	static constexpr DirectX::XMFLOAT3 hitboxDims = { 1.36f, 0.75f, 2.0f };
+	
 	static constexpr size_t turretNodeIdx = 13;
 
 private:
-	DirectX::XMFLOAT3 position;
 	float turretAngle;
 
 	SceneNode* pNode;
@@ -32,5 +32,5 @@ private:
 	int32_t health;
 	int32_t maxHealth;
 
-	RigidBody rb;
+	RigidBody* pRB;
 };

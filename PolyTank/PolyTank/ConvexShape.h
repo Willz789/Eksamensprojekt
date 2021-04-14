@@ -4,7 +4,7 @@
 
 class ConvexShape {
 public:
-	virtual ~ConvexShape() = 0;
+	virtual ~ConvexShape() = default;
 	virtual DirectX::XMVECTOR support(DirectX::FXMVECTOR dir) const = 0;
 	virtual DirectX::XMMATRIX inertiaTensor() const = 0;
 

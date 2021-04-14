@@ -7,16 +7,35 @@ RigidBody::RigidBody(std::unique_ptr<ConvexShape>&& pShape, float m, FXMVECTOR i
 	pShape(std::move(pShape)),
 	mass(m)
 {
+
+	XMMATRIX inertia = mass * this->pShape->inertiaTensor();
+	inertia.r[3] = XMVectorSetW(inertia.r[3], 1.0f);
+
+	XMStoreFloat3x3(&invInertia, XMMatrixInverse(nullptr, inertia));
+
 	XMStoreFloat3(&position, initPos);
 	XMStoreFloat4(&rotation, initRot);
-	XMStoreFloat3(&linMom, { 0.0f, 0.0f, 0.0f });
-	XMStoreFloat3(&angMom, { 0.0f, 0.0f, 0.0f });
+	linMom = { 0.0f, 0.0f, 0.0f };
+	angMom = { 0.0f, 0.0f, 0.0f };
+	externalForces = { 0.0f, 0.0f, 0.0f };
+	externalTorques = { 0.0f, 0.0f, 0.0f };
+
+}
+
+XMVECTOR RigidBody::getPosition() {
+	return XMVectorSetW(XMLoadFloat3(&position), 1.0f);
+}
+
+DirectX::XMVECTOR RigidBody::getRotation() {
+	return XMLoadFloat4(&rotation);
 }
 
 void RigidBody::addForce(FXMVECTOR force)
 {
 	XMVECTOR extForces = XMLoadFloat3(&externalForces);
 	extForces += force;
+
+	XMStoreFloat3(&externalForces, extForces);
 }
 
 void RigidBody::addForce(DirectX::FXMVECTOR force, DirectX::FXMVECTOR point)
@@ -28,18 +47,25 @@ void RigidBody::addForce(DirectX::FXMVECTOR force, DirectX::FXMVECTOR point)
 	XMVECTOR pos = XMLoadFloat3(&position);
 	XMVECTOR pointRelative = point - pos;
 	extTorque += XMVector3Cross(pointRelative, force);
+
+	XMStoreFloat3(&externalForces, extForces);
+	XMStoreFloat3(&externalTorques, extTorque);
 }
 
 void RigidBody::addMoment(DirectX::FXMVECTOR moment)
 {
 	XMVECTOR linMoment = XMLoadFloat3(&linMom);
 	linMoment += moment;
+
+	XMStoreFloat3(&linMom, linMoment);
 }
 
 void RigidBody::addAngMoment(DirectX::FXMVECTOR moment)
 {
 	XMVECTOR angMoment = XMLoadFloat3(&angMom);
 	angMoment += moment;
+
+	XMStoreFloat3(&angMom, angMoment);
 }
 
 inline void applyForce(XMVECTOR& linMoment, XMVECTOR& pos, FXMVECTOR force, float dt, float mass) 
@@ -55,7 +81,10 @@ inline void applyTorque(XMVECTOR& angMoment, XMVECTOR& rot, FXMVECTOR torque, fl
 	XMMATRIX rotation = XMMatrixRotationQuaternion(rot);
 	XMMATRIX invInertia = XMMatrixTranspose(rotation) * invInertiaBody * rotation;
 	XMVECTOR angVelocity = XMVector3Transform(angMoment, invInertia);
-	rot += 0.5f * XMQuaternionMultiply(rot, angVelocity) * dt;
+
+	rot += 0.5f * XMQuaternionMultiply(rot, XMVectorSetW(angVelocity, 0.0f)) * dt;
+
+
 }
 
 void RigidBody::update(float dt)
@@ -76,6 +105,8 @@ void RigidBody::update(float dt)
 
 	XMStoreFloat3(&linMom, linMoment);
 	XMStoreFloat3(&position, pos);
+	XMStoreFloat3(&angMom, angMoment);
+	XMStoreFloat4(&rotation, quaternion);
 }
 
 

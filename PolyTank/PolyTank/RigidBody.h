@@ -6,8 +6,13 @@
 #include <memory>
 
 class RigidBody {
+	friend class Physics;
 public:
-	RigidBody(std::unique_ptr<ConvexShape>&& pShape, float m, FXMVECTOR initPos, FXMVECTOR initRot);
+	RigidBody() = default;
+	RigidBody(std::unique_ptr<ConvexShape>&& pShape, float m, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR initRot);
+
+	DirectX::XMVECTOR getPosition();
+	DirectX::XMVECTOR getRotation();
 
 	void addForce(DirectX::FXMVECTOR force);
 	void addForce(DirectX::FXMVECTOR force, DirectX::FXMVECTOR point);
@@ -15,10 +20,8 @@ public:
 	void addAngMoment(DirectX::FXMVECTOR angMoment);
 	void update(float dt);
 
-public:
-	const float mass;
-
 private:
+	float mass;
 	std::unique_ptr<ConvexShape> pShape;
 	
 	DirectX::XMFLOAT3X3 invInertia;
