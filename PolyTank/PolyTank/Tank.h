@@ -4,6 +4,8 @@
 #include "Graphics.h"
 #include "Scene.h"
 #include "Level.h"
+#include "Physics.h"
+#include "RigidBody.h"
 
 class Tank {
 public:
@@ -29,4 +31,6 @@ private:
 	
 	int32_t health;
 	int32_t maxHealth;
+
+	RigidBody rb;
 };

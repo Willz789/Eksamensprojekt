@@ -6,11 +6,13 @@
 
 class Physics {
 public:
+	static constexpr float g = 9.82f;
 	void update(float t, float dt);
 
 private:
 	
 private:
 	std::vector<RigidBody*> rigidBodies;
+	
 };
 
