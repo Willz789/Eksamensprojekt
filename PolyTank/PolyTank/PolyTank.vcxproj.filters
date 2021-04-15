@@ -156,7 +156,10 @@
     <ClCompile Include="Physics.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="ConvexShape.cpp">
+    <ClCompile Include="TransformedShape.cpp">
+      <Filter>Source Files\Engine\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Box.cpp">
       <Filter>Source Files\Engine\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
@@ -264,6 +267,12 @@
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="ConvexShape.h">
+      <Filter>Header Files\Engine\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformedShape.h">
+      <Filter>Header Files\Engine\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
       <Filter>Header Files\Engine\Geometry</Filter>
     </ClInclude>
   </ItemGroup>

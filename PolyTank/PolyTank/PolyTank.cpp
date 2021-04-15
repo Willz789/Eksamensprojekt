@@ -35,7 +35,7 @@ void PolyTank::update(float t, float dt) {
 		gfx.setCamera(camera.viewMatrix());
 		
 
-		/*XMMATRIX cameraInv = XMMatrixInverse(nullptr, gfx.getCamera());
+		XMMATRIX cameraInv = XMMatrixInverse(nullptr, gfx.getCamera());
 		if (wnd.getInteraction()->keyDown('A')) {
 			XMStoreFloat4(&cameraPos, dt * XMVector4Transform(XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
 		}
@@ -60,7 +60,7 @@ void PolyTank::update(float t, float dt) {
 			XMStoreFloat4(&cameraPos, dt * XMVector4Transform(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
 		}
 
-		gfx.setCamera(XMMatrixLookAtRH(XMLoadFloat4(&cameraPos), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));*/
+		gfx.setCamera(XMMatrixLookAtRH(XMLoadFloat4(&cameraPos), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
 		
 	}
 }

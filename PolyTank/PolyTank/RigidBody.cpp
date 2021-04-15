@@ -108,6 +108,3 @@ void RigidBody::update(float dt)
 	XMStoreFloat3(&angMom, angMoment);
 	XMStoreFloat4(&rotation, quaternion);
 }
-
-
-

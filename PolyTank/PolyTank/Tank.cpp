@@ -1,6 +1,7 @@
 #include "Tank.h"
 
 #include "GLTFLoader.h"
+#include "Box.h"
 
 using namespace DirectX;
 
@@ -15,14 +16,15 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 		std::make_unique<Box>(1.36f, 0.75f, 2.0f),
 		10.0f,
 		initPos,
-		XMQuaternionIdentity()));
+		XMQuaternionIdentity()
+	));
 
-	pRB->addAngMoment(XMVectorSet(0.0f, 10.0f, 0.0f, 0.0f));
+	pRB->addAngMoment(XMVectorSet(0.0f, 0.0f, 4.0f, 0.0f));
 }
 
 void Tank::update(Level& lvl, float dt) {
-	pNode->setTranslation(pRB->getPosition() - XMVectorSet(0.0f, 0.75f / 2.0f, 0.0f, 0.0f));
 	pNode->setRotation(pRB->getRotation());
+	pNode->setTranslation(pRB->getPosition() - XMVectorSet(0.0f, 0.75f / 2.0f, 0.0f, 0.0f));
 	pNode->getChild(turretNodeIdx)->setRotation(XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), turretAngle));
 }
 

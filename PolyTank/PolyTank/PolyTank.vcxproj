@@ -152,9 +152,9 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BindableManager.cpp" />
     <ClCompile Include="BlendState.cpp" />
+    <ClCompile Include="Box.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
-    <ClCompile Include="ConvexShape.cpp" />
     <ClCompile Include="DepthState.cpp" />
     <ClCompile Include="Explosion.cpp" />
     <ClCompile Include="Fire.cpp" />
@@ -178,6 +178,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderCommon.cpp" />
     <ClCompile Include="Tank.cpp" />
+    <ClCompile Include="TransformedShape.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="BindableManager.h" />
     <ClInclude Include="BlendState.h" />
+    <ClInclude Include="Box.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="ConvexShape.h" />
@@ -214,6 +216,7 @@
     <ClInclude Include="ShaderCommon.h" />
     <ClInclude Include="Interaction.h" />
     <ClInclude Include="Tank.h" />
+    <ClInclude Include="TransformedShape.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexShader.h" />
