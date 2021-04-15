@@ -10,7 +10,7 @@ RigidBody* Physics::addBody(std::unique_ptr<RigidBody>&& pRB) {
 void Physics::update(float t, float dt)
 {
 	for (auto& pr : rigidBodies) {
-		XMVECTOR gravity = XMVectorSet(0.0f, pr->mass*-g, 0.0f, 0.0f);
+		XMVECTOR gravity = XMVectorSet(0.0f, pr->mass * -g, 0.0f, 0.0f);
 		pr->addForce(gravity);
 		pr->update(dt);
 	}

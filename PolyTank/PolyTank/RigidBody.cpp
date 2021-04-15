@@ -30,6 +30,26 @@ DirectX::XMVECTOR RigidBody::getRotation() {
 	return XMLoadFloat4(&rotation);
 }
 
+DirectX::XMVECTOR RigidBody::getLinMoment()
+{
+	return XMLoadFloat3(&linMom);
+}
+
+DirectX::XMMATRIX RigidBody::getTransform()
+{
+	return XMMatrixRotationQuaternion(XMLoadFloat4(&rotation)) * XMMatrixTranslationFromVector(XMLoadFloat3(&position));
+}
+
+float RigidBody::getMass()
+{
+	return mass;
+}
+
+void RigidBody::setRotation(DirectX::FXMVECTOR newRot)
+{
+	XMStoreFloat4(&rotation, newRot);
+}
+
 void RigidBody::addForce(FXMVECTOR force)
 {
 	XMVECTOR extForces = XMLoadFloat3(&externalForces);
@@ -83,6 +103,7 @@ inline void applyTorque(XMVECTOR& angMoment, XMVECTOR& rot, FXMVECTOR torque, fl
 	XMVECTOR angVelocity = XMVector3Transform(angMoment, invInertia);
 
 	rot += 0.5f * XMQuaternionMultiply(rot, XMVectorSetW(angVelocity, 0.0f)) * dt;
+	rot = XMQuaternionNormalize(rot);
 
 
 }
@@ -108,6 +129,3 @@ void RigidBody::update(float dt)
 	XMStoreFloat3(&angMom, angMoment);
 	XMStoreFloat4(&rotation, quaternion);
 }
-
-
-

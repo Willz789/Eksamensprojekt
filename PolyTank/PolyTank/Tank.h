@@ -3,16 +3,18 @@
 #include "Util.h"
 #include "Graphics.h"
 #include "Scene.h"
-#include "Level.h"
 #include "Physics.h"
 #include "RigidBody.h"
+#include "Projectile.h"
+#include "Interaction.h"
 
 class Tank {
 public:
 	Tank() = default;
-	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos);
+	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, Interaction& interaction, Tank* pDest);
 
-	void update(Level& lvl, float dt);
+	void update(float dt);
+	void shoot(Graphics& gfx, Physics& pcs);
 	
 	void rotateTurret(float angle);
 
@@ -33,4 +35,7 @@ private:
 	int32_t maxHealth;
 
 	RigidBody* pRB;
+
+	Projectile proj;
+	bool projExist;
 };
