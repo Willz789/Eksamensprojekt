@@ -1,6 +1,7 @@
 #include "Projectile.h"
 
 #include "GLTFLoader.h"
+#include "Box.h"
 
 using namespace DirectX;
 
