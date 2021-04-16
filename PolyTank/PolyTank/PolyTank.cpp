@@ -14,7 +14,7 @@ PolyTank::PolyTank() :
 	hud(gfx, wnd.getInteraction()),
 	state(State::MENU),
 	level(),
-	camera(wnd.getInteraction(), tank1) {
+	camera(wnd.getInteraction()) {
 
 	cameraPos = { 0, 1.0f, 5.0f, 1.0f };
 	gfx.setCamera(XMMatrixLookAtRH(XMLoadFloat4(&cameraPos), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
@@ -23,14 +23,32 @@ PolyTank::PolyTank() :
 	GLTF::Loader("./Models/ground/ground.gltf").getScene(gfx, scene.getRoot());
 }
 
+PolyTank& PolyTank::get()
+{
+	static PolyTank instance;
+	return instance;
+}
+
+IGameObject* PolyTank::addGameObject(std::unique_ptr<IGameObject>&& pGameObject)
+{
+	gameObjects.push_back(std::move(pGameObject));
+	return gameObjects.back().get();
+}
+
+void PolyTank::deleteGameObject(IGameObject* pGameObject)
+{
+	deleteList.push_back(pGameObject);
+}
+
 void PolyTank::update(float t, float dt) {
 	if (state==State::MENU) {
 		scene.getRoot()->getChild(0)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), t));
 		scene.getRoot()->getChild(0)->getChild(13)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -2.0f * t));
 
 	} else if(state==State::GAME) {
-		tank1.update(dt);
-		tank2.update(dt);
+		for (auto& g : gameObjects) {
+			g->update(dt);
+		}
 		pcs.update(t, dt);
 		
 		gfx.setCamera(camera.viewMatrix());
@@ -64,6 +82,13 @@ void PolyTank::update(float t, float dt) {
 		gfx.setCamera(XMMatrixLookAtRH(XMLoadFloat4(&cameraPos), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
 		
 	}
+
+	gameObjects.erase(
+		std::remove_if(gameObjects.begin(), gameObjects.end(), [this](std::unique_ptr<IGameObject>& g)->bool{
+			return std::find(deleteList.begin(), deleteList.end(), g.get()) != deleteList.end();
+		}), gameObjects.end()
+	);
+	deleteList.clear();
 }
 
 void PolyTank::render() {
@@ -80,6 +105,11 @@ void PolyTank::render() {
 	}
 }
 
+Physics& PolyTank::getPcs()
+{
+	return pcs;
+}
+
 void PolyTank::startGame()
 {
 	state = State::GAME;
@@ -88,6 +118,8 @@ void PolyTank::startGame()
 	wnd.getInteraction()->setCursorVisible(false);
 
 	level = Level(gfx, "./Levels/level1.bin", scene);
-	tank1 = Tank(gfx, pcs, scene.getRoot(), { 0.0f, 0.0f, 0.0f, 0.0f }, *wnd.getInteraction(), &tank1);
-	tank2 = Tank(gfx, pcs, scene.getRoot(), { 0.0f, 1.0f, 0.0f, 0.0f }, *wnd.getInteraction(), &tank2);
+	
+	Tank* pTank = emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), *wnd.getInteraction());
+	camera.assignTank(*pTank);
+	emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), *wnd.getInteraction());
 }

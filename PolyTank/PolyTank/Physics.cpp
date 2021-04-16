@@ -7,11 +7,24 @@ RigidBody* Physics::addBody(std::unique_ptr<RigidBody>&& pRB) {
 	return rigidBodies.back().get();
 }
 
+void Physics::deleteBody(RigidBody* pRB)
+{
+	for (auto it = rigidBodies.begin(); it != rigidBodies.end(); it++) {
+		if (pRB == it->get()) {
+			rigidBodies.erase(it);
+			break;
+		}
+	}
+}
+
 void Physics::update(float t, float dt)
 {
 	for (auto& pr : rigidBodies) {
 		XMVECTOR gravity = XMVectorSet(0.0f, pr->mass * -g, 0.0f, 0.0f);
-		//pr->addForce(gravity);
+		// midlertidig ! Skal ændres
+		if (pr->getMass() == 0.05f) {
+			pr->addForce(gravity);
+		}
 		pr->update(dt);
 	}
 

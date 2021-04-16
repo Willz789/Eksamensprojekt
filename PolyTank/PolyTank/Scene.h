@@ -20,6 +20,8 @@ public:
 	SceneNode* getChild(size_t index);
 	SceneNode* lastChild();
 	SceneNode* getParent();
+	void deleteChild(SceneNode* pChild);
+	void deleteNode();
 
 	IDrawable* addDrawable(std::unique_ptr<IDrawable>&& pDrawable);
 	void removeDrawable(IDrawable* pDrawable);

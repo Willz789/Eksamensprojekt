@@ -52,6 +52,21 @@ SceneNode* SceneNode::getParent()
 	return pParent;
 }
 
+void SceneNode::deleteChild(SceneNode* pChild)
+{
+	for (auto it = children.begin(); it != children.end(); it++) {
+		if (pChild == &(*it)) {
+			children.erase(it);
+			break;
+		}
+	}
+}
+
+void SceneNode::deleteNode()
+{
+	pParent->deleteChild(this);
+}
+
 IDrawable* SceneNode::addDrawable(std::unique_ptr<IDrawable>&& pDrawable) {
 	drawables.push_back(std::move(pDrawable));
 	return drawables.back().get();

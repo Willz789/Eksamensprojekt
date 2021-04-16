@@ -6,7 +6,7 @@
 class Camera {
 public:
 	Camera() = default;
-	Camera(Interaction* pInteraction, Tank& tank);
+	Camera(Interaction* pInteraction);
 
 	Camera(const Camera&) = delete;
 	Camera(Camera&& other) = delete;
@@ -14,6 +14,8 @@ public:
 	Camera& operator=(Camera&& other) = delete;
 
 	~Camera();
+
+	void assignTank(Tank& tank);
 
 	DirectX::FXMMATRIX viewMatrix();
 

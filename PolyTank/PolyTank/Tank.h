@@ -7,13 +7,15 @@
 #include "RigidBody.h"
 #include "Projectile.h"
 #include "Interaction.h"
+#include "IGameObject.h"
 
-class Tank {
+class Tank : public IGameObject {
+
 public:
 	Tank() = default;
-	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, Interaction& interaction, Tank* pDest);
+	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, Interaction& interaction);
 
-	void update(float dt);
+	void update(float dt) override;
 	void shoot(Graphics& gfx, Physics& pcs);
 	
 	void rotateTurret(float angle);
@@ -35,7 +37,4 @@ private:
 	int32_t maxHealth;
 
 	RigidBody* pRB;
-
-	Projectile proj;
-	bool projExist;
 };

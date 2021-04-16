@@ -8,6 +8,8 @@ class Physics {
 public:
 	
 	RigidBody* addBody(std::unique_ptr<RigidBody>&& pRB);
+	void deleteBody(RigidBody* pRB);
+
 	void update(float t, float dt);
 	
 private:	

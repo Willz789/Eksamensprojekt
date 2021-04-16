@@ -2,6 +2,7 @@
 
 #include "GLTFLoader.h"
 #include "Box.h"
+#include "PolyTank.h"
 
 using namespace DirectX;
 
@@ -22,9 +23,19 @@ Projectile::Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::F
 	pRB->addMoment(XMVector4Transform(XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), XMMatrixRotationQuaternion(initRot))*initVel*pRB->getMass());
 }
 
+Projectile::~Projectile()
+{
+	PolyTank::get().getPcs().deleteBody(pRB);
+	pNode->deleteNode();
+}
+
 void Projectile::update(float dt)
 {
 	pRB->setRotation(XMQuaternionRotationMatrix(XMMatrixLookToRH(pRB->getPosition(), pRB->getLinMoment(), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))));
 	pNode->setTranslation(pRB->getPosition() - XMVectorSet(0.0f, 0.75f / 2.0f, 0.0f, 0.0f));
 	pNode->setRotation(pRB->getRotation());
+
+	if (XMVectorGetY(pRB->getPosition()) < -1) {
+		PolyTank::get().deleteGameObject(this);
+	}
 }

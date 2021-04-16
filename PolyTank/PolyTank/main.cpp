@@ -1,8 +1,7 @@
 #include "Polytank.h"
 
 int main() {
-	PolyTank game;
-	game.run();
+	PolyTank::get().run();
 	
 	return 0;
 }

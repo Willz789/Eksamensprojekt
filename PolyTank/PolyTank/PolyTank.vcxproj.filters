@@ -281,6 +281,9 @@
     <ClInclude Include="Projectile.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
+    <ClInclude Include="IGameObject.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

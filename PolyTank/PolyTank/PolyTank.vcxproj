@@ -189,6 +189,7 @@
     <ClInclude Include="BindableManager.h" />
     <ClInclude Include="BlendState.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="IGameObject.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />

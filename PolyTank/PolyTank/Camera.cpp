@@ -4,13 +4,13 @@
 
 using namespace DirectX;
 
-Camera::Camera(Interaction* pInteraction, Tank& tank) :
+Camera::Camera(Interaction* pInteraction) :
 	pitch(0.0f),
-	pTank(&tank),
-	pInteraction(pInteraction) {
-
+	pInteraction(pInteraction) 
+{
 	pListener = pInteraction->addListener([this](const MouseEvent& e) -> void {
-		if (e.button != MouseEvent::Button::MOVE) return;
+		if (e.button != MouseEvent::Button::MOVE || 
+			!pTank) return;
 
 		float deltaYaw = -0.004f * e.mousex;
 		float deltaPitch = 0.004f * e.mousey;
@@ -24,6 +24,11 @@ Camera::~Camera() {
 	if (pListener) {
 		pInteraction->removeListener(pListener);
 	}
+}
+
+void Camera::assignTank(Tank& tank)
+{
+	pTank = &tank;
 }
 
 DirectX::FXMMATRIX Camera::viewMatrix() {
