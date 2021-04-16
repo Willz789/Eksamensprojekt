@@ -10,7 +10,7 @@ RigidBody* Physics::addBody(std::unique_ptr<RigidBody>&& pRB) {
 void Physics::update(float t, float dt)
 {
 	for (auto& pr : rigidBodies) {
-		XMVECTOR gravity = XMVectorSet(0.0f, pr->mass*-g, 0.0f, 0.0f);
+		XMVECTOR gravity = XMVectorSet(0.0f, pr->mass * -g, 0.0f, 0.0f);
 		//pr->addForce(gravity);
 		pr->update(dt);
 	}
@@ -19,9 +19,9 @@ void Physics::update(float t, float dt)
 		for (size_t j = i + 1; j < rigidBodies.size(); j++) {
 		
 			if (rigidBodies[i]->checkCollision(*rigidBodies[j].get(), nullptr)) {
-				std::cout << "0";
-			} else {
 				std::cout << "1";
+			} else {
+				std::cout << "0";
 			}
 
 		}

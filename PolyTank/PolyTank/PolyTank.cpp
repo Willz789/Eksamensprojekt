@@ -29,8 +29,8 @@ void PolyTank::update(float t, float dt) {
 		scene.getRoot()->getChild(0)->getChild(13)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -2.0f * t));
 
 	} else if(state==State::GAME) {
-		tank1.update(level, dt);
-		tank2.update(level, dt);
+		tank1.update(dt);
+		tank2.update(dt);
 		pcs.update(t, dt);
 		
 		gfx.setCamera(camera.viewMatrix());
@@ -88,7 +88,6 @@ void PolyTank::startGame()
 	wnd.getInteraction()->setCursorVisible(false);
 
 	level = Level(gfx, "./Levels/level1.bin", scene);
-	tank1 = Tank(gfx, pcs, scene.getRoot(), { 0.0f, 0.0f, 0.0f, 0.0f });
-	tank2 = Tank(gfx, pcs, scene.getRoot(), { 0.0f, 1.0f, 0.0f, 0.0f });
-	
+	tank1 = Tank(gfx, pcs, scene.getRoot(), { 0.0f, 0.0f, 0.0f, 0.0f }, *wnd.getInteraction(), &tank1);
+	tank2 = Tank(gfx, pcs, scene.getRoot(), { 0.0f, 1.0f, 0.0f, 0.0f }, *wnd.getInteraction(), &tank2);
 }

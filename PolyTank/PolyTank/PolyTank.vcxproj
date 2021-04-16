@@ -153,6 +153,7 @@
     <ClCompile Include="BindableManager.cpp" />
     <ClCompile Include="BlendState.cpp" />
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="DepthState.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="BindableManager.h" />
     <ClInclude Include="BlendState.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="ConvexShape.h" />

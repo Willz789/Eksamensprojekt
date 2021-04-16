@@ -162,6 +162,9 @@
     <ClCompile Include="Box.cpp">
       <Filter>Source Files\Engine\Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IBindable.h">
@@ -274,6 +277,9 @@
     </ClInclude>
     <ClInclude Include="Box.h">
       <Filter>Header Files\Engine\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
