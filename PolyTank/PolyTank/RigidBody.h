@@ -20,6 +20,8 @@ public:
 	void addAngMoment(DirectX::FXMVECTOR angMoment);
 	void update(float dt);
 
+	bool checkCollision(const RigidBody& other, DirectX::XMVECTOR* pResolution) const;
+
 private:
 	float mass;
 	std::unique_ptr<ConvexShape> pShape;

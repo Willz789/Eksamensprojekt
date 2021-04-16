@@ -34,5 +34,18 @@ TransformedBox::TransformedBox(const Box& box, DirectX::FXMMATRIX transform) {
 }
 
 DirectX::XMVECTOR TransformedBox::support(DirectX::FXMVECTOR dir) const {
-	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	XMVECTOR bestCorner;
+	float highestDot = -std::numeric_limits<float>::infinity();
+
+	for (auto& corner : corners) {
+		XMVECTOR c = XMLoadFloat3(&corner);
+		float dot = XMVectorGetX(XMVector3Dot(dir, c));
+
+		if (dot > highestDot) {
+			bestCorner = c;
+			highestDot = dot;
+		}
+	}
+
+	return bestCorner;
 }

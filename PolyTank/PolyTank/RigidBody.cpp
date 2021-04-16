@@ -108,3 +108,18 @@ void RigidBody::update(float dt)
 	XMStoreFloat3(&angMom, angMoment);
 	XMStoreFloat4(&rotation, quaternion);
 }
+
+bool RigidBody::checkCollision(const RigidBody& other, DirectX::XMVECTOR* pResolution) const {
+	
+	auto pThisTransformed = pShape->transform(
+		XMMatrixRotationQuaternion(XMLoadFloat4(&rotation)) *
+		XMMatrixTranslationFromVector(XMLoadFloat3(&position)));
+
+	XMMATRIX otherTransform = XMMatrixTranslationFromVector(XMLoadFloat3(&other.position));
+
+	auto pOtherTransformed = other.pShape->transform(
+		XMMatrixRotationQuaternion(XMLoadFloat4(&other.rotation)) *
+		otherTransform);
+
+	return pThisTransformed->checkIntersection(pOtherTransformed.get(), nullptr);
+}

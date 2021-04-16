@@ -19,7 +19,7 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 		XMQuaternionIdentity()
 	));
 
-	pRB->addAngMoment(XMVectorSet(0.0f, 0.0f, 4.0f, 0.0f));
+	pRB->addAngMoment(XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f));
 }
 
 void Tank::update(Level& lvl, float dt) {

@@ -22,6 +22,10 @@ private:
 };
 
 struct Simplex {
+	inline Simplex() {
+		index = -1;
+		points[0] = XMVectorZero();
+	}
 
 	inline Simplex(FXMVECTOR a) {
 		index = 0;
@@ -53,6 +57,10 @@ struct Simplex {
 		return points[idx];
 	}
 
+	inline const XMVECTOR& operator[](size_t idx) const {
+		return points[idx];
+	}
+
 	inline XMVECTOR& last() {
 		return points[index];
 	}
@@ -79,10 +87,15 @@ inline bool doLine(Simplex& simplex, XMVECTOR& dir, const MinkowskiDiff& diff) {
 	XMVECTOR& a = simplex[1];
 	XMVECTOR& b = simplex[0];
 
-	XMVECTOR ab = a - b;
+	XMVECTOR ab = b - a;
 	XMVECTOR ao = -a;
-
-	dir = XMVector3Cross(XMVector3Cross(ab, ao), ab);
+	
+	if (sameDir(ab, ao)) {
+		dir = XMVector3Cross(XMVector3Cross(ab, ao), ab);
+	} else {
+		simplex = Simplex(a);
+		dir = ao;
+	}
 	
 	return false;
 }
@@ -93,29 +106,47 @@ inline bool doTriangle(Simplex& simplex, XMVECTOR& dir, const MinkowskiDiff& dif
 	XMVECTOR& b = simplex[1];
 	XMVECTOR& c = simplex[0];
 
-	XMVECTOR ab = a - b;
-	XMVECTOR ac = a - c;
+	XMVECTOR ab = b - a;
+	XMVECTOR ac = c - a;
 	XMVECTOR ao = -a;
 
 	XMVECTOR abc = XMVector3Cross(ab, ac);
 	XMVECTOR abPerp = XMVector3Cross(ab, abc);
 	XMVECTOR acPerp = XMVector3Cross(abc, ac);
 
-	if (sameDir(abPerp, ao)) { // outside triangle on ab side
-		simplex = Simplex(a, b);
-		dir = XMVector3Cross(XMVector3Cross(ab, ao), ab);
-	} else if(sameDir(acPerp, ao)) { // outside triangle on ac side
-		simplex = Simplex(a, c);
-		dir = XMVector3Cross(XMVector3Cross(ac, ao), ac);
-	} else { // inside triangle 
+	if (sameDir(acPerp, ao)) { // outside AC
+		if (sameDir(ac, ao)) { // closer to AC than A
+			simplex = Simplex(a, c);
+			dir = XMVector3Cross(XMVector3Cross(ac, ao), ac);
+		} else { // closer to A than AC
+			if (sameDir(ab, ao)) { // closer to AB than A
+				simplex = Simplex(a, b);
+				dir = XMVector3Cross(XMVector3Cross(ab, ao), ab);
+			} else { // closer to A than AB
+				simplex = Simplex(a);
+				dir = ao;
+			}
+		}
 
-		if (sameDir(abc, ao)) { // origin is above triangle
-			dir = abc;
-		} else { // origin is below triangle
-			simplex = Simplex(a, c, b);
-			dir = -abc;
+	} else { // inside AC
+		if (sameDir(abPerp, ao)) { // outside AB
+			if (sameDir(ab, ao)) { // closer to AB than A
+				simplex = Simplex(a, b);
+				dir = XMVector3Cross(XMVector3Cross(ab, ao), ab);
+			} else { // closer to A than AB
+				simplex = Simplex(a);
+				dir = ao;
+			}
+		} else { // inside AB -> inside triangle
+			if (sameDir(abc, ao)) { // origin is above triangle
+				dir = abc;
+			} else { // origin is below triangle
+				simplex = Simplex(a, c, b);
+				dir = -abc;
+			}
 		}
 	}
+
 	return false;
 }
 
@@ -137,17 +168,20 @@ inline bool doTetrahedron(Simplex& simplex, XMVECTOR& dir, const MinkowskiDiff& 
 
 	if (sameDir(abc, ao)) {
 		simplex = Simplex(a, b, c);
-		return doTriangle(simplex, dir, diff);
+		dir = abc;
+		return false;
 	}
 
 	if (sameDir(acd, ao)) {
 		simplex = Simplex(a, c, d);
-		return doTriangle(simplex, dir, diff);
+		dir = acd;
+		return false;
 	}
 
 	if (sameDir(adb, ao)) {
 		simplex = Simplex(a, d, b);
-		return doTriangle(simplex, dir, diff);
+		dir = adb;
+		return false;
 	}
 
 	return true;
@@ -165,10 +199,10 @@ inline bool nextSimplex(Simplex& simplex, XMVECTOR& dir, const MinkowskiDiff& di
 	return false;
 }
 
-inline bool GJK(const MinkowskiDiff& diff) {
+inline bool GJK(const MinkowskiDiff& diff, Simplex& simplex) {
 	
 	XMVECTOR dir = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-	Simplex simplex(diff.support(dir));
+	simplex = Simplex(diff.support(dir));
 	
 	if (!sameDir(simplex.last(), dir)) return false;
 
@@ -188,8 +222,57 @@ inline bool GJK(const MinkowskiDiff& diff) {
 	}
 }
 
+struct EPATriangle {
+	size_t& operator[](size_t idx) {
+		return indices[idx];
+	}
+
+	union {
+		size_t indices[3];
+
+		struct {
+			size_t a;
+			size_t b;
+			size_t c;
+		};
+	};
+
+};
+
+class EPAPolyhedron {
+public:
+	EPAPolyhedron(const Simplex& simplex) {
+		vertices.resize(4);
+
+		XMStoreFloat3(&vertices[0], simplex[0]);
+		XMStoreFloat3(&vertices[1], simplex[1]);
+		XMStoreFloat3(&vertices[2], simplex[2]);
+		XMStoreFloat3(&vertices[3], simplex[3]);
+
+		triangles.push_back({ 3, 2, 1 }); // ABC
+		triangles.push_back({ 3, 1, 0 }); // ACD
+		triangles.push_back({ 3, 0, 2 }); // ADB
+		triangles.push_back({ 0, 1, 2 }); // DCB
+	}
+
+private:
+	std::vector<XMFLOAT3> vertices;
+	std::vector<EPATriangle> triangles;
+
+};
+
+void EPA(const Simplex& gjkOutput, const MinkowskiDiff& diff) {
+	EPAPolyhedron polyhedron(gjkOutput);
+
+
+}
+
 bool TransformedShape::checkIntersection(const TransformedShape* pOther, DirectX::XMVECTOR* pResolution) const {
-	GJK(MinkowskiDiff(this, pOther));
+	Simplex simplex;
+
+	if (GJK(MinkowskiDiff(this, pOther), simplex)) {
+		return true;
+	}
 
 	return false;
 }
