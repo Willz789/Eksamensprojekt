@@ -223,8 +223,45 @@ inline bool GJK(const MinkowskiDiff& diff, Simplex& simplex) {
 }
 
 struct EPATriangle {
-	size_t& operator[](size_t idx) {
-		return indices[idx];
+	
+	EPATriangle(std::vector<XMFLOAT3>& vertices, size_t a, size_t b, size_t c) :
+		vertices(vertices),
+		indices{ a, b, c } {
+
+		XMVECTOR va = XMLoadFloat3(&vertices[a]);
+		XMVECTOR vb = XMLoadFloat3(&vertices[b]);
+		XMVECTOR vc = XMLoadFloat3(&vertices[c]);
+
+		XMVECTOR vn = XMVector3Normalize(XMVector3Cross(vb - va, vc - va));
+		XMStoreFloat3(&n, vn);
+		dist = XMVectorGetX(XMVector3Dot(va, vn));
+
+		//assert(dist >= 0.0f);
+
+		if (dist < 0.0f) {
+			std::swap(b, c);
+			XMStoreFloat3(&n, -vn);
+			dist = -dist;
+		}
+	}
+
+	EPATriangle& operator=(const EPATriangle& other) {
+		a = other.a;
+		b = other.b;
+		c = other.c;
+
+		n = other.n;
+		dist = other.dist;
+
+		return *this;
+	}
+
+	XMVECTOR operator[](size_t idx) {
+		return XMLoadFloat3(&vertices[indices[idx]]);
+	}
+
+	XMVECTOR normal() {
+		return XMLoadFloat3(&n);
 	}
 
 	union {
@@ -237,9 +274,48 @@ struct EPATriangle {
 		};
 	};
 
+	std::vector<XMFLOAT3>& vertices;
+	XMFLOAT3 n;
+	float dist;
 };
 
-class EPAPolyhedron {
+struct EPAEdge {
+	EPAEdge(size_t a, size_t b) :
+		a(a),
+		b(b) {}
+
+	bool operator==(const EPAEdge& e) {
+		return (a == e.b) && (b == e.a);
+	}
+
+	size_t a, b;
+};
+
+inline void handleEdges(EPATriangle& t, std::vector<EPAEdge>& freeEdges) {
+	for (size_t i = 0; i < 3; i++) { // 3 edges in a triangle
+		EPAEdge edge(t.indices[i], t.indices[(i + 1) % 3]);
+
+		bool edgeWasRemoved = false;
+		for (auto edgeit = freeEdges.begin(); edgeit != freeEdges.end(); edgeit++) {
+			// edge was already in list ->
+			// it was shared with another removed triangle ->
+			// it should be removed
+			if (*edgeit == edge) {
+				freeEdges.erase(edgeit);
+				edgeWasRemoved = true;
+				break;
+			}
+		}
+
+		if (!edgeWasRemoved) {
+			// the sharing triangle is still here ->
+			// the edge needs to be handled
+			freeEdges.push_back(edge);
+		}
+	}
+}
+
+struct EPAPolyhedron {
 public:
 	EPAPolyhedron(const Simplex& simplex) {
 		vertices.resize(4);
@@ -249,28 +325,109 @@ public:
 		XMStoreFloat3(&vertices[2], simplex[2]);
 		XMStoreFloat3(&vertices[3], simplex[3]);
 
-		triangles.push_back({ 3, 2, 1 }); // ABC
-		triangles.push_back({ 3, 1, 0 }); // ACD
-		triangles.push_back({ 3, 0, 2 }); // ADB
-		triangles.push_back({ 0, 1, 2 }); // DCB
+		triangles.emplace_back(vertices, 3, 2, 1); // ABC
+		triangles.emplace_back(vertices, 3, 1, 0); // ACD
+		triangles.emplace_back(vertices, 3, 0, 2); // ADB
+		triangles.emplace_back(vertices, 2, 0, 1); // BDC
+
+		assertValid();
 	}
 
-private:
+	void assertValid() {
+		for (EPATriangle& t : triangles) {
+			XMVECTOR a = t[0];
+			XMVECTOR b = t[1];
+			XMVECTOR c = t[2];
+
+			XMVECTOR abc = XMVector3Cross(b - a, c - a);
+
+			float adotn = XMVectorGetX(XMVector3Dot(abc, a));
+
+			assert(XMVectorGetX(XMVector3Dot(abc, a)) >= 0.0f);
+			assert(XMVectorGetX(XMVector3Dot(abc, b)) >= 0.0f);
+			assert(XMVectorGetX(XMVector3Dot(abc, c)) >= 0.0f);
+		}
+	}
+
+	void printDebug() {
+
+		for (EPATriangle& t : triangles) {
+			std::cout << "Polygon(";
+			std::cout << "(" << vertices[t.a].x << ", " << vertices[t.a].y << ", " << vertices[t.a].z << "), ";
+			std::cout << "(" << vertices[t.b].x << ", " << vertices[t.b].y << ", " << vertices[t.b].z << "), ";
+			std::cout << "(" << vertices[t.c].x << ", " << vertices[t.c].y << ", " << vertices[t.c].z << ")";
+			std::cout << "),\n";
+		}
+	}
+
+	void addVertex(XMVECTOR v) {
+		XMStoreFloat3(&vertices.emplace_back(), v);
+
+		std::vector<EPAEdge> freeEdges;
+		triangles.erase(std::remove_if(triangles.begin(), triangles.end(), [&](EPATriangle& t) -> bool {
+			if (sameDir(t.normal(), v-t[0])) {
+				handleEdges(t, freeEdges);
+				return true;
+			}
+			return false;
+		}), triangles.end());
+
+		for (EPAEdge& e : freeEdges) {
+			triangles.emplace_back(vertices, e.a, e.b, vertices.size() - 1);
+		}
+	}
+
+
+	EPATriangle& closestFace() {
+		EPATriangle* pClosest = nullptr;
+		float minDist = std::numeric_limits<float>::infinity();
+
+		for (EPATriangle& t : triangles) {
+			if (t.dist < minDist) {
+				minDist = t.dist;
+				pClosest = &t;
+			}
+		}
+
+		return *pClosest;
+	}
+
 	std::vector<XMFLOAT3> vertices;
 	std::vector<EPATriangle> triangles;
-
 };
 
-void EPA(const Simplex& gjkOutput, const MinkowskiDiff& diff) {
+inline XMVECTOR EPA(const MinkowskiDiff& diff, const Simplex& gjkOutput) {
 	EPAPolyhedron polyhedron(gjkOutput);
 
+	//size_t n = 0;
+	while (true) {
+		//std::cout << "iteration: " << n << "\n";
+		//polyhedron.printDebug();
+		
+		EPATriangle& closest = polyhedron.closestFace();
+		XMVECTOR dir = closest.normal();
+		XMVECTOR p = diff.support(dir);
 
+
+		if (XMVectorGetX(XMVector3Dot(p, dir)) - closest.dist < 0.001f) {
+			return dir * XMVector3Dot(p, dir); // projection of p along normal
+		}
+		
+		polyhedron.addVertex(p);
+		//n++;
+		//polyhedron.assertValid();
+	}
+
+	assert(false);
+	return XMVectorZero();
 }
 
 bool TransformedShape::checkIntersection(const TransformedShape* pOther, DirectX::XMVECTOR* pResolution) const {
+	MinkowskiDiff diff = MinkowskiDiff(this, pOther);
 	Simplex simplex;
-
-	if (GJK(MinkowskiDiff(this, pOther), simplex)) {
+	
+	if (GJK(diff, simplex)) {
+		*pResolution = EPA(diff, simplex);
 		return true;
 	}
 

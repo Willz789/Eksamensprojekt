@@ -12,7 +12,7 @@ Projectile::Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::F
 	pNode = pRoot->lastChild();
 
 	pRB = pcs.addBody(std::make_unique<RigidBody>(
-		std::make_unique<Box>(1.36f, 0.75f, 2.0f),
+		std::make_unique<Box>(0.04f, 0.04f, 0.06f),
 		0.05f,
 		initPos,
 		initRot
@@ -32,7 +32,7 @@ Projectile::~Projectile()
 void Projectile::update(float dt)
 {
 	pRB->setRotation(XMQuaternionRotationMatrix(XMMatrixLookToRH(pRB->getPosition(), pRB->getLinMoment(), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))));
-	pNode->setTranslation(pRB->getPosition() - XMVectorSet(0.0f, 0.75f / 2.0f, 0.0f, 0.0f));
+	pNode->setTranslation(pRB->getPosition());
 	pNode->setRotation(pRB->getRotation());
 
 	if (XMVectorGetY(pRB->getPosition()) < -1) {

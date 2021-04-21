@@ -45,9 +45,17 @@ float RigidBody::getMass()
 	return mass;
 }
 
+void RigidBody::setPosition(DirectX::FXMVECTOR newPos) {
+	XMStoreFloat3(&position, newPos);
+}
+
 void RigidBody::setRotation(DirectX::FXMVECTOR newRot)
 {
 	XMStoreFloat4(&rotation, newRot);
+}
+
+void RigidBody::move(DirectX::FXMVECTOR translation) {
+	XMStoreFloat3(&position, XMLoadFloat3(&position) + translation);
 }
 
 void RigidBody::addForce(FXMVECTOR force)
@@ -142,5 +150,5 @@ bool RigidBody::checkCollision(const RigidBody& other, DirectX::XMVECTOR* pResol
 		XMMatrixRotationQuaternion(XMLoadFloat4(&other.rotation)) *
 		otherTransform);
 
-	return pThisTransformed->checkIntersection(pOtherTransformed.get(), nullptr);
+	return pThisTransformed->checkIntersection(pOtherTransformed.get(), pResolution);
 }

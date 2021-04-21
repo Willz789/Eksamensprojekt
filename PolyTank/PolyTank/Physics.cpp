@@ -31,10 +31,17 @@ void Physics::update(float t, float dt)
 	for (size_t i = 0; i < rigidBodies.size(); i++) {
 		for (size_t j = i + 1; j < rigidBodies.size(); j++) {
 		
-			if (rigidBodies[i]->checkCollision(*rigidBodies[j].get(), nullptr)) {
-				std::cout << "1";
-			} else {
-				std::cout << "0";
+			XMVECTOR resolution;
+
+			if (rigidBodies[i]->checkCollision(*rigidBodies[j].get(), &resolution)) {
+
+				// resolve impulse
+
+
+				// resolve positions
+				rigidBodies[i]->move(-0.5f * resolution);
+				rigidBodies[j]->move(+0.5f * resolution);
+
 			}
 
 		}

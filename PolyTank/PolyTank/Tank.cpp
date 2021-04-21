@@ -14,13 +14,13 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 	turretAngle = 0.0f;
 
 	pRB = pcs.addBody(std::make_unique<RigidBody>(
-		std::make_unique<Box>(1.36f, 0.75f, 2.0f),
+		std::make_unique<Box>(boxDims.x, boxDims.y, boxDims.z),
 		10.0f,
 		initPos,
 		XMQuaternionIdentity()
 	));
 
-	pRB->addAngMoment(XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f));
+	pRB->addAngMoment(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
 
 	interaction.addListener([this, &gfx, &pcs](const MouseEvent& e) -> void {
 		if (e.button == MouseEvent::Button::RIGHT) {

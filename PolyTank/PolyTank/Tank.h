@@ -24,7 +24,7 @@ public:
 	DirectX::XMMATRIX turretToWorld();
 	
 private:
-	static constexpr DirectX::XMFLOAT3 hitboxDims = { 1.36f, 0.75f, 2.0f };
+	static constexpr DirectX::XMFLOAT3 boxDims = { 1.36f, 0.75f, 2.0f };
 	
 	static constexpr size_t turretNodeIdx = 13;
 

@@ -16,7 +16,11 @@ public:
 	DirectX::XMVECTOR getLinMoment();
 	DirectX::XMMATRIX getTransform();
 	float getMass();
+
+	void setPosition(DirectX::FXMVECTOR newPos);
 	void setRotation(DirectX::FXMVECTOR newRot);
+
+	void move(DirectX::FXMVECTOR translation);
 
 	void addForce(DirectX::FXMVECTOR force);
 	void addForce(DirectX::FXMVECTOR force, DirectX::FXMVECTOR point);
