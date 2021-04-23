@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <cassert>
+#include <iomanip>
 
 using namespace DirectX;
 
@@ -341,11 +342,11 @@ public:
 
 			XMVECTOR abc = XMVector3Cross(b - a, c - a);
 
-			/*float tempA = XMVectorGetX(XMVector3Dot(abc, a));
+			float tempA = XMVectorGetX(XMVector3Dot(abc, a));
 			float tempB = XMVectorGetX(XMVector3Dot(abc, b));
 			float tempC = XMVectorGetX(XMVector3Dot(abc, c));
 
-			if (tempA < 0.0f || tempB < 0.0f || tempC < 0.0f) 
+			/*if (tempA < 0.0f || tempB < 0.0f || tempC < 0.0f) 
 			{
 				printDebug();
 			}*/
@@ -357,6 +358,8 @@ public:
 	}
 
 	void printDebug() {
+
+		std::cout << std::fixed << std::setprecision(5);
 
 		for (EPATriangle& t : triangles) {
 			std::cout << "Polygon(";
@@ -417,7 +420,12 @@ inline XMVECTOR EPA(const MinkowskiDiff& diff, const Simplex& gjkOutput) {
 
 
 		if (XMVectorGetX(XMVector3Dot(p, dir)) - closest.dist < 0.001f) {
-			return dir * XMVector3Dot(p, dir); // projection of p along normal
+			if (XMVectorGetX(XMVector3Length(dir * XMVector3Dot(p, dir))) > 0.1f) {
+				return XMVectorZero();
+			}
+
+
+			return dir * XMVector3Dot(p, dir); // projection of p onto normal
 		}
 		
 		polyhedron.addVertex(p);

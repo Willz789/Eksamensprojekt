@@ -19,7 +19,7 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 		XMQuaternionIdentity(),
 		10.0f
 	);
-
+	
 	interaction.addListener([this, &gfx, &pcs](const MouseEvent& e) -> void {
 		if (e.button == MouseEvent::Button::RIGHT) {
 			this->shoot(gfx, pcs);
@@ -27,9 +27,22 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 	});
 }
 
+Tank::~Tank() {
+	if (pRB) {
+		PolyTank::get().getPcs().deleteBody(pRB);
+	}
+	
+	if (pNode) {
+		pNode->deleteNode();
+	}
+
+
+}
+
 void Tank::update(float dt) {
 	XMMATRIX world = pNode->localToWorld();
 	XMStoreFloat3(&forwardDir, -world.r[2]);
+	XMStoreFloat3(&upDir, world.r[1]);
 	XMStoreFloat3(&rightDir, world.r[0]);
 	driveForwards();
 	turnRight();
@@ -70,12 +83,14 @@ void Tank::driveBackwards()
 
 void Tank::turnRight()
 {
-	pRB->addForce(0.5 * pRB->getMass() * acc * XMLoadFloat3(&forwardDir), pRB->getPosition() - (boxDims.x/2) * XMLoadFloat3(&rightDir));
+	//pRB->addForce(0.5 * pRB->getMass() * acc * XMLoadFloat3(&forwardDir), pRB->getPosition() - (boxDims.x / 2) * XMLoadFloat3(&rightDir));
+	pRB->addTorque(-acc * XMLoadFloat3(&upDir));
 }
 
 void Tank::turnLeft()
 {
-	pRB->addForce(0.5 * pRB->getMass() * acc * XMLoadFloat3(&forwardDir), pRB->getPosition() + (boxDims.x / 2) * XMLoadFloat3(&rightDir));
+	//pRB->addForce(0.5 * pRB->getMass() * acc * XMLoadFloat3(&forwardDir), pRB->getPosition() + (boxDims.x / 2) * XMLoadFloat3(&rightDir));
+	pRB->addTorque(+acc * XMLoadFloat3(&upDir));
 }
 
 DirectX::XMMATRIX Tank::bodyToWorld() {
