@@ -6,6 +6,7 @@
 #include "Level.h"
 #include "Tank.h"
 #include "Camera.h"
+#include "Player.h"
 
 #include <memory>
 #include <utility>
@@ -37,20 +38,20 @@ public:
 
 private:
 
-	DirectX::XMFLOAT4 cameraPos;
-
 	State state;
 	
 	Scene scene;
 	Menu menu;
 	HUD hud;
 
+	Player player;
+
 	Level level;
 
 	std::vector<std::unique_ptr<IGameObject>> gameObjects;
 	std::vector<IGameObject*> deleteList;
 
-	Camera camera;
+	
 };
 
 template<typename T, typename ...CTorArgs>

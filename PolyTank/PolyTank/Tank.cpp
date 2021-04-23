@@ -6,7 +6,7 @@
 
 using namespace DirectX;
 
-Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, Interaction& interaction) {
+Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos) {
 
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
@@ -19,20 +19,12 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 		XMQuaternionIdentity(),
 		10.0f
 	);
-
-	interaction.addListener([this, &gfx, &pcs](const MouseEvent& e) -> void {
-		if (e.button == MouseEvent::Button::RIGHT) {
-			this->shoot(gfx, pcs);
-		}
-	});
 }
 
 void Tank::update(float dt) {
 	XMMATRIX world = pNode->localToWorld();
 	XMStoreFloat3(&forwardDir, -world.r[2]);
 	XMStoreFloat3(&rightDir, world.r[0]);
-	driveForwards();
-	turnRight();
 
 	XMVECTOR vel = pRB->getLinMoment()*pRB->getInvMass();
 	XMVECTOR dragLin = -XMVector3Length(vel) * vel * dragConstant;

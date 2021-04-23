@@ -13,7 +13,7 @@ class Tank : public IGameObject {
 
 public:
 	Tank() = default;
-	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, Interaction& interaction);
+	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos);
 
 	void update(float dt) override;
 	void shoot(Graphics& gfx, Physics& pcs);

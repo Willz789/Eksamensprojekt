@@ -11,15 +11,18 @@
 using namespace DirectX;
 
 PolyTank::PolyTank() :
+	player(),
 	scene(gfx),
 	menu(gfx, *this),
 	hud(gfx, wnd.getInteraction()),
 	state(State::MENU),
-	level(),
-	camera(wnd.getInteraction()) {
+	level() {
 
-	cameraPos = { 0, 1.0f, 5.0f, 1.0f };
-	gfx.setCamera(XMMatrixLookAtRH(XMLoadFloat4(&cameraPos), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
+	gfx.setCamera(XMMatrixLookAtRH(
+		XMVectorSet( 0.0f, 1.0f, 5.0f, 1.0f ), 
+		XMVectorSet( 0.0f, 0.0f, 0.0f, 1.0f ), 
+		XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f )
+	));
 	
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, scene.getRoot());
 	GLTF::Loader("./Models/ground/ground.gltf").getScene(gfx, scene.getRoot());
@@ -53,7 +56,7 @@ void PolyTank::update(float t, float dt) {
 		}
 		pcs.update(t, dt);
 		
-		gfx.setCamera(camera.viewMatrix());
+		gfx.setCamera(player.getCamera()->viewMatrix());
 	}
 
 	gameObjects.erase(
@@ -92,9 +95,9 @@ void PolyTank::startGame()
 
 	level = Level(gfx, "./Levels/level1.bin", scene);
 	
-	Tank* pTank = emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f), *wnd.getInteraction());
-	camera.assignTank(*pTank);
-	emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(3.0f, 1.0f, 0.0f, 0.0f), *wnd.getInteraction());
+	player = Player(gfx, pcs, scene.getRoot(), *wnd.getInteraction());
+	player.initListeners(gfx, pcs);
+	//emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(3.0f, 1.0f, 0.0f, 0.0f), *wnd.getInteraction());
 
 	pcs.emplaceBody<StaticBody>(
 		std::make_unique<Box>(100.0f, 1.0f, 100.0f),
