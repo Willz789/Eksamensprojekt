@@ -33,14 +33,15 @@ private:
 	
 	static constexpr size_t turretNodeIdx = 13;
 
-	static constexpr float dragConstant = 0.3;
-	static constexpr float acc = 0.3;
+	static constexpr float dragConstant = 1.0f;
+	static constexpr float acc = 2.0f;
 
 private:
 	float turretAngle;
 
 	DirectX::XMFLOAT3 forwardDir;
 	DirectX::XMFLOAT3 rightDir;
+	DirectX::XMFLOAT3 upDir;
 
 	SceneNode* pNode;
 	

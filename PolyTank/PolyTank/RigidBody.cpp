@@ -73,7 +73,7 @@ void RigidBody::addTorque(DirectX::FXMVECTOR torque)
 	XMVECTOR extTorques = XMLoadFloat3(&externalTorques);
 	extTorques += torque;
 
-	XMStoreFloat3(&externalForces, extTorques);
+	XMStoreFloat3(&externalTorques, extTorques);
 }
 
 void RigidBody::addMoment(DirectX::FXMVECTOR moment)
