@@ -154,6 +154,7 @@
     <ClCompile Include="BlendState.cpp" />
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="Body.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="IGameObject.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />

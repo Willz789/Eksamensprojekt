@@ -28,6 +28,19 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 }
 
 void Tank::update(float dt) {
+	XMMATRIX world = pNode->localToWorld();
+	XMStoreFloat3(&forwardDir, -world.r[2]);
+	XMStoreFloat3(&rightDir, world.r[0]);
+	driveForwards();
+	turnRight();
+
+	XMVECTOR vel = pRB->getLinMoment()*pRB->getInvMass();
+	XMVECTOR dragLin = -XMVector3Length(vel) * vel * dragConstant;
+	pRB->addForce(dragLin);
+	XMVECTOR angVel = XMVector3Transform(pRB->getAngMoment(), pRB->getInvInertia());
+	XMVECTOR dragAng = -XMVector3Length(angVel) * angVel * dragConstant;
+	pRB->addTorque(dragAng);
+
 	pNode->setRotation(pRB->getRotation());
 	pNode->setTranslation(pRB->getPosition() - XMVectorSet(0.0f, 0.75f / 2.0f, 0.0f, 0.0f));
 	pNode->getChild(turretNodeIdx)->setRotation(XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), turretAngle));
@@ -43,6 +56,26 @@ void Tank::shoot(Graphics& gfx, Physics& pcs)
 
 void Tank::rotateTurret(float angle) {
 	turretAngle = normalizeAngle(turretAngle + angle);
+}
+
+void Tank::driveForwards()
+{
+	pRB->addForce(pRB->getMass() * acc * XMLoadFloat3(&forwardDir));
+}
+
+void Tank::driveBackwards()
+{
+	pRB->addForce(pRB->getMass() * acc * -XMLoadFloat3(&forwardDir));
+}
+
+void Tank::turnRight()
+{
+	pRB->addForce(0.5 * pRB->getMass() * acc * XMLoadFloat3(&forwardDir), pRB->getPosition() - (boxDims.x/2) * XMLoadFloat3(&rightDir));
+}
+
+void Tank::turnLeft()
+{
+	pRB->addForce(0.5 * pRB->getMass() * acc * XMLoadFloat3(&forwardDir), pRB->getPosition() + (boxDims.x / 2) * XMLoadFloat3(&rightDir));
 }
 
 DirectX::XMMATRIX Tank::bodyToWorld() {

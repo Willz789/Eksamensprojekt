@@ -13,9 +13,11 @@ public:
 	DirectX::XMVECTOR getAngMoment() const;
 	float getMass() const;
 	float getInvMass() const override;
+	DirectX::XMMATRIX getInvInertia() const;
 
 	void addForce(DirectX::FXMVECTOR force);
 	void addForce(DirectX::FXMVECTOR force, DirectX::FXMVECTOR point);
+	void addTorque(DirectX::FXMVECTOR torque);
 	void addMoment(DirectX::FXMVECTOR moment);
 	void addAngMoment(DirectX::FXMVECTOR angMoment);
 
@@ -25,6 +27,7 @@ private:
 	float mass;
 
 	DirectX::XMFLOAT3X3 invInertia;
+	DirectX::XMFLOAT3X3 invInertiaWorld;
 
 	DirectX::XMFLOAT3 linMom;
 	DirectX::XMFLOAT3 angMom;

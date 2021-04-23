@@ -41,6 +41,11 @@ float RigidBody::getInvMass() const
 	return 1.0f / mass;
 }
 
+XMMATRIX RigidBody::getInvInertia() const
+{
+	return XMLoadFloat3x3(&invInertiaWorld);
+}
+
 void RigidBody::addForce(FXMVECTOR force)
 {
 	XMVECTOR extForces = XMLoadFloat3(&externalForces);
@@ -61,6 +66,14 @@ void RigidBody::addForce(DirectX::FXMVECTOR force, DirectX::FXMVECTOR point)
 
 	XMStoreFloat3(&externalForces, extForces);
 	XMStoreFloat3(&externalTorques, extTorque);
+}
+
+void RigidBody::addTorque(DirectX::FXMVECTOR torque)
+{
+	XMVECTOR extTorques = XMLoadFloat3(&externalTorques);
+	extTorques += torque;
+
+	XMStoreFloat3(&externalForces, extTorques);
 }
 
 void RigidBody::addMoment(DirectX::FXMVECTOR moment)
@@ -86,7 +99,7 @@ inline void applyForce(XMVECTOR& linMoment, XMVECTOR& pos, FXMVECTOR force, floa
 	pos += velocity * dt;
 }
 
-inline void applyTorque(XMVECTOR& angMoment, XMVECTOR& rot, FXMVECTOR torque, float dt, FXMMATRIX invInertiaBody) 
+inline void applyTorque(XMVECTOR& angMoment, XMVECTOR& rot, FXMVECTOR torque, float dt, FXMMATRIX invInertiaBody, XMFLOAT3X3* invInertiaWorld) 
 {
 	angMoment += torque * dt;
 	XMMATRIX rotation = XMMatrixRotationQuaternion(rot);
@@ -95,6 +108,8 @@ inline void applyTorque(XMVECTOR& angMoment, XMVECTOR& rot, FXMVECTOR torque, fl
 
 	rot += 0.5f * XMQuaternionMultiply(rot, XMVectorSetW(angVelocity, 0.0f)) * dt;
 	rot = XMQuaternionNormalize(rot);
+
+	XMStoreFloat3x3(invInertiaWorld, invInertia);
 }
 
 void RigidBody::update(float dt)
@@ -108,7 +123,7 @@ void RigidBody::update(float dt)
 	XMVECTOR forces = XMLoadFloat3(&externalForces);
 	XMVECTOR torques = XMLoadFloat3(&externalTorques);
 	applyForce(linMoment, pos, forces, dt, mass);
-	applyTorque(angMoment, quaternion, torques, dt, invI);
+	applyTorque(angMoment, quaternion, torques, dt, invI, &invInertiaWorld);
 
 	externalForces = { 0.0f, 0.0f, 0.0f};
 	externalTorques = {0.0f, 0.0f, 0.0f};

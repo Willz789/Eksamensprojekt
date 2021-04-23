@@ -341,11 +341,18 @@ public:
 
 			XMVECTOR abc = XMVector3Cross(b - a, c - a);
 
-			float adotn = XMVectorGetX(XMVector3Dot(abc, a));
+			/*float tempA = XMVectorGetX(XMVector3Dot(abc, a));
+			float tempB = XMVectorGetX(XMVector3Dot(abc, b));
+			float tempC = XMVectorGetX(XMVector3Dot(abc, c));
 
-			assert(XMVectorGetX(XMVector3Dot(abc, a)) >= 0.0f);
-			assert(XMVectorGetX(XMVector3Dot(abc, b)) >= 0.0f);
-			assert(XMVectorGetX(XMVector3Dot(abc, c)) >= 0.0f);
+			if (tempA < 0.0f || tempB < 0.0f || tempC < 0.0f) 
+			{
+				printDebug();
+			}*/
+
+			assert(XMVectorGetX(XMVector3Dot(abc, a)) >= -0.001f);
+			assert(XMVectorGetX(XMVector3Dot(abc, b)) >= -0.001f);
+			assert(XMVectorGetX(XMVector3Dot(abc, c)) >= -0.001f);
 		}
 	}
 

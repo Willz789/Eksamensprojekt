@@ -97,7 +97,7 @@ void PolyTank::startGame()
 	emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(3.0f, 1.0f, 0.0f, 0.0f), *wnd.getInteraction());
 
 	pcs.emplaceBody<StaticBody>(
-		std::make_unique<Box>(10.0f, 1.0f, 10.0f),
+		std::make_unique<Box>(100.0f, 1.0f, 100.0f),
 		XMVectorSet(0.0f, -0.5f, 0.0f, 0.0f),
 		XMQuaternionIdentity());
 }

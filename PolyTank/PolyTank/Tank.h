@@ -20,6 +20,11 @@ public:
 	
 	void rotateTurret(float angle);
 
+	void driveForwards();
+	void driveBackwards();
+	void turnRight();
+	void turnLeft();
+
 	DirectX::XMMATRIX bodyToWorld();
 	DirectX::XMMATRIX turretToWorld();
 	
@@ -28,8 +33,14 @@ private:
 	
 	static constexpr size_t turretNodeIdx = 13;
 
+	static constexpr float dragConstant = 0.3;
+	static constexpr float acc = 0.3;
+
 private:
 	float turretAngle;
+
+	DirectX::XMFLOAT3 forwardDir;
+	DirectX::XMFLOAT3 rightDir;
 
 	SceneNode* pNode;
 	
