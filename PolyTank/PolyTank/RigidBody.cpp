@@ -1,10 +1,12 @@
 #include "RigidBody.h"
 #include "Physics.h"
 
+#include <utility>
+
 using namespace DirectX;
 
-RigidBody::RigidBody(std::unique_ptr<ConvexShape>&& pShape, float m, FXMVECTOR initPos, FXMVECTOR initRot) :
-	pShape(std::move(pShape)),
+RigidBody::RigidBody(std::unique_ptr<ConvexShape>&& pShape, FXMVECTOR initPos, FXMVECTOR initRot, float m) :
+	Body(std::move(pShape), initPos, initRot),
 	mass(m)
 {
 
@@ -13,8 +15,6 @@ RigidBody::RigidBody(std::unique_ptr<ConvexShape>&& pShape, float m, FXMVECTOR i
 
 	XMStoreFloat3x3(&invInertia, XMMatrixInverse(nullptr, inertia));
 
-	XMStoreFloat3(&position, initPos);
-	XMStoreFloat4(&rotation, initRot);
 	linMom = { 0.0f, 0.0f, 0.0f };
 	angMom = { 0.0f, 0.0f, 0.0f };
 	externalForces = { 0.0f, 0.0f, 0.0f };
@@ -22,40 +22,23 @@ RigidBody::RigidBody(std::unique_ptr<ConvexShape>&& pShape, float m, FXMVECTOR i
 
 }
 
-XMVECTOR RigidBody::getPosition() {
-	return XMVectorSetW(XMLoadFloat3(&position), 1.0f);
-}
-
-DirectX::XMVECTOR RigidBody::getRotation() {
-	return XMLoadFloat4(&rotation);
-}
-
-DirectX::XMVECTOR RigidBody::getLinMoment()
+DirectX::XMVECTOR RigidBody::getLinMoment() const
 {
 	return XMLoadFloat3(&linMom);
 }
 
-DirectX::XMMATRIX RigidBody::getTransform()
-{
-	return XMMatrixRotationQuaternion(XMLoadFloat4(&rotation)) * XMMatrixTranslationFromVector(XMLoadFloat3(&position));
+DirectX::XMVECTOR RigidBody::getAngMoment() const {
+	return XMLoadFloat3(&angMom);
 }
 
-float RigidBody::getMass()
+float RigidBody::getMass() const
 {
 	return mass;
 }
 
-void RigidBody::setPosition(DirectX::FXMVECTOR newPos) {
-	XMStoreFloat3(&position, newPos);
-}
-
-void RigidBody::setRotation(DirectX::FXMVECTOR newRot)
+float RigidBody::getInvMass() const 
 {
-	XMStoreFloat4(&rotation, newRot);
-}
-
-void RigidBody::move(DirectX::FXMVECTOR translation) {
-	XMStoreFloat3(&position, XMLoadFloat3(&position) + translation);
+	return 1.0f / mass;
 }
 
 void RigidBody::addForce(FXMVECTOR force)
@@ -112,8 +95,6 @@ inline void applyTorque(XMVECTOR& angMoment, XMVECTOR& rot, FXMVECTOR torque, fl
 
 	rot += 0.5f * XMQuaternionMultiply(rot, XMVectorSetW(angVelocity, 0.0f)) * dt;
 	rot = XMQuaternionNormalize(rot);
-
-
 }
 
 void RigidBody::update(float dt)
@@ -136,19 +117,4 @@ void RigidBody::update(float dt)
 	XMStoreFloat3(&position, pos);
 	XMStoreFloat3(&angMom, angMoment);
 	XMStoreFloat4(&rotation, quaternion);
-}
-
-bool RigidBody::checkCollision(const RigidBody& other, DirectX::XMVECTOR* pResolution) const {
-	
-	auto pThisTransformed = pShape->transform(
-		XMMatrixRotationQuaternion(XMLoadFloat4(&rotation)) *
-		XMMatrixTranslationFromVector(XMLoadFloat3(&position)));
-
-	XMMATRIX otherTransform = XMMatrixTranslationFromVector(XMLoadFloat3(&other.position));
-
-	auto pOtherTransformed = other.pShape->transform(
-		XMMatrixRotationQuaternion(XMLoadFloat4(&other.rotation)) *
-		otherTransform);
-
-	return pThisTransformed->checkIntersection(pOtherTransformed.get(), pResolution);
 }

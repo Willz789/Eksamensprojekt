@@ -66,8 +66,8 @@ Layer::Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>
 			Block b = getBlock(blocks[idx]);
 			Index baseIndex = vertices.size();
 			for (DefaultVertex dv : b.vertices) {
-				dv.position.x += j;
-				dv.position.z += i;
+				dv.position.x += j - w / 2.0f;
+				dv.position.z += i - d / 2.0f;
 				vertices.push_back(dv);
 			}
 			for (Index index : b.indices) {

@@ -152,6 +152,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BindableManager.cpp" />
     <ClCompile Include="BlendState.cpp" />
+    <ClCompile Include="Body.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderCommon.cpp" />
+    <ClCompile Include="StaticBody.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="TransformedShape.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
@@ -188,6 +190,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="BindableManager.h" />
     <ClInclude Include="BlendState.h" />
+    <ClInclude Include="Body.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="IGameObject.h" />
     <ClInclude Include="Projectile.h" />
@@ -218,6 +221,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderCommon.h" />
     <ClInclude Include="Interaction.h" />
+    <ClInclude Include="StaticBody.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="TransformedShape.h" />
     <ClInclude Include="Util.h" />

@@ -1,17 +1,18 @@
 #include "Physics.h"
 
+#include "RigidBody.h"
+
 using namespace DirectX;
 
-RigidBody* Physics::addBody(std::unique_ptr<RigidBody>&& pRB) {
-	rigidBodies.push_back(std::move(pRB));
-	return rigidBodies.back().get();
+Body* Physics::addBody(std::unique_ptr<Body>&& pBody) {
+	bodies.push_back(std::move(pBody));
+	return bodies.back().get();
 }
 
-void Physics::deleteBody(RigidBody* pRB)
-{
-	for (auto it = rigidBodies.begin(); it != rigidBodies.end(); it++) {
-		if (pRB == it->get()) {
-			rigidBodies.erase(it);
+void Physics::deleteBody(Body* pBody) {
+	for (auto it = bodies.begin(); it != bodies.end(); it++) {
+		if (pBody == it->get()) {
+			bodies.erase(it);
 			break;
 		}
 	}
@@ -19,32 +20,42 @@ void Physics::deleteBody(RigidBody* pRB)
 
 void Physics::update(float t, float dt)
 {
-	for (auto& pr : rigidBodies) {
-		XMVECTOR gravity = XMVectorSet(0.0f, pr->mass * -g, 0.0f, 0.0f);
-		// midlertidig ! Skal ændres
-		if (pr->getMass() == 0.05f) {
-			pr->addForce(gravity);
+	
+	for (auto& pBody : bodies) {
+		if (RigidBody* pRB = dynamic_cast<RigidBody*>(pBody.get())) {
+
+			XMVECTOR gravity = XMVectorSet(0.0f, pRB->getMass() * -g, 0.0f, 0.0f);
+			pRB->addForce(gravity);
+			pRB->update(dt);
 		}
-		pr->update(dt);
 	}
 
-	for (size_t i = 0; i < rigidBodies.size(); i++) {
-		for (size_t j = i + 1; j < rigidBodies.size(); j++) {
-		
-			XMVECTOR resolution;
+	collisions();
+}
 
-			if (rigidBodies[i]->checkCollision(*rigidBodies[j].get(), &resolution)) {
+void Physics::collisions() {
+	XMVECTOR resolution;
+
+	for (size_t i = 0; i < bodies.size(); i++) {
+		for (size_t j = i + 1; j < bodies.size(); j++) {
+			
+			if (bodies[i]->checkCollision(*bodies[j].get(), &resolution)) {
 
 				// resolve impulse
-
+				if (RigidBody* pRB = dynamic_cast<RigidBody*>(bodies[i].get())) {
+					XMVECTOR linMom = pRB->getLinMoment();
+					pRB->addMoment(XMVectorSet(0.0f, -XMVectorGetY(linMom), 0.0f, 0.0f));
+				}
 
 				// resolve positions
-				rigidBodies[i]->move(-0.5f * resolution);
-				rigidBodies[j]->move(+0.5f * resolution);
+				float invMassi = bodies[i]->getInvMass();
+				float invMassj = bodies[j]->getInvMass();
+				float invMassSum = invMassi + invMassj;
+
+				bodies[i]->move(-(invMassi / invMassSum) * resolution);
+				bodies[j]->move(+(invMassj / invMassSum) * resolution);
 
 			}
-
 		}
 	}
-
 }

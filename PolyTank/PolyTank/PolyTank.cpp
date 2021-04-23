@@ -2,6 +2,8 @@
 #include "GLTFLoader.h"
 
 #include "Interaction.h"
+#include "Box.h"
+#include "StaticBody.h"
 
 #include <random>
 #include <math.h>
@@ -52,35 +54,6 @@ void PolyTank::update(float t, float dt) {
 		pcs.update(t, dt);
 		
 		gfx.setCamera(camera.viewMatrix());
-		
-
-		XMMATRIX cameraInv = XMMatrixInverse(nullptr, gfx.getCamera());
-		if (wnd.getInteraction()->keyDown('A')) {
-			XMStoreFloat4(&cameraPos, dt * XMVector4Transform(XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
-		}
-
-		if (wnd.getInteraction()->keyDown('D')) {
-			XMStoreFloat4(&cameraPos, dt * XMVector4Transform(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
-		}
-
-		if (wnd.getInteraction()->keyDown('W')) {
-			XMStoreFloat4(&cameraPos, dt*XMVector4Transform(XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
-		}
-
-		if (wnd.getInteraction()->keyDown('S')) {
-			XMStoreFloat4(&cameraPos, dt * XMVector4Transform(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
-		}
-
-		if (wnd.getInteraction()->keyDown(' ')) {
-			XMStoreFloat4(&cameraPos, dt * XMVector4Transform(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
-		}
-
-		if (wnd.getInteraction()->keyDown(VK_SHIFT)) {
-			XMStoreFloat4(&cameraPos, dt * XMVector4Transform(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), cameraInv) + XMLoadFloat4(&cameraPos));
-		}
-
-		gfx.setCamera(XMMatrixLookAtRH(XMLoadFloat4(&cameraPos), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0)));
-		
 	}
 
 	gameObjects.erase(
@@ -119,7 +92,12 @@ void PolyTank::startGame()
 
 	level = Level(gfx, "./Levels/level1.bin", scene);
 	
-	Tank* pTank = emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), *wnd.getInteraction());
+	Tank* pTank = emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f), *wnd.getInteraction());
 	camera.assignTank(*pTank);
-	emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), *wnd.getInteraction());
+	emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(3.0f, 1.0f, 0.0f, 0.0f), *wnd.getInteraction());
+
+	pcs.emplaceBody<StaticBody>(
+		std::make_unique<Box>(10.0f, 1.0f, 10.0f),
+		XMVectorSet(0.0f, -0.5f, 0.0f, 0.0f),
+		XMQuaternionIdentity());
 }

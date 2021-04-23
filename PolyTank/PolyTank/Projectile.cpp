@@ -11,12 +11,12 @@ Projectile::Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::F
 	GLTF::Loader("./Models/projectile/projectile.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
 
-	pRB = pcs.addBody(std::make_unique<RigidBody>(
+	pRB = pcs.emplaceBody<RigidBody>(
 		std::make_unique<Box>(0.04f, 0.04f, 0.06f),
-		0.05f,
 		initPos,
-		initRot
-	));
+		initRot,
+		0.05f
+	);
 
 	XMVector4Transform(XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), XMMatrixRotationQuaternion(initRot));
 

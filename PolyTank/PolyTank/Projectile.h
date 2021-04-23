@@ -4,6 +4,8 @@
 #include "Physics.h"
 #include "Scene.h"
 #include "IGameObject.h"
+#include "RigidBody.h"
+
 
 class Projectile : public IGameObject 
 {

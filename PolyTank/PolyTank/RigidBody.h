@@ -1,44 +1,32 @@
 #pragma once
 
-#include "ConvexShape.h"
+#include "Body.h"
 #include "Util.h"
 
 #include <memory>
 
-class RigidBody {
-	friend class Physics;
+class RigidBody : public Body {
 public:
-	RigidBody() = default;
-	RigidBody(std::unique_ptr<ConvexShape>&& pShape, float m, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR initRot);
+	RigidBody(std::unique_ptr<ConvexShape>&& pShape, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR initRot, float m);
 
-	DirectX::XMVECTOR getPosition();
-	DirectX::XMVECTOR getRotation();
-	DirectX::XMVECTOR getLinMoment();
-	DirectX::XMMATRIX getTransform();
-	float getMass();
-
-	void setPosition(DirectX::FXMVECTOR newPos);
-	void setRotation(DirectX::FXMVECTOR newRot);
-
-	void move(DirectX::FXMVECTOR translation);
+	DirectX::XMVECTOR getLinMoment() const;
+	DirectX::XMVECTOR getAngMoment() const;
+	float getMass() const;
+	float getInvMass() const override;
 
 	void addForce(DirectX::FXMVECTOR force);
 	void addForce(DirectX::FXMVECTOR force, DirectX::FXMVECTOR point);
 	void addMoment(DirectX::FXMVECTOR moment);
 	void addAngMoment(DirectX::FXMVECTOR angMoment);
-	void update(float dt);
 
-	bool checkCollision(const RigidBody& other, DirectX::XMVECTOR* pResolution) const;
+	void update(float dt);
 
 private:
 	float mass;
-	std::unique_ptr<ConvexShape> pShape;
-	
+
 	DirectX::XMFLOAT3X3 invInertia;
 
-	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 linMom;
-	DirectX::XMFLOAT4 rotation;
 	DirectX::XMFLOAT3 angMom;
 
 	DirectX::XMFLOAT3 externalForces;
