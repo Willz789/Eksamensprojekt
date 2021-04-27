@@ -11,7 +11,8 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
 
-	turretAngle = 0.0f;
+	turretYaw = 0.0f;
+	turretPitch = 0.0f;
 
 	pRB = pcs.emplaceBody<RigidBody>(
 		std::make_unique<Box>(boxDims.x, boxDims.y, boxDims.z),
@@ -48,19 +49,26 @@ void Tank::update(float dt) {
 
 	pNode->setRotation(pRB->getRotation());
 	pNode->setTranslation(pRB->getPosition() - XMVectorSet(0.0f, 0.75f / 2.0f, 0.0f, 0.0f));
-	pNode->getChild(turretNodeIdx)->setRotation(XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), turretAngle));
+	pNode->getChild(turretNodeIdx)->setRotation(XMQuaternionRotationRollPitchYaw(turretPitch, turretYaw, 0.0f));
+
+	
 }
 
-void Tank::shoot(Graphics& gfx, Physics& pcs)
+void Tank::shoot(Graphics& gfx, Physics& pcs, float power)
 {
 	XMMATRIX turretTransform = pNode->getChild(turretNodeIdx)->localToWorld();
 	XMVECTOR turretTip = XMVector4Transform(XMVectorSet(0.0f, 0.1f, -2.0f, 1.0f), turretTransform);
-
-	PolyTank::get().emplaceGameObject<Projectile>(gfx, pcs, pNode->getParent(), turretTip, XMQuaternionRotationMatrix(turretTransform), 4);
+	PolyTank::get().emplaceGameObject<Projectile>(gfx, pcs, pNode->getParent(), turretTip, XMQuaternionRotationMatrix(turretTransform), power);
 }
 
-void Tank::rotateTurret(float angle) {
-	turretAngle = normalizeAngle(turretAngle + angle);
+void Tank::rotateTurret(float yaw, float pitch) {
+	turretYaw = normalizeAngle(turretYaw + yaw);
+	turretPitch = std::clamp(turretPitch + pitch, 0.001f, 0.499f*pi);
+}
+
+void Tank::resetTurretPitch()
+{
+	turretPitch = 0.0f;
 }
 
 void Tank::driveForwards()
@@ -72,7 +80,7 @@ void Tank::driveBackwards()
 {
 	pRB->addForce(pRB->getMass() * acc * -XMLoadFloat3(&forwardDir));
 }
-
+ 
 void Tank::turnRight()
 {
 	//pRB->addForce(0.5 * pRB->getMass() * acc * XMLoadFloat3(&forwardDir), pRB->getPosition() - (boxDims.x / 2) * XMLoadFloat3(&rightDir));
@@ -83,6 +91,7 @@ void Tank::turnLeft()
 {
 	//pRB->addForce(0.5 * pRB->getMass() * acc * XMLoadFloat3(&forwardDir), pRB->getPosition() + (boxDims.x / 2) * XMLoadFloat3(&rightDir));
 	pRB->addTorque(+acc * XMLoadFloat3(&upDir));
+	
 }
 
 DirectX::XMMATRIX Tank::bodyToWorld() {
@@ -91,4 +100,15 @@ DirectX::XMMATRIX Tank::bodyToWorld() {
 
 DirectX::XMMATRIX Tank::turretToWorld() {
 	return pNode->getChild(turretNodeIdx)->localToWorld();
+}
+
+DirectX::XMVECTOR Tank::getTurretTipPos()
+{
+	XMMATRIX turretTransform = pNode->getChild(turretNodeIdx)->localToWorld();
+	return XMVector4Transform(XMVectorSet(0.0f, 0.2f, -1.0f, 1.0f), turretTransform);
+}
+
+DirectX::XMMATRIX Tank::getTurretTransform()
+{
+	return pNode->getChild(turretNodeIdx)->localToWorld();;
 }

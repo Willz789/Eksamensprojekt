@@ -54,6 +54,7 @@ void PolyTank::update(float t, float dt) {
 		for (auto& g : gameObjects) {
 			g->update(dt);
 		}
+		player.update(gfx, pcs, dt);
 		pcs.update(t, dt);
 		
 		gfx.setCamera(player.getCamera()->viewMatrix());

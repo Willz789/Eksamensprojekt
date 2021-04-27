@@ -20,6 +20,7 @@ public:
 	void addTorque(DirectX::FXMVECTOR torque);
 	void addMoment(DirectX::FXMVECTOR moment);
 	void addAngMoment(DirectX::FXMVECTOR angMoment);
+	void rotateLinMoment(DirectX::FXMVECTOR rot);
 
 	void update(float dt);
 

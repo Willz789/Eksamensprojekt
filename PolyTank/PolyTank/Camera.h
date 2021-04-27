@@ -5,14 +5,19 @@
 
 class Camera {
 public:
-	Camera() = default;
+	Camera();
 
 	void assignTank(Tank& tank);
 	void addPitch(float pitch);
 
+	void setAim();
+	bool getAim();
+
 	DirectX::FXMMATRIX viewMatrix();
 
 private:
+	bool isAiming;
+
 	Tank* pTank;
 	float pitch;
 };

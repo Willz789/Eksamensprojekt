@@ -15,10 +15,13 @@ public:
 	Tank() = default;
 	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos);
 
+	~Tank();
+
 	void update(float dt) override;
-	void shoot(Graphics& gfx, Physics& pcs);
+	void shoot(Graphics& gfx, Physics& pcs, float power);
 	
-	void rotateTurret(float angle);
+	void rotateTurret(float yaw, float pitch);
+	void resetTurretPitch();
 
 	void driveForwards();
 	void driveBackwards();
@@ -27,21 +30,27 @@ public:
 
 	DirectX::XMMATRIX bodyToWorld();
 	DirectX::XMMATRIX turretToWorld();
+
+	DirectX::XMVECTOR getTurretTipPos();
+	DirectX::XMMATRIX getTurretTransform();
 	
 private:
 	static constexpr DirectX::XMFLOAT3 boxDims = { 1.36f, 0.75f, 2.0f };
 	
 	static constexpr size_t turretNodeIdx = 13;
 
-	static constexpr float dragConstant = 1.0f;
-	static constexpr float acc = 2.0f;
+	static constexpr float dragConstant = 0.5f;
+	static constexpr float acc = 8.0f;
 
 private:
-	float turretAngle;
+	float turretYaw;
+	float turretPitch;
 
 	DirectX::XMFLOAT3 forwardDir;
 	DirectX::XMFLOAT3 rightDir;
 	DirectX::XMFLOAT3 upDir;
+
+	DirectX::XMFLOAT4 turretTipPos;
 
 	SceneNode* pNode;
 	
