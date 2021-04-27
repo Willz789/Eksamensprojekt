@@ -10,6 +10,8 @@ public:
 	~Player();
 
 	void initListeners(Graphics& gfx, Physics& pcs);
+	
+	void update();
 
 	Camera* getCamera();
 	
@@ -20,10 +22,6 @@ private:
 	Tank* pTank;
 
 	MouseListener* pMListener;
-	KeyListener* pKListener;
-
 	Interaction* pInteraction;
-
-	
 
 };

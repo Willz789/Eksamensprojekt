@@ -92,6 +92,10 @@ void RigidBody::addAngMoment(DirectX::FXMVECTOR moment)
 	XMStoreFloat3(&angMom, angMoment);
 }
 
+DirectX::XMVECTOR RigidBody::getForce() {
+	return XMLoadFloat3(&externalForces);
+}
+
 inline void applyForce(XMVECTOR& linMoment, XMVECTOR& pos, FXMVECTOR force, float dt, float mass) 
 {
 	linMoment += force * dt;

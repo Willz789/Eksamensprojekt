@@ -237,9 +237,7 @@ struct EPATriangle {
 		XMStoreFloat3(&n, vn);
 		dist = XMVectorGetX(XMVector3Dot(va, vn));
 
-		//assert(dist >= 0.0f);
-
-		if (dist < 0.0f) {
+		if (dist + 0.000001f < 0.0f) {
 			std::swap(b, c);
 			XMStoreFloat3(&n, -vn);
 			dist = -dist;
@@ -351,9 +349,9 @@ public:
 				printDebug();
 			}*/
 
-			assert(XMVectorGetX(XMVector3Dot(abc, a)) >= -0.001f);
-			assert(XMVectorGetX(XMVector3Dot(abc, b)) >= -0.001f);
-			assert(XMVectorGetX(XMVector3Dot(abc, c)) >= -0.001f);
+			assert(XMVectorGetX(XMVector3Dot(abc, a)) >= -0.00001f);
+			assert(XMVectorGetX(XMVector3Dot(abc, b)) >= -0.00001f);
+			assert(XMVectorGetX(XMVector3Dot(abc, c)) >= -0.00001f);
 		}
 	}
 
@@ -419,12 +417,7 @@ inline XMVECTOR EPA(const MinkowskiDiff& diff, const Simplex& gjkOutput) {
 		XMVECTOR p = diff.support(dir);
 
 
-		if (XMVectorGetX(XMVector3Dot(p, dir)) - closest.dist < 0.001f) {
-			if (XMVectorGetX(XMVector3Length(dir * XMVector3Dot(p, dir))) > 0.1f) {
-				return XMVectorZero();
-			}
-
-
+		if (XMVectorGetX(XMVector3Dot(p, dir)) - closest.dist < 0.00001f) {
 			return dir * XMVector3Dot(p, dir); // projection of p onto normal
 		}
 		

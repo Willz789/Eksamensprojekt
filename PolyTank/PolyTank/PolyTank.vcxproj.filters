@@ -174,6 +174,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Polyhedron.cpp">
+      <Filter>Source Files\Engine\Geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IBindable.h">
@@ -301,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Polyhedron.h">
+      <Filter>Header Files\Engine\Geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

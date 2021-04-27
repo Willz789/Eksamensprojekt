@@ -15,13 +15,15 @@ public:
 	Tank() = default;
 	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos);
 
+	~Tank();
+
 	void update(float dt) override;
 	void shoot(Graphics& gfx, Physics& pcs);
 	
 	void rotateTurret(float angle);
 
-	void driveForwards();
-	void driveBackwards();
+	void driveForward();
+	void driveBackward();
 	void turnRight();
 	void turnLeft();
 
@@ -43,10 +45,13 @@ private:
 	DirectX::XMFLOAT3 rightDir;
 	DirectX::XMFLOAT3 upDir;
 
+	bool isOnGround;
+
 	SceneNode* pNode;
 	
 	int32_t health;
 	int32_t maxHealth;
+	
 
 	RigidBody* pRB;
 };

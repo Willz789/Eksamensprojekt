@@ -4,7 +4,8 @@
 using namespace DirectX;
 
 Player::Player(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Interaction& interaction) :
-	pInteraction(pInteraction)
+	pInteraction(&interaction),
+	pMListener(nullptr)
 {
 	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f));
 	camera.assignTank(*pTank);
@@ -12,13 +13,8 @@ Player::Player(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Interaction& inter
 
 Player::~Player()
 {
-	if (pInteraction) {
-		if (pMListener) {
-			pInteraction->removeListener(pMListener);
-		}
-		if (pKListener) {
-			pInteraction->removeListener(pKListener);
-		}
+	if (pMListener) {
+		pInteraction->removeListener(pMListener);
 	}
 }
 
@@ -36,22 +32,22 @@ void Player::initListeners(Graphics& gfx, Physics& pcs)
 
 		pTank->rotateTurret(deltaYaw);
 		camera.addPitch(deltaPitch);
-		});
-
-	pKListener = pInteraction->addListener([this](const KeyEvent& e) -> void {
-		if (e.key == 'w') {
-			pTank->driveForwards();
-		}
-		if (e.key == 's') {
-			pTank->driveBackwards();
-		}
-		if (e.key == 'a') {
-			pTank->turnLeft();
-		}
-		if (e.key == 'd') {
-			pTank->turnRight();
-		}
 	});
+}
+
+void Player::update() {
+	if (pInteraction->keyDown('W')) {
+		pTank->driveForward();
+	}
+	if (pInteraction->keyDown('S')) {
+		pTank->driveBackward();
+	}
+	if (pInteraction->keyDown('A')) {
+		pTank->turnLeft();
+	}
+	if (pInteraction->keyDown('D')) {
+		pTank->turnRight();
+	}
 }
 
 Camera* Player::getCamera()

@@ -18,11 +18,13 @@ public:
 	virtual float getInvMass() const = 0;
 	virtual void move(DirectX::FXMVECTOR translation);
 
+	ConvexShape* getShape();
+
 	bool checkCollision(const Body& other, DirectX::XMVECTOR* pResolution) const;
 
 protected:
 	std::unique_ptr<ConvexShape> pShape;
-
+	
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT4 rotation;
 

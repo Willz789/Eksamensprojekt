@@ -33,6 +33,10 @@ void Body::move(DirectX::FXMVECTOR translation) {
 	XMStoreFloat3(&position, XMLoadFloat3(&position) + translation);
 }
 
+ConvexShape* Body::getShape() {
+	return pShape.get();
+}
+
 bool Body::checkCollision(const Body& other, DirectX::XMVECTOR* pResolution) const {
 
 	auto pThisTransformed = pShape->transform(

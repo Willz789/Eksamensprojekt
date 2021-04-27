@@ -3,14 +3,19 @@
 #include "Body.h"
 
 #include <vector>
+#include <unordered_map>
+#include <functional>
+
+using CollisionHandler = std::function<void(Body*, DirectX::FXMVECTOR)>;
 
 class Physics {
 public:
 	
-	Body* addBody(std::unique_ptr<Body>&& pRB);
+	Body* addBody(std::unique_ptr<Body>&& pBody, CollisionHandler ch = nullptr);
 	template<typename T, typename... CTorArgs>
 	T* emplaceBody(CTorArgs&&... args);
-	void deleteBody(Body* pRB);
+	void deleteBody(Body* pBody);
+	void assignCollisionHandler(Body* pBody, CollisionHandler ch);
 
 	void update(float t, float dt);
 	void collisions();
@@ -20,6 +25,7 @@ private:
 
 private:
 	std::vector<std::unique_ptr<Body>> bodies;
+	std::unordered_map<Body*, CollisionHandler> collisionHandlers;
 
 };
 

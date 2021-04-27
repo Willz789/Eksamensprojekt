@@ -1,11 +1,15 @@
 #include "Physics.h"
 
 #include "RigidBody.h"
+#include "StaticBody.h"
 
 using namespace DirectX;
 
-Body* Physics::addBody(std::unique_ptr<Body>&& pBody) {
+Body* Physics::addBody(std::unique_ptr<Body>&& pBody, CollisionHandler ch) {
 	bodies.push_back(std::move(pBody));
+	if (ch) {
+		collisionHandlers[bodies.back().get()] = ch;
+	}
 	return bodies.back().get();
 }
 
@@ -18,19 +22,27 @@ void Physics::deleteBody(Body* pBody) {
 	}
 }
 
+void Physics::assignCollisionHandler(Body* pBody, CollisionHandler ch) {
+	collisionHandlers[pBody] = ch;
+}
+
 void Physics::update(float t, float dt)
 {
-	
 	for (auto& pBody : bodies) {
 		if (RigidBody* pRB = dynamic_cast<RigidBody*>(pBody.get())) {
-
 			XMVECTOR gravity = XMVectorSet(0.0f, pRB->getMass() * -g, 0.0f, 0.0f);
 			pRB->addForce(gravity);
-			pRB->update(dt);
 		}
 	}
 
 	collisions();
+
+	for (auto& pBody : bodies) {
+		if (RigidBody* pRB = dynamic_cast<RigidBody*>(pBody.get())) {
+			pRB->update(dt);
+		}
+	}
+
 }
 
 void Physics::collisions() {
@@ -39,22 +51,21 @@ void Physics::collisions() {
 	for (size_t i = 0; i < bodies.size(); i++) {
 		for (size_t j = i + 1; j < bodies.size(); j++) {
 			
-			if (bodies[i]->checkCollision(*bodies[j].get(), &resolution)) {
+			if (dynamic_cast<StaticBody*>(bodies[i].get()) &&
+				dynamic_cast<StaticBody*>(bodies[j].get())) {
+				continue;
+			}
 
-				// resolve impulse
-				if (RigidBody* pRB = dynamic_cast<RigidBody*>(bodies[i].get())) {
-					XMVECTOR linMom = pRB->getLinMoment();
-					pRB->addMoment(XMVectorSet(0.0f, -XMVectorGetY(linMom), 0.0f, 0.0f));
+			if (bodies[i]->checkCollision(*bodies[j].get(), &resolution)) {
+				auto it = collisionHandlers.find(bodies[i].get());
+				if (it != collisionHandlers.end()) {
+					it->second(bodies[j].get(), resolution);
 				}
 
-				// resolve positions
-				float invMassi = bodies[i]->getInvMass();
-				float invMassj = bodies[j]->getInvMass();
-				float invMassSum = invMassi + invMassj;
-
-				bodies[i]->move(-(invMassi / invMassSum) * resolution);
-				bodies[j]->move(+(invMassj / invMassSum) * resolution);
-
+				it = collisionHandlers.find(bodies[j].get());
+				if (it != collisionHandlers.end()) {
+					it->second(bodies[i].get(), resolution);
+				}
 			}
 		}
 	}

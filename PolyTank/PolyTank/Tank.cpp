@@ -19,6 +19,19 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 		XMQuaternionIdentity(),
 		10.0f
 	);
+
+	pcs.assignCollisionHandler(pRB, [this](Body* pOther, FXMVECTOR resolution) -> void {
+		if (dynamic_cast<StaticBody*>(pOther)) {
+			isOnGround = true;
+
+			pRB->move(resolution);
+			pRB->addMoment(-XMVectorSwizzle<3, 1, 3, 3>(pRB->getLinMoment()));
+			pRB->addForce(-XMVectorSwizzle<3, 1, 3, 3>(pRB->getForce()));
+
+		}
+	});
+
+
 }
 
 Tank::~Tank() {
@@ -29,8 +42,6 @@ Tank::~Tank() {
 	if (pNode) {
 		pNode->deleteNode();
 	}
-
-
 }
 
 void Tank::update(float dt) {
@@ -63,12 +74,12 @@ void Tank::rotateTurret(float angle) {
 	turretAngle = normalizeAngle(turretAngle + angle);
 }
 
-void Tank::driveForwards()
+void Tank::driveForward()
 {
 	pRB->addForce(pRB->getMass() * acc * XMLoadFloat3(&forwardDir));
 }
 
-void Tank::driveBackwards()
+void Tank::driveBackward()
 {
 	pRB->addForce(pRB->getMass() * acc * -XMLoadFloat3(&forwardDir));
 }

@@ -54,8 +54,10 @@ void PolyTank::update(float t, float dt) {
 		for (auto& g : gameObjects) {
 			g->update(dt);
 		}
+
+		player.update();
+
 		pcs.update(t, dt);
-		
 		gfx.setCamera(player.getCamera()->viewMatrix());
 	}
 
@@ -93,14 +95,14 @@ void PolyTank::startGame()
 	wnd.getInteraction()->setCursorLocked(true);
 	wnd.getInteraction()->setCursorVisible(false);
 
-	level = Level(gfx, "./Levels/level1.bin", scene);
+	level = Level(gfx, pcs, "./Levels/level1.bin", scene);
 	
 	player = Player(gfx, pcs, scene.getRoot(), *wnd.getInteraction());
 	player.initListeners(gfx, pcs);
 	//emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(3.0f, 1.0f, 0.0f, 0.0f), *wnd.getInteraction());
 
-	pcs.emplaceBody<StaticBody>(
-		std::make_unique<Box>(100.0f, 1.0f, 100.0f),
-		XMVectorSet(0.0f, -0.5f, 0.0f, 0.0f),
-		XMQuaternionIdentity());
+	//pcs.emplaceBody<StaticBody>(
+	//	std::make_unique<Box>(100.0f, 1.0f, 100.0f),
+	//	XMVectorSet(0.0f, -0.5f, 0.0f, 0.0f),
+	//	XMQuaternionIdentity());
 }

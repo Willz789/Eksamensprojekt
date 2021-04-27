@@ -5,6 +5,8 @@
 #include "Graphics.h"
 #include "Mesh.h"
 #include "Scene.h"
+#include "Physics.h"
+#include "StaticBody.h"
 
 #include <filesystem>
 #include <unordered_map>
@@ -18,15 +20,19 @@ struct Block
 class Layer
 {
 public:
-	Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color);
+	Layer(Graphics& gfx,  Physics& pcs, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color);
 
 	SceneNode* getNode();
+
+	void moveUp(uint32_t n);
 
 private:
 	static Block getBlock(uint8_t id);
 
 private:
 	std::vector<uint8_t> blocks;
+	std::vector<StaticBody*> blockBodies;
+
 	uint32_t w;
 	uint32_t d;
 
@@ -38,7 +44,7 @@ class Level
 {
 public:
 	Level() = default;
-	Level(Graphics& gfx, const std::filesystem::path& file, Scene& scene);
+	Level(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Scene& scene);
 
 	Layer* getLayer(size_t idx);
 	Layer* getLayer(DirectX::FXMVECTOR position);

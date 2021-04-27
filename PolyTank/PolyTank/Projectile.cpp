@@ -18,6 +18,13 @@ Projectile::Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::F
 		0.05f
 	);
 
+	pcs.assignCollisionHandler(pRB, [this](Body* pOther, FXMVECTOR resolution) -> void {
+		if (dynamic_cast<StaticBody*>(pOther)) {
+			PolyTank::get().deleteGameObject(this);
+		}
+
+	});
+
 	XMVector4Transform(XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), XMMatrixRotationQuaternion(initRot));
 
 	pRB->addMoment(XMVector4Transform(XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), XMMatrixRotationQuaternion(initRot))*initVel*pRB->getMass());

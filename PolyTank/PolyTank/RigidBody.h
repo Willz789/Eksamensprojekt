@@ -21,6 +21,9 @@ public:
 	void addMoment(DirectX::FXMVECTOR moment);
 	void addAngMoment(DirectX::FXMVECTOR angMoment);
 
+	DirectX::XMVECTOR getForce();
+
+
 	void update(float dt);
 
 private:

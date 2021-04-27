@@ -1,5 +1,4 @@
 #include "Level.h"
-#include <fstream>
 
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
@@ -10,10 +9,13 @@
 #include "GLTFMaterial.h"
 #include "BlendState.h"
 #include "DepthState.h"
+#include "Polyhedron.h"
+
+#include <fstream>
 
 using namespace DirectX;
 
-Level::Level(Graphics& gfx, const std::filesystem::path& file, Scene& scene)
+Level::Level(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Scene& scene)
 {
 	std::ifstream ifs(file, std::ios::binary);
 	uint32_t w, h, d;
@@ -33,8 +35,8 @@ Level::Level(Graphics& gfx, const std::filesystem::path& file, Scene& scene)
 		if (!ifs.good()) throw std::runtime_error("");
 
 		SceneNode* pLayerNode = scene.getRoot()->addChild();
-		pLayerNode->translate(XMVectorSet(0, i, 0, 0));
-		layers.emplace_back(gfx, d, w, blocks, pLayerNode, colors[i % std::size(colors)]);
+		layers.emplace_back(gfx, pcs, d, w, blocks, pLayerNode, colors[i % std::size(colors)]);
+		layers.back().moveUp(i);
 	}
 
 }
@@ -50,7 +52,7 @@ Layer* Level::getLayer(DirectX::FXMVECTOR position) {
 	return &layers[std::clamp(static_cast<size_t>(y - 1.0f), 0ui64, layers.size() - 1)];
 }
 
-Layer::Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color) :
+Layer::Layer(Graphics& gfx, Physics& pcs, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color) :
 	pNode(pNode)
 {
 	this->blocks = blocks;
@@ -73,6 +75,24 @@ Layer::Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>
 			for (Index index : b.indices) {
 				indices.push_back(baseIndex+index);
 			}
+
+			// add static body
+			if (!b.vertices.empty()) {
+				std::vector<XMFLOAT3> vertexPositions(b.vertices.size());
+				
+				for (const DefaultVertex& dv : b.vertices) {
+					vertexPositions.push_back(dv.position);
+				}
+				
+				blockBodies.push_back(pcs.emplaceBody<StaticBody>(
+					std::make_unique<Polyhedron>(vertexPositions.data(), vertexPositions.size()),
+					XMVectorSet(j - w / 2.0f, 0.0f, i - d / 2.0f, 0.0f),
+					XMQuaternionIdentity()
+				));
+			}
+
+
+
 		}
 	}
 
@@ -105,10 +125,21 @@ Layer::Layer(Graphics& gfx, uint32_t depth, uint32_t width, std::vector<uint8_t>
 	pMesh->addBindable(pMaterial);
 
 	this->pMesh = dynamic_cast<Mesh*>(pNode->addDrawable(std::move(pMesh)));
+
 }
 
 SceneNode* Layer::getNode() {
 	return pNode;
+}
+
+void Layer::moveUp(uint32_t n) {
+	
+	XMVECTOR translation = XMVectorSet(0.0f, float(n), 0.0f, 0.0f);
+	for (StaticBody* pBody : blockBodies) {
+		pBody->setPosition(pBody->getPosition() + translation);
+	}
+
+	pNode->translate(translation);
 }
 
 inline Block makeEmptyBlock() 
@@ -364,9 +395,9 @@ Block Layer::getBlock(uint8_t id) {
 
 	XMMATRIX rotation = XMMatrixSet(
  		 intCos(idRot), 0.0f, intSin(idRot), 0.0f,
-					  0.0f, 1.0f,			   0.0f, 0.0f,
+				  0.0f, 1.0f,		   0.0f, 0.0f,
 		-intSin(idRot), 0.0f, intCos(idRot), 0.0f,
-					  0.0f, 0.0f,			   0.0f, 1.0f
+				  0.0f, 0.0f,		   0.0f, 1.0f
 	);
 
 	Block b = blockMap[0xf & id];
