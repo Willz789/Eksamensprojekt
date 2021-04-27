@@ -4,8 +4,7 @@
 using namespace DirectX;
 
 Player::Player(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Interaction& interaction) :
-	pInteraction(&interaction),
-	pMListener(nullptr)
+	pInteraction(&interaction)
 {
 	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f));
 	camera.assignTank(*pTank);
@@ -18,11 +17,41 @@ Player::~Player()
 	}
 }
 
+void Player::update(Graphics& gfx, Physics& pcs, float dt)
+{
+	if (pInteraction->keyDown('W')) {
+		pTank->driveForward(dt);
+	}
+	if (pInteraction->keyDown('S')) {
+		pTank->driveBackward(dt);
+	}
+	if (pInteraction->keyDown('A')) {
+		pTank->turnLeft(dt);
+	}
+	if (pInteraction->keyDown('D')) {
+		pTank->turnRight(dt);
+	}
+
+	if (shooting) {
+		if (!pInteraction->lMouseDown) {
+			pTank->shoot(gfx, pcs, shotPower);
+			shotPower = 0.0f;
+			shooting = false;
+		} 		else {
+			shotPower += 10.0f * dt;
+		}
+	}
+}
+
 void Player::initListeners(Graphics& gfx, Physics& pcs)
 {
 	pMListener = pInteraction->addListener([this, &gfx, &pcs](const MouseEvent& e) -> void {
 		if (e.button == MouseEvent::Button::LEFT) {
-			pTank->shoot(gfx, pcs);
+			shooting = true;
+			shotPower = 0;
+		}
+		if (e.button == MouseEvent::Button::RIGHT) {
+			camera.setAim();
 		}
 
 		if (e.button != MouseEvent::Button::MOVE) return;
@@ -30,24 +59,14 @@ void Player::initListeners(Graphics& gfx, Physics& pcs)
 		float deltaYaw = -0.004f * e.mousex;
 		float deltaPitch = 0.004f * e.mousey;
 
-		pTank->rotateTurret(deltaYaw);
-		camera.addPitch(deltaPitch);
+		if (camera.getAim()) {
+			pTank->rotateTurret(deltaYaw, -deltaPitch);
+		}
+		else {
+			pTank->rotateTurret(deltaYaw, 0);
+			camera.addPitch(deltaPitch);
+		}
 	});
-}
-
-void Player::update() {
-	if (pInteraction->keyDown('W')) {
-		pTank->driveForward();
-	}
-	if (pInteraction->keyDown('S')) {
-		pTank->driveBackward();
-	}
-	if (pInteraction->keyDown('A')) {
-		pTank->turnLeft();
-	}
-	if (pInteraction->keyDown('D')) {
-		pTank->turnRight();
-	}
 }
 
 Camera* Player::getCamera()
