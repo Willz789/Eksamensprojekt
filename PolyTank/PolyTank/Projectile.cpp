@@ -8,7 +8,7 @@ using namespace DirectX;
 
 Projectile::Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR initRot, float initVel)
 {
-	GLTF::Loader("./Models/projectile/projectile.gltf").getScene(gfx, pRoot);
+	GLTF::Loader("./Models/projectile/projectile2.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
 
 	pRB = pcs.emplaceBody<RigidBody>(
@@ -22,7 +22,6 @@ Projectile::Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::F
 		if (dynamic_cast<StaticBody*>(pOther)) {
 			PolyTank::get().deleteGameObject(this);
 		}
-
 	});
 
 	XMVector4Transform(XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), XMMatrixRotationQuaternion(initRot));
@@ -38,9 +37,7 @@ Projectile::~Projectile()
 
 void Projectile::update(float dt)
 {
-	pRB->setRotation(XMQuaternionRotationMatrix(XMMatrixLookToRH(pRB->getPosition(), pRB->getLinMoment(), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))));
 	pNode->setTranslation(pRB->getPosition());
-	pNode->setRotation(pRB->getRotation());
 
 	if (XMVectorGetY(pRB->getPosition()) < -1) {
 		PolyTank::get().deleteGameObject(this);

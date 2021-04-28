@@ -16,7 +16,7 @@ void Camera::assignTank(Tank& tank)
 
 void Camera::addPitch(float pitch)
 {
-	this->pitch = std::clamp(this->pitch + pitch, -pi / 8.0f, pi / 2.001f);
+	this->pitch = std::clamp(this->pitch + pitch, 0.01f, pi / 2.001f);
 }
 
 void Camera::setAim()

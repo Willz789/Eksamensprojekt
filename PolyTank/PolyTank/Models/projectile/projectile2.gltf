@@ -15,23 +15,17 @@
     "nodes" : [
         {
             "mesh" : 0,
-            "name" : "Cylinder",
-            "rotation" : [
-                1,
-                0,
-                0,
-                -4.371138828673793e-08
-            ],
+            "name" : "Sphere",
             "scale" : [
-                2.5,
-                2.5,
-                2.5
+                0.10000000149011612,
+                0.10000000149011612,
+                0.10000000149011612
             ]
         }
     ],
     "meshes" : [
         {
-            "name" : "Cylinder.002",
+            "name" : "Sphere",
             "primitives" : [
                 {
                     "attributes" : {
@@ -48,64 +42,64 @@
         {
             "bufferView" : 0,
             "componentType" : 5126,
-            "count" : 168,
+            "count" : 1984,
             "max" : [
-                0.019999999552965164,
-                0.029999999329447746,
-                0.019999999552965164
+                1.000000238418579,
+                1,
+                1.0000003576278687
             ],
             "min" : [
-                -0.019999999552965164,
-                -0.029999999329447746,
-                -0.019999999552965164
+                -0.9999998211860657,
+                -1,
+                -1
             ],
             "type" : "VEC3"
         },
         {
             "bufferView" : 1,
             "componentType" : 5126,
-            "count" : 168,
+            "count" : 1984,
             "type" : "VEC3"
         },
         {
             "bufferView" : 2,
             "componentType" : 5126,
-            "count" : 168,
+            "count" : 1984,
             "type" : "VEC2"
         },
         {
             "bufferView" : 3,
             "componentType" : 5123,
-            "count" : 258,
+            "count" : 2880,
             "type" : "SCALAR"
         }
     ],
     "bufferViews" : [
         {
             "buffer" : 0,
-            "byteLength" : 2016,
+            "byteLength" : 23808,
             "byteOffset" : 0
         },
         {
             "buffer" : 0,
-            "byteLength" : 2016,
-            "byteOffset" : 2016
+            "byteLength" : 23808,
+            "byteOffset" : 23808
         },
         {
             "buffer" : 0,
-            "byteLength" : 1344,
-            "byteOffset" : 4032
+            "byteLength" : 15872,
+            "byteOffset" : 47616
         },
         {
             "buffer" : 0,
-            "byteLength" : 516,
-            "byteOffset" : 5376
+            "byteLength" : 5760,
+            "byteOffset" : 63488
         }
     ],
     "buffers" : [
         {
-            "byteLength" : 5892,
-            "uri" : "projectile.bin"
+            "byteLength" : 69248,
+            "uri" : "projectile2.bin"
         }
     ]
 }

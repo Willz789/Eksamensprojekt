@@ -37,8 +37,8 @@ void Player::update(Graphics& gfx, Physics& pcs, float dt)
 			pTank->shoot(gfx, pcs, shotPower);
 			shotPower = 0.0f;
 			shooting = false;
-		} 		else {
-			shotPower += 10.0f * dt;
+		} 	else {
+			shotPower += 30.0f * dt;
 		}
 	}
 }
