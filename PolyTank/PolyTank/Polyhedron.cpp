@@ -42,3 +42,21 @@ DirectX::XMVECTOR Polyhedron::support(DirectX::FXMVECTOR dir) const {
 
 	return max;
 }
+
+AABB Polyhedron::getBoundingBox() const {
+	AABB bb;
+	bb.max = { vertices[0].x, vertices[0].y, vertices[0].z };
+	bb.min = bb.max;
+
+	for (auto it = vertices.begin() + 1; it != vertices.end(); it++) {
+		bb.max.x = std::max(it->x, bb.max.x);
+		bb.max.y = std::max(it->y, bb.max.y);
+		bb.max.z = std::max(it->z, bb.max.z);
+
+		bb.min.x = std::min(it->x, bb.min.x);
+		bb.min.y = std::min(it->y, bb.min.y);
+		bb.min.z = std::min(it->z, bb.min.z);
+	}
+
+	return bb;
+}

@@ -37,16 +37,18 @@ ConvexShape* Body::getShape() {
 	return pShape.get();
 }
 
-bool Body::checkCollision(const Body& other, DirectX::XMVECTOR* pResolution) const {
-
-	auto pThisTransformed = pShape->transform(
+void Body::updateWorldShape() {
+	pWorldShape = pShape->transform(
 		XMMatrixRotationQuaternion(XMLoadFloat4(&rotation)) *
 		XMMatrixTranslationFromVector(XMLoadFloat3(&position)));
+};
 
-	auto pOtherTransformed = other.pShape->transform(
-		XMMatrixRotationQuaternion(XMLoadFloat4(&other.rotation)) *
-		XMMatrixTranslationFromVector(XMLoadFloat3(&other.position)));
+AABB Body::getBoundingBox() const {
+	return pWorldShape->getBoundingBox();
+}
 
-	return pThisTransformed->checkIntersection(pOtherTransformed.get(), pResolution);
+bool Body::checkCollision(const Body& other, DirectX::XMVECTOR* pResolution) const {
+
+	return pWorldShape->checkIntersection(other.pWorldShape.get(), pResolution);
 }
 

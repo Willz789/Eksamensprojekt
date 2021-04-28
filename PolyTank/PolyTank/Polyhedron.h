@@ -13,6 +13,7 @@ public:
 	DirectX::XMMATRIX inertiaTensor() const override;
 
 	DirectX::XMVECTOR support(DirectX::FXMVECTOR dir) const override;
+	AABB getBoundingBox() const override;
 
 private:
 	std::vector<DirectX::XMFLOAT3> vertices;

@@ -27,6 +27,7 @@ private:
 	std::vector<std::unique_ptr<Body>> bodies;
 	std::unordered_map<Body*, CollisionHandler> collisionHandlers;
 
+	std::vector<std::pair<Body*, AABB>> boundingBoxes;
 };
 
 template<typename T, typename ...CTorArgs>

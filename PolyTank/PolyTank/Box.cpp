@@ -49,3 +49,22 @@ DirectX::XMVECTOR TransformedBox::support(DirectX::FXMVECTOR dir) const {
 
 	return bestCorner;
 }
+
+AABB TransformedBox::getBoundingBox() const {
+
+	AABB bb;
+	bb.max = { corners[0].x, corners[0].y, corners[0].z };
+	bb.min = bb.max;
+
+	for (auto it = corners + 1; it != corners + std::size(corners); it++) {
+		bb.max.x = std::max(it->x, bb.max.x);
+		bb.max.y = std::max(it->y, bb.max.y);
+		bb.max.z = std::max(it->z, bb.max.z);
+
+		bb.min.x = std::min(it->x, bb.min.x);
+		bb.min.y = std::min(it->y, bb.min.y);
+		bb.min.z = std::min(it->z, bb.min.z);
+	}
+
+	return bb;
+}

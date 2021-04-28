@@ -3,6 +3,8 @@
 #include "RigidBody.h"
 #include "StaticBody.h"
 
+#include <chrono>
+
 using namespace DirectX;
 
 Body* Physics::addBody(std::unique_ptr<Body>&& pBody, CollisionHandler ch) {
@@ -48,6 +50,12 @@ void Physics::update(float t, float dt)
 void Physics::collisions() {
 	XMVECTOR resolution;
 
+	auto t0 = std::chrono::steady_clock::now();
+
+	for (size_t i = 0; i < bodies.size(); i++) {
+		bodies[i]->updateWorldShape();
+	}
+
 	for (size_t i = 0; i < bodies.size(); i++) {
 		for (size_t j = i + 1; j < bodies.size(); j++) {
 			
@@ -57,16 +65,25 @@ void Physics::collisions() {
 			}
 
 			if (bodies[i]->checkCollision(*bodies[j].get(), &resolution)) {
+
 				auto it = collisionHandlers.find(bodies[i].get());
 				if (it != collisionHandlers.end()) {
 					it->second(bodies[j].get(), resolution);
+					bodies[i]->updateWorldShape();
 				}
 
 				it = collisionHandlers.find(bodies[j].get());
 				if (it != collisionHandlers.end()) {
 					it->second(bodies[i].get(), resolution);
+					bodies[j]->updateWorldShape();
 				}
 			}
 		}
 	}
+
+	auto t1 = std::chrono::steady_clock::now();
+
+	uint64_t delta = (t1 - t0).count();
+
+	std::cout << delta / 1e6f << "\n";
 }
