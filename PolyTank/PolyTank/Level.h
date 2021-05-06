@@ -25,9 +25,19 @@ public:
 	SceneNode* getNode();
 
 	void moveUp(uint32_t n);
+	bool doesBlockExist(uint32_t i, uint32_t j) const;
+	bool isBlockSolid (uint32_t i, uint32_t j) const;
 
 private:
 	static Block getBlock(uint8_t id);
+
+	static constexpr uint8_t emptyBlockId = 0;
+	static constexpr uint8_t cubeBlockId = 1;
+	static constexpr uint8_t bridgeBlockId = 2;
+	static constexpr uint8_t ramp1BlockId = 3;
+	static constexpr uint8_t ramp2BlockId = 4;
+	static constexpr uint8_t liftBlockId = 5;
+
 
 private:
 	std::vector<uint8_t> blocks;
@@ -52,4 +62,7 @@ public:
 
 private:
 	std::vector<Layer> layers;
+
+	std::vector<uint8_t> edges;
+
 };

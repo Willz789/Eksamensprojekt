@@ -33,6 +33,7 @@ public:
 
 	DirectX::XMVECTOR getTurretTipPos();
 	DirectX::XMMATRIX getTurretTransform();
+	DirectX::XMVECTOR getPosition();
 	
 private:
 	static constexpr DirectX::XMFLOAT3 boxDims = { 1.36f, 0.75f, 2.0f };
@@ -57,7 +58,6 @@ private:
 	
 	int32_t health;
 	int32_t maxHealth;
-	
 
 	RigidBody* pRB;
 };

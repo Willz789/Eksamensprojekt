@@ -154,6 +154,7 @@
     <ClCompile Include="BlendState.cpp" />
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Polyhedron.cpp" />
     <ClCompile Include="Projectile.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="BlendState.h" />
     <ClInclude Include="Body.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="IGameObject.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Polyhedron.h" />

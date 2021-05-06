@@ -7,6 +7,7 @@
 #include "Tank.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Enemy.h"
 
 #include <memory>
 #include <utility>
@@ -49,6 +50,7 @@ private:
 	Level level;
 
 	std::vector<std::unique_ptr<IGameObject>> gameObjects;
+	std::vector<Enemy> enemies;
 	std::vector<IGameObject*> deleteList;
 
 	
