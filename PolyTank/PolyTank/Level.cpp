@@ -15,7 +15,14 @@
 
 using namespace DirectX;
 
-Level::Level(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Scene& scene)
+inline bool isBlockDrivable(const std::vector<Layer>& layers, uint32_t i, uint32_t j, uint32_t k) {
+	if (layers[i].doesBlockExist(j, k)) {
+		return i + 1 >= layers.size() || !layers[i + 1].isBlockSolid(j,k);
+	}
+	return false;
+}
+
+Level::Level(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Scene& scene) 
 {
 	std::ifstream ifs(file, std::ios::binary);
 	uint32_t w, h, d;
@@ -39,6 +46,49 @@ Level::Level(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Sce
 		layers.back().moveUp(i);
 	}
 
+	edges.resize(w*h*d*w*h*d);
+
+	for (uint32_t i = 0; i < h; i++) {
+		for (uint32_t j = 0; j < d; j++) {
+			for (uint32_t k = 0; k < w; k++) {
+				if (isBlockDrivable(layers, i, j, k)) {
+					size_t col = i * d * w + j * w + k;
+					if (isBlockDrivable(layers, i, j + 1, k)) {
+						size_t row = i * d * w + (j + 1) * w + k;
+						edges[row * w * h * d + col] = 1;
+					}
+					if (isBlockDrivable(layers, i, j - 1, k)) {
+						size_t row = i * d * w + (j - 1) * w + k;
+						edges[row * w * h * d + col] = 1;
+					}
+					if (isBlockDrivable(layers, i, j, k + 1)) {
+						size_t row = i * d * w + j * w + (k + 1);
+						edges[row * w * h * d + col] = 1;
+					} 
+					if (isBlockDrivable(layers, i, j, k - 1)) {
+						size_t row = i * d * w + j * w + (k - 1);
+						edges[row * w * h * d + col] = 1;
+					}
+					if (isBlockDrivable(layers, i, j + 1, k + 1)) {
+						size_t row = i * d * w + (j + 1) * w + (k + 1);
+						edges[row * w * h * d + col] = 1;
+					}
+					if (isBlockDrivable(layers, i, j + 1, k - 1)) {
+						size_t row = i * d * w + (j + 1) * w + (k - 1);
+						edges[row * w * h * d + col] = 1;
+					}
+					if (isBlockDrivable(layers, i, j - 1, k + 1)) {
+						size_t row = i * d * w + (j - 1) * w + (k + 1);
+						edges[row * w * h * d + col] = 1;
+					}
+					if (isBlockDrivable(layers, i, j - 1, k - 1)) {
+						size_t row = i * d * w + (j - 1) * w + (k - 1);
+						edges[row * w * h * d + col] = 1;
+					}
+				}
+			}
+		}
+	}
 }
 
 Layer* Level::getLayer(size_t idx) {
@@ -140,6 +190,37 @@ void Layer::moveUp(uint32_t n) {
 	}
 
 	pNode->translate(translation);
+}
+
+bool Layer::doesBlockExist(uint32_t i, uint32_t j) const
+{
+	size_t pos = i * w + j;
+	if (i >= d || j >= w) {
+		return false;
+	}
+	return blocks[pos] != 0;
+}
+
+bool Layer::isBlockSolid(uint32_t i, uint32_t j) const
+{
+	if (i >= d || j >= w) {
+		return false;
+	}
+	size_t pos = i * w + j;
+	switch (blocks[pos]) {
+	case emptyBlockId: 
+		return false;
+	case cubeBlockId:
+		return true;
+	case bridgeBlockId:
+		return false;
+	case ramp1BlockId:
+		return true;
+	case ramp2BlockId:
+		return true;
+	case liftBlockId:
+		return false;
+	}
 }
 
 inline Block makeEmptyBlock() 

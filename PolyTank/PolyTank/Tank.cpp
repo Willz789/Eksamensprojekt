@@ -125,3 +125,8 @@ DirectX::XMMATRIX Tank::getTurretTransform()
 {
 	return pNode->getChild(turretNodeIdx)->localToWorld();;
 }
+
+DirectX::XMVECTOR Tank::getPosition()
+{
+	return pRB->getPosition();
+}
