@@ -49,8 +49,7 @@ private:
 	DirectX::XMFLOAT3 forwardDir;
 	DirectX::XMFLOAT3 rightDir;
 	DirectX::XMFLOAT3 upDir;
-
-	bool isOnGround;
+	
 	DirectX::XMFLOAT4 turretTipPos;
 
 	SceneNode* pNode;

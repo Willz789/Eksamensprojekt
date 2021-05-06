@@ -23,11 +23,9 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 
 	pcs.assignCollisionHandler(pRB, [this](Body* pOther, FXMVECTOR resolution) -> void {
 		if (dynamic_cast<StaticBody*>(pOther)) {
-			isOnGround = true;
 			pRB->move(resolution);
 			pRB->addMoment(-XMVectorSwizzle<3, 1, 3, 3>(pRB->getLinMoment()));
 			pRB->addForce(-XMVectorSwizzle<3, 1, 3, 3>(pRB->getForce()));
-
 		}
 	});
 
@@ -91,8 +89,8 @@ void Tank::driveForward(float dt)
 
 void Tank::driveBackward(float dt)
 {
-	//pRB->addForce(pRB->getMass() * acc * -XMLoadFloat3(&forwardDir));
-	pRB->setPosition(pRB->getPosition() - 5.0f * dt * XMLoadFloat3(&forwardDir));
+	pRB->addForce(pRB->getMass() * acc * -XMLoadFloat3(&forwardDir));
+	//pRB->setPosition(pRB->getPosition() - 5.0f * dt * XMLoadFloat3(&forwardDir));
 }
  
 void Tank::turnRight(float dt)

@@ -1,5 +1,6 @@
 #include "TransformedShape.h"
 
+#include <algorithm>
 #include <functional>
 #include <cassert>
 #include <iomanip>

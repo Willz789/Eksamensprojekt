@@ -12,7 +12,7 @@ Projectile::Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::F
 	pNode = pRoot->lastChild();
 
 	pRB = pcs.emplaceBody<RigidBody>(
-		std::make_unique<Box>(0.04f, 0.04f, 0.06f),
+		std::make_unique<Box>(0.04f, 0.04f, 0.04f),
 		initPos,
 		initRot,
 		0.05f

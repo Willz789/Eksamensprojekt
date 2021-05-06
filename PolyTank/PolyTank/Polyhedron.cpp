@@ -1,6 +1,7 @@
 #include "Polyhedron.h"
 
 #include <memory>
+#include <algorithm>
 
 using namespace DirectX;
 

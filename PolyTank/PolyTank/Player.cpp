@@ -4,7 +4,9 @@
 using namespace DirectX;
 
 Player::Player(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Interaction& interaction) :
-	pInteraction(&interaction)
+	pInteraction(&interaction),
+	shooting(false),
+	shotPower(0.0f)
 {
 	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f));
 	camera.assignTank(*pTank);
@@ -37,7 +39,7 @@ void Player::update(Graphics& gfx, Physics& pcs, float dt)
 			pTank->shoot(gfx, pcs, shotPower);
 			shotPower = 0.0f;
 			shooting = false;
-		} 	else {
+		} else {
 			shotPower += 30.0f * dt;
 		}
 	}
@@ -48,7 +50,7 @@ void Player::initListeners(Graphics& gfx, Physics& pcs)
 	pMListener = pInteraction->addListener([this, &gfx, &pcs](const MouseEvent& e) -> void {
 		if (e.button == MouseEvent::Button::LEFT) {
 			shooting = true;
-			shotPower = 0;
+			shotPower = 0.0f;
 		}
 		if (e.button == MouseEvent::Button::RIGHT) {
 			camera.setAim();

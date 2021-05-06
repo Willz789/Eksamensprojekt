@@ -21,13 +21,14 @@ public:
 	ConvexShape* getShape();
 
 	void updateWorldShape();
-	AABB getBoundingBox() const;
+	const AABB& getBoundingBox() const;
 	bool checkCollision(const Body& other, DirectX::XMVECTOR* pResolution) const;
 
 protected:
 	std::unique_ptr<ConvexShape> pShape;
 	std::unique_ptr<TransformedShape> pWorldShape;
-	
+	AABB boundingBox;
+
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT4 rotation;
 };

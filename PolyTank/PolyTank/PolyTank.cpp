@@ -97,10 +97,7 @@ void PolyTank::startGame()
 	
 	player = Player(gfx, pcs, scene.getRoot(), *wnd.getInteraction());
 	player.initListeners(gfx, pcs);
-	//emplaceGameObject<Tank>(gfx, pcs, scene.getRoot(), XMVectorSet(3.0f, 1.0f, 0.0f, 0.0f), *wnd.getInteraction());
 
-	//pcs.emplaceBody<StaticBody>(
-	//	std::make_unique<Box>(100.0f, 1.0f, 100.0f),
-	//	XMVectorSet(0.0f, -0.5f, 0.0f, 0.0f),
-	//	XMQuaternionIdentity());
+	pcs.update(0.0f, 0.0f);
+	resetTime();
 }

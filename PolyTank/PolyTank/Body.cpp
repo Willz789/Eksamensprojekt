@@ -7,6 +7,7 @@ Body::Body(std::unique_ptr<ConvexShape>&& pShape, DirectX::FXMVECTOR initPos, Di
 	
 	XMStoreFloat3(&position, initPos);
 	XMStoreFloat4(&rotation, initRot);
+	updateWorldShape();
 }
 
 XMVECTOR Body::getPosition() const {
@@ -41,10 +42,12 @@ void Body::updateWorldShape() {
 	pWorldShape = pShape->transform(
 		XMMatrixRotationQuaternion(XMLoadFloat4(&rotation)) *
 		XMMatrixTranslationFromVector(XMLoadFloat3(&position)));
+
+	boundingBox = pWorldShape->getBoundingBox();
 };
 
-AABB Body::getBoundingBox() const {
-	return pWorldShape->getBoundingBox();
+const AABB& Body::getBoundingBox() const {
+	return boundingBox;
 }
 
 bool Body::checkCollision(const Body& other, DirectX::XMVECTOR* pResolution) const {

@@ -1,5 +1,7 @@
 #include "Box.h"
 
+#include <algorithm>
+
 using namespace DirectX;
 
 Box::Box(float width, float height, float depth) :
@@ -53,7 +55,7 @@ DirectX::XMVECTOR TransformedBox::support(DirectX::FXMVECTOR dir) const {
 AABB TransformedBox::getBoundingBox() const {
 
 	AABB bb;
-	bb.max = { corners[0].x, corners[0].y, corners[0].z };
+	bb.max = corners[0];
 	bb.min = bb.max;
 
 	for (auto it = corners + 1; it != corners + std::size(corners); it++) {

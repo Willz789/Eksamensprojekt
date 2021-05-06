@@ -8,7 +8,6 @@
 #include "PrimitiveTopology.h"
 #include "GLTFLoader.h"
 
-#include <chrono>
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -24,9 +23,8 @@ void Application::run() {
 	
 	wnd.setVisible(true);
 
-
-	steady_clock::time_point tstart = steady_clock::now();
-	steady_clock::time_point t0 = tstart;
+	tstart = steady_clock::now();
+	tframe = tstart;
 
 	while (true) {
 		static uint32_t frameCount = 0;
@@ -36,10 +34,10 @@ void Application::run() {
 			return;
 		}
 
-		steady_clock::time_point t1 = steady_clock::now();
-		float t = std::chrono::duration<float>(t1 - tstart).count();
-		float dt = std::chrono::duration<float>(t1 - t0).count();
-		t0 = t1;
+		steady_clock::time_point tnow = steady_clock::now();
+		float t = std::chrono::duration<float>(tnow - tstart).count();
+		float dt = std::chrono::duration<float>(tnow - tframe).count();
+		tframe = tnow;
 		
 		update(t, dt);
 
@@ -47,6 +45,12 @@ void Application::run() {
 		render();
 		gfx.endFrame();
 	}
+}
+
+void Application::resetTime()
+{
+	tstart = std::chrono::steady_clock::now();
+	tframe = tstart;
 }
 
 Window* Application::getWnd()
