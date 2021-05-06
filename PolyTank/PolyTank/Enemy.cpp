@@ -28,14 +28,14 @@ void Enemy::buildPath()
 	Node targetNode;
 	XMVECTOR targetPos = pTarget->getPosition() + targetOffset;
 
-	targetNode.i = XMVectorGetY(targetPos);
-	targetNode.j = XMVectorGetZ(targetPos);
-	targetNode.k = XMVectorGetX(targetPos);
+	targetNode.i = uint32_t(XMVectorGetY(targetPos));
+	targetNode.j = uint32_t(XMVectorGetZ(targetPos));
+	targetNode.k = uint32_t(XMVectorGetX(targetPos));
 	
 	Node currentNode;
 	XMVECTOR currentPos = pTank->getPosition();
-	currentNode.i = XMVectorGetY(currentPos);
-	currentNode.j = XMVectorGetZ(currentPos);
-	currentNode.k = XMVectorGetX(currentPos);
+	currentNode.i = uint32_t(XMVectorGetY(currentPos));
+	currentNode.j = uint32_t(XMVectorGetZ(currentPos));
+	currentNode.k = uint32_t(XMVectorGetX(currentPos));
 
 }
