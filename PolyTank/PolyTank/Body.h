@@ -28,6 +28,7 @@ protected:
 	std::unique_ptr<ConvexShape> pShape;
 	std::unique_ptr<TransformedShape> pWorldShape;
 	AABB boundingBox;
+	bool transformDirty;
 
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT4 rotation;

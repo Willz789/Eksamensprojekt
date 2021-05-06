@@ -46,7 +46,8 @@ void setup() {
   tools.add(new SetBlockTool((byte)2)); // Bridge
   tools.add(new SetBlockTool((byte)3)); // RampBottom
   tools.add(new SetBlockTool((byte)4)); // RampTop
-  tools.add(new SetBlockTool((byte)5)); // Rotate
+  tools.add(new SetBlockTool((byte)5)); // Lift
+  tools.add(new RotateTool()); // Rotate
 }
 
 
@@ -66,8 +67,8 @@ color blockColor(byte block) {
     return color(0, 200, 0); // RampTop
 
   case 5:
-    return color(255); // Rotate
-
+    return color(0, 255, 255); // Lift
+  
   default:
     return color(0); // Air
   }

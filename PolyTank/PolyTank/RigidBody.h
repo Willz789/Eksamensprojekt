@@ -24,7 +24,6 @@ public:
 
 	DirectX::XMVECTOR getForce();
 
-
 	void update(float dt);
 
 private:

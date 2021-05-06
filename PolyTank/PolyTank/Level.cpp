@@ -10,6 +10,7 @@
 #include "BlendState.h"
 #include "DepthState.h"
 #include "Polyhedron.h"
+#include "PolyTank.h"
 
 #include <fstream>
 
@@ -22,14 +23,17 @@ inline bool isBlockDrivable(const std::vector<Layer>& layers, uint32_t i, uint32
 	return false;
 }
 
-Level::Level(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Scene& scene) 
+void Level::loadFile(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Scene& scene)
 {
+	layers.clear();
+	edges.clear();
+
 	std::ifstream ifs(file, std::ios::binary);
 	uint32_t w, h, d;
 	ifs.read(reinterpret_cast<char*>(&w), sizeof(w));
 	ifs.read(reinterpret_cast<char*>(&h), sizeof(h));
 	ifs.read(reinterpret_cast<char*>(&d), sizeof(d));
-	std::vector<uint8_t> blocks(w*d);
+	std::vector<uint8_t> blocks(w * d);
 
 	const XMVECTOR colors[] = {
 		XMVectorSet(0.8f, 0.2f, 0.2f, 0.0f),
@@ -42,11 +46,33 @@ Level::Level(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Sce
 		if (!ifs.good()) throw std::runtime_error("");
 
 		SceneNode* pLayerNode = scene.getRoot()->addChild();
-		layers.emplace_back(gfx, pcs, d, w, blocks, pLayerNode, colors[i % std::size(colors)]);
-		layers.back().moveUp(i);
+		layers.emplace_back(gfx, pcs, i, d, w, blocks, pLayerNode, colors[i % std::size(colors)]);
 	}
 
-	edges.resize(w*h*d*w*h*d);
+	buildGraph(w, h, d);
+}
+
+void Level::update(float t, float dt)
+{
+	for (Layer& l : layers) {
+		l.update(t, dt);
+	}
+}
+
+Layer* Level::getLayer(size_t idx) {
+	return &layers[idx];
+}
+
+Layer* Level::getLayer(DirectX::FXMVECTOR position) {
+	
+	float y = XMVectorGetY(position);
+	
+	return &layers[std::clamp(static_cast<size_t>(y - 1.0f), 0ui64, layers.size() - 1)];
+}
+
+void Level::buildGraph(uint32_t w, uint32_t h, uint32_t d)
+{
+	edges.resize(w * h * d * w * h * d);
 
 	for (uint32_t i = 0; i < h; i++) {
 		for (uint32_t j = 0; j < d; j++) {
@@ -64,7 +90,7 @@ Level::Level(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Sce
 					if (isBlockDrivable(layers, i, j, k + 1)) {
 						size_t row = i * d * w + j * w + (k + 1);
 						edges[row * w * h * d + col] = 1;
-					} 
+					}
 					if (isBlockDrivable(layers, i, j, k - 1)) {
 						size_t row = i * d * w + j * w + (k - 1);
 						edges[row * w * h * d + col] = 1;
@@ -91,18 +117,15 @@ Level::Level(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Sce
 	}
 }
 
-Layer* Level::getLayer(size_t idx) {
-	return &layers[idx];
-}
-
-Layer* Level::getLayer(DirectX::FXMVECTOR position) {
-	
-	float y = XMVectorGetY(position);
-	
-	return &layers[std::clamp(static_cast<size_t>(y - 1.0f), 0ui64, layers.size() - 1)];
-}
-
-Layer::Layer(Graphics& gfx, Physics& pcs, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color) :
+Layer::Layer(
+	Graphics& gfx,
+	Physics& pcs,
+	uint32_t layerIdx,
+	uint32_t depth,
+	uint32_t width,
+	std::vector<uint8_t>& blocks,
+	SceneNode* pNode,
+	DirectX::FXMVECTOR color) :
 	pNode(pNode)
 {
 	this->blocks = blocks;
@@ -113,12 +136,18 @@ Layer::Layer(Graphics& gfx, Physics& pcs, uint32_t depth, uint32_t width, std::v
 	std::vector<Index> indices;
 	for (uint32_t i = 0; i < d; i++) {
 		for (uint32_t j = 0; j < w; j++) {
-
 			uint32_t idx = w * i + j;
 			Block b = getBlock(blocks[idx]);
+
+			if (blocks[idx] == liftBlockId) {
+				lifts.emplace_back(gfx, pcs, pNode, b, layerIdx, i, j, d, w);
+				continue;
+			} 
+			
 			Index baseIndex = vertices.size();
 			for (DefaultVertex dv : b.vertices) {
 				dv.position.x += j - w / 2.0f;
+				dv.position.y += layerIdx;
 				dv.position.z += i - d / 2.0f;
 				vertices.push_back(dv);
 			}
@@ -136,12 +165,10 @@ Layer::Layer(Graphics& gfx, Physics& pcs, uint32_t depth, uint32_t width, std::v
 				
 				blockBodies.push_back(pcs.emplaceBody<StaticBody>(
 					std::make_unique<Polyhedron>(vertexPositions.data(), vertexPositions.size()),
-					XMVectorSet(j - w / 2.0f, 0.0f, i - d / 2.0f, 0.0f),
+					XMVectorSet(j - w / 2.0f, float(layerIdx), i - d / 2.0f, 0.0f),
 					XMQuaternionIdentity()
 				));
 			}
-
-
 
 		}
 	}
@@ -178,18 +205,14 @@ Layer::Layer(Graphics& gfx, Physics& pcs, uint32_t depth, uint32_t width, std::v
 
 }
 
-SceneNode* Layer::getNode() {
-	return pNode;
+Layer::~Layer() {
+	for (StaticBody* pBody : blockBodies) {
+		PolyTank::get().getPcs().deleteBody(pBody);
+	}
 }
 
-void Layer::moveUp(uint32_t n) {
-	
-	XMVECTOR translation = XMVectorSet(0.0f, float(n), 0.0f, 0.0f);
-	for (StaticBody* pBody : blockBodies) {
-		pBody->setPosition(pBody->getPosition() + translation);
-	}
-
-	pNode->translate(translation);
+SceneNode* Layer::getNode() {
+	return pNode;
 }
 
 bool Layer::doesBlockExist(uint32_t i, uint32_t j) const
@@ -220,6 +243,13 @@ bool Layer::isBlockSolid(uint32_t i, uint32_t j) const
 		return true;
 	case liftBlockId:
 		return false;
+	}
+}
+
+void Layer::update(float t, float dt)
+{
+	for (Lift& l : lifts) {
+		l.update(t);
 	}
 }
 
@@ -465,20 +495,21 @@ int8_t intCos(uint8_t id) {
 Block Layer::getBlock(uint8_t id) {
 
 	static std::unordered_map<uint8_t, Block> blockMap = {
-		{ 0, makeEmptyBlock() },
-		{ 1, makeCubeBlock() },
-		{ 2, makeBridgeBlock() },
-		{ 3, makeRamp1Block() },
-		{ 4, makeRamp2Block() },
+		{ emptyBlockId, makeEmptyBlock() },
+		{ cubeBlockId, makeCubeBlock() },
+		{ bridgeBlockId, makeBridgeBlock() },
+		{ ramp1BlockId, makeRamp1Block() },
+		{ ramp2BlockId, makeRamp2Block() },
+		{ liftBlockId, makeCubeBlock() },
 	};
 
 	uint8_t idRot = id >> 6;
 
 	XMMATRIX rotation = XMMatrixSet(
- 		 intCos(idRot), 0.0f, intSin(idRot), 0.0f,
-				  0.0f, 1.0f,		   0.0f, 0.0f,
-		-intSin(idRot), 0.0f, intCos(idRot), 0.0f,
-				  0.0f, 0.0f,		   0.0f, 1.0f
+ 		float(intCos(idRot)), 0.0f, float(intSin(idRot)), 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		float(-intSin(idRot)), 0.0f, float(intCos(idRot)), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
 	);
 
 	Block b = blockMap[0xf & id];
@@ -488,4 +519,86 @@ Block Layer::getBlock(uint8_t id) {
 		XMStoreFloat3(&v.normal, XMVector4Transform(XMLoadFloat3(&v.normal), rotation));
 	}
 	return b;
+}
+
+Lift::Lift(Graphics& gfx, Physics& pcs, SceneNode* pLayerNode, const Block& b, uint32_t layerIdx, uint32_t i, uint32_t j, uint32_t d, uint32_t w)
+{
+	XMVECTOR pos = XMVectorSet(j - w / 2.0f, float(layerIdx) + 0.001f, i - d / 2.0f, 0.0f);
+	XMStoreFloat3(&basePosition, pos);
+
+	pNode = pLayerNode->addChild();
+	pNode->setTranslation(pos);
+
+	std::vector<XMFLOAT3> vertexPositions(b.vertices.size());
+
+	for (const DefaultVertex& dv : b.vertices) {
+		vertexPositions.push_back(dv.position);
+	}
+
+	pBody = pcs.emplaceBody<StaticBody>(
+		std::make_unique<Polyhedron>(vertexPositions.data(), vertexPositions.size()),
+		pos,
+		XMQuaternionIdentity()
+	);
+
+	std::unique_ptr<Mesh> pMesh = std::make_unique<Mesh>();
+
+	Microsoft::WRL::ComPtr<ID3DBlob> pVSBlob;
+
+	std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+
+	pMesh->addBindable(std::make_shared<VertexBuffer>(gfx, "", b.vertices));
+	pMesh->addBindable(std::make_shared<IndexBuffer>(gfx, "", b.indices));
+	pMesh->addBindable(gfx.getBindMgr()->get<VertexShader>("./ShaderBin/VertexShader.cso", &pVSBlob));
+	pMesh->addBindable(gfx.getBindMgr()->get<PixelShader>("./ShaderBin/PixelShader.cso"));
+	pMesh->addBindable(gfx.getBindMgr()->get<InputLayout>(inputElements, pVSBlob.Get()));
+	pMesh->addBindable(gfx.getBindMgr()->get<PrimitiveTopology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	pMesh->addBindable(gfx.getBindMgr()->get<BlendState>(BlendState::Mode::OPAQUE));
+	pMesh->addBindable(gfx.getBindMgr()->get<DepthState>(true));
+
+	std::shared_ptr<GLTFMaterial> pMaterial = std::make_shared<GLTFMaterial>(gfx);
+	DirectX::XMStoreFloat3(&pMaterial->factors.baseColor, XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f));
+	pMesh->addBindable(pMaterial);
+
+	pNode->addDrawable(std::move(pMesh));
+}
+
+Lift::Lift(Lift&& other) {
+	pBody = other.pBody;
+	pNode = other.pNode;
+	basePosition = other.basePosition;
+
+	other.pBody = nullptr;
+	other.pNode = nullptr;
+}
+
+Lift& Lift::operator=(Lift&& other)
+{
+	pBody = other.pBody;
+	pNode = other.pNode;
+	basePosition = other.basePosition;
+
+	other.pBody = nullptr;
+	other.pNode = nullptr;
+
+	return *this;
+}
+
+Lift::~Lift()
+{
+	if (pBody) {
+		PolyTank::get().getPcs().deleteBody(pBody);
+	}
+}
+
+void Lift::update(float t)
+{
+	XMVECTOR pos = XMLoadFloat3(&basePosition) - XMVectorSet(0.0f, 0.5f * (cos(t) + 1.0f), 0.0f, 0.0f);
+
+	pBody->setPosition(pos);
+	pNode->setTranslation(pos);
 }

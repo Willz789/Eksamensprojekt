@@ -54,6 +54,7 @@ void PolyTank::update(float t, float dt) {
 		for (auto& g : gameObjects) {
 			g->update(dt);
 		}
+		level.update(t, dt);
 		player.update(gfx, pcs, dt);
 		pcs.update(t, dt);
 		gfx.setCamera(player.getCamera()->viewMatrix());
@@ -93,7 +94,7 @@ void PolyTank::startGame()
 	wnd.getInteraction()->setCursorLocked(true);
 	wnd.getInteraction()->setCursorVisible(false);
 
-	level = Level(gfx, pcs, "./Levels/level1.bin", scene);
+	level.loadFile(gfx, pcs, "./Levels/level1.bin", scene);
 	
 	player = Player(gfx, pcs, scene.getRoot(), *wnd.getInteraction());
 	player.initListeners(gfx, pcs);

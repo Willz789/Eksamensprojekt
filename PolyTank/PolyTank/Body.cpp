@@ -7,7 +7,10 @@ Body::Body(std::unique_ptr<ConvexShape>&& pShape, DirectX::FXMVECTOR initPos, Di
 	
 	XMStoreFloat3(&position, initPos);
 	XMStoreFloat4(&rotation, initRot);
+
+	transformDirty = true;
 	updateWorldShape();
+
 }
 
 XMVECTOR Body::getPosition() const {
@@ -24,14 +27,17 @@ DirectX::XMMATRIX Body::getTransform() const {
 
 void Body::setPosition(DirectX::FXMVECTOR newPos) {
 	XMStoreFloat3(&position, newPos);
+	transformDirty = true;
 }
 
 void Body::setRotation(DirectX::FXMVECTOR newRot) {
 	XMStoreFloat4(&rotation, newRot);
+	transformDirty = true;
 }
 
 void Body::move(DirectX::FXMVECTOR translation) {
 	XMStoreFloat3(&position, XMLoadFloat3(&position) + translation);
+	transformDirty = true;
 }
 
 ConvexShape* Body::getShape() {
@@ -39,11 +45,14 @@ ConvexShape* Body::getShape() {
 }
 
 void Body::updateWorldShape() {
-	pWorldShape = pShape->transform(
-		XMMatrixRotationQuaternion(XMLoadFloat4(&rotation)) *
-		XMMatrixTranslationFromVector(XMLoadFloat3(&position)));
+	if (transformDirty) {
+		pWorldShape = pShape->transform(
+			XMMatrixRotationQuaternion(XMLoadFloat4(&rotation)) *
+			XMMatrixTranslationFromVector(XMLoadFloat3(&position)));
 
-	boundingBox = pWorldShape->getBoundingBox();
+		boundingBox = pWorldShape->getBoundingBox();
+		transformDirty = false;
+	}
 };
 
 const AABB& Body::getBoundingBox() const {

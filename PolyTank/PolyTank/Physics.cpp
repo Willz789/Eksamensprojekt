@@ -73,11 +73,11 @@ void Physics::collisions() {
 
 	for (size_t i = 0; i < bodies.size(); i++) {
 		bodies[i]->updateWorldShape();
-		const AABB& bb = bodies[i]->getBoundingBox();
-		assert(bb.min.x < bb.max.x);
-		assert(bb.min.y < bb.max.y);
-		assert(bb.min.z < bb.max.z);
 	}
+
+	auto t1 = std::chrono::steady_clock::now();
+	uint64_t delta = (t1 - t0).count();
+	std::cout << delta / 1e6f << "\n";
 
 	sortAll();
 
@@ -128,10 +128,6 @@ void Physics::collisions() {
 		}
 
 	}
-
-	auto t1 = std::chrono::steady_clock::now();
-	uint64_t delta = (t1 - t0).count();
-	std::cout << delta / 1e6f << "\n";
 
 }
 

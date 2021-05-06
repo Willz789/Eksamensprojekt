@@ -136,4 +136,6 @@ void RigidBody::update(float dt)
 	XMStoreFloat3(&position, pos);
 	XMStoreFloat3(&angMom, angMoment);
 	XMStoreFloat4(&rotation, quaternion);
+
+	transformDirty = true;
 }
