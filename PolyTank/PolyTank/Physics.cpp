@@ -131,7 +131,7 @@ void Physics::collisions() {
 
 	auto t1 = std::chrono::steady_clock::now();
 	uint64_t delta = (t1 - t0).count();
-	std::cout << delta / 1e6f << "\n";
+	//std::cout << delta / 1e6f << "\n";
 
 }
 
