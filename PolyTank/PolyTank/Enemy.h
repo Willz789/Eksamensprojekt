@@ -3,10 +3,6 @@
 #include "Tank.h"
 #include "Level.h"
 
-struct Node {
-	uint32_t i, j, k;
-};
-
 class Enemy
 {
 public:

@@ -71,6 +71,11 @@ void Player::initListeners(Graphics& gfx, Physics& pcs)
 	});
 }
 
+Tank* Player::getTank()
+{
+	return pTank;
+}
+
 Camera* Player::getCamera()
 {
 	return &camera;

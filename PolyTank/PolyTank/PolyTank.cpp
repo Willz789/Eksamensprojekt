@@ -99,6 +99,8 @@ void PolyTank::startGame()
 	player = Player(gfx, pcs, scene.getRoot(), *wnd.getInteraction());
 	player.initListeners(gfx, pcs);
 
+	Enemy(gfx, pcs, scene.getRoot(), player.getTank(), level);
+
 	pcs.update(0.0f, 0.0f);
 	resetTime();
 }

@@ -69,8 +69,6 @@ inline bool inRange(float x, float a, float b) {
 
 void Physics::collisions() {
 	
-	auto t0 = std::chrono::steady_clock::now();
-
 	for (size_t i = 0; i < bodies.size(); i++) {
 		bodies[i]->updateWorldShape();
 	}
@@ -128,7 +126,6 @@ void Physics::collisions() {
 		}
 
 	}
-
 }
 
 void Physics::sortAll()

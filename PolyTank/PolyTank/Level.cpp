@@ -29,7 +29,6 @@ void Level::loadFile(Graphics& gfx, Physics& pcs, const std::filesystem::path& f
 	edges.clear();
 
 	std::ifstream ifs(file, std::ios::binary);
-	uint32_t w, h, d;
 	ifs.read(reinterpret_cast<char*>(&w), sizeof(w));
 	ifs.read(reinterpret_cast<char*>(&h), sizeof(h));
 	ifs.read(reinterpret_cast<char*>(&d), sizeof(d));
@@ -79,42 +78,97 @@ void Level::buildGraph(uint32_t w, uint32_t h, uint32_t d)
 			for (uint32_t k = 0; k < w; k++) {
 				if (isBlockDrivable(layers, i, j, k)) {
 					size_t col = i * d * w + j * w + k;
-					if (isBlockDrivable(layers, i, j + 1, k)) {
-						size_t row = i * d * w + (j + 1) * w + k;
-						edges[row * w * h * d + col] = 1;
-					}
-					if (isBlockDrivable(layers, i, j - 1, k)) {
-						size_t row = i * d * w + (j - 1) * w + k;
-						edges[row * w * h * d + col] = 1;
-					}
-					if (isBlockDrivable(layers, i, j, k + 1)) {
-						size_t row = i * d * w + j * w + (k + 1);
-						edges[row * w * h * d + col] = 1;
-					}
-					if (isBlockDrivable(layers, i, j, k - 1)) {
-						size_t row = i * d * w + j * w + (k - 1);
-						edges[row * w * h * d + col] = 1;
-					}
-					if (isBlockDrivable(layers, i, j + 1, k + 1)) {
-						size_t row = i * d * w + (j + 1) * w + (k + 1);
-						edges[row * w * h * d + col] = 1;
-					}
-					if (isBlockDrivable(layers, i, j + 1, k - 1)) {
-						size_t row = i * d * w + (j + 1) * w + (k - 1);
-						edges[row * w * h * d + col] = 1;
-					}
-					if (isBlockDrivable(layers, i, j - 1, k + 1)) {
-						size_t row = i * d * w + (j - 1) * w + (k + 1);
-						edges[row * w * h * d + col] = 1;
-					}
-					if (isBlockDrivable(layers, i, j - 1, k - 1)) {
-						size_t row = i * d * w + (j - 1) * w + (k - 1);
-						edges[row * w * h * d + col] = 1;
+
+					for (int8_t jOff = -1; jOff < 2; jOff++) {
+						for (int8_t kOff = -1; kOff < 2; kOff++) {
+							uint32_t jNode = j + jOff;
+							uint32_t kNode = k + kOff;
+							if (jOff != 0 || kOff != 0) {
+								if (jOff == 0 || kOff == 0) {
+									if (isBlockDrivable(layers, i, jNode, kNode)) {
+										size_t row = i * d * w + jNode * w + kNode;
+										edges[row * w * h * d + col] = 1;
+									}
+								}
+								else if(isBlockDrivable(layers, i, jNode, k) && isBlockDrivable(layers, i, j, kNode) && isBlockDrivable(layers, i, jNode, kNode)){
+									size_t row = i * d * w + jNode * w + kNode;
+									edges[row * w * h * d + col] = 1;
+								}
+							}
+							
+						}
 					}
 				}
 			}
 		}
 	}
+}
+
+Layer* Level::getLayer(size_t idx) {
+	return &layers[idx];
+}
+
+Layer* Level::getLayer(DirectX::FXMVECTOR position) {
+	
+	float y = XMVectorGetY(position);
+	
+	return &layers[std::clamp(static_cast<size_t>(y - 1.0f), 0ui64, layers.size() - 1)];
+}
+
+Node Level::findNearestNode(FXMVECTOR pos)
+{
+	float dist = std::numeric_limits<float>::infinity();
+	uint32_t i = 0;
+	uint32_t j = 0;
+	uint32_t k = 0;
+	for (uint32_t i1 = 0; i1 < h; i1++) {
+		for (uint32_t j1 = 0; j1 < d; j1++) {
+			for (uint32_t k1 = 0; k1 < w; k1++) {
+				if (isBlockDrivable(layers, i1, j1, k1)) {
+					XMVECTOR nodeWorldSpace = XMVectorSet(k1 - w / 2.0f, i1, j1 - d / 2.0f, 0.0f);
+					float distNew = XMVectorGetX(XMVector3LengthSq(pos - nodeWorldSpace));
+					if (distNew < dist) {
+						dist = distNew;
+						i = i1;
+						j = j1;
+						k = k1;
+					}
+				}
+			}
+		}
+	}
+
+	Node node;
+	node.i = i;
+	node.j = j;
+	node.k = k;
+
+	return node;
+}
+
+uint32_t Level::getW()
+{
+	return w;
+}
+
+uint32_t Level::getD()
+{
+	return d;
+}
+
+uint32_t Level::getH()
+{
+	return h;
+}
+
+std::vector<uint8_t>* Level::getEdges()
+{
+	return &edges;
+}
+
+std::vector<Layer>* Level::getLayers()
+{
+	return &layers;
 }
 
 Layer::Layer(
@@ -242,7 +296,7 @@ bool Layer::isBlockSolid(uint32_t i, uint32_t j) const
 	case ramp2BlockId:
 		return true;
 	case liftBlockId:
-		return false;
+		return true;
 	}
 }
 
@@ -251,6 +305,16 @@ void Layer::update(float t, float dt)
 	for (Lift& l : lifts) {
 		l.update(t);
 	}
+}
+
+std::vector<StaticBody*>* Layer::getBlockBodies()
+{
+	return &blockBodies;
+}
+
+uint8_t Layer::getBlockType(uint32_t i, uint32_t j)
+{
+	return blocks[i * w + j];
 }
 
 inline Block makeEmptyBlock() 

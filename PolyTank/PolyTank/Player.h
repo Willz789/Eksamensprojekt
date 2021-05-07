@@ -12,6 +12,8 @@ public:
 	void update(Graphics& gfx, Physics& pcs, float dt);
 	void initListeners(Graphics& gfx, Physics& pcs);
 
+	Tank* getTank();
+
 	Camera* getCamera();
 	
 private:
