@@ -16,7 +16,7 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 
 	pRB = pcs.emplaceBody<RigidBody>(
 		std::make_unique<Box>(boxDims.x, boxDims.y, boxDims.z),
-		initPos,
+		initPos + XMVectorSet(0.0f, boxDims.y, 0.0f, 0.0f),
 		XMQuaternionIdentity(),
 		10.0f
 	);
@@ -43,6 +43,11 @@ Tank::~Tank() {
 }
 
 void Tank::update(float dt) {
+
+	pNode->setRotation(pRB->getRotation());
+	pNode->setTranslation(pRB->getPosition());
+	pNode->getChild(turretNodeIdx)->setRotation(XMQuaternionRotationRollPitchYaw(turretPitch, turretYaw, 0.0f));
+
 	XMMATRIX world = pNode->localToWorld();
 	XMStoreFloat3(&forwardDir, -world.r[2]);
 	XMStoreFloat3(&upDir, world.r[1]);
@@ -55,11 +60,6 @@ void Tank::update(float dt) {
 	XMVECTOR angVel = XMVector3Transform(pRB->getAngMoment(), pRB->getInvInertia());
 	XMVECTOR dragAng = -XMVector3Length(angVel) * angVel * dragConstant;
 	pRB->addTorque(dragAng);
-
-	pNode->setRotation(pRB->getRotation());
-	pNode->setTranslation(pRB->getPosition() - XMVectorSet(0.0f, 0.75f / 2.0f, 0.0f, 0.0f));
-	pNode->getChild(turretNodeIdx)->setRotation(XMQuaternionRotationRollPitchYaw(turretPitch, turretYaw, 0.0f));
-
 	
 }
 
@@ -83,14 +83,14 @@ void Tank::resetTurretPitch()
 void Tank::driveForward(float dt)
 {
 
-	pRB->addForce(pRB->getMass() * acc * XMLoadFloat3(&forwardDir));
-	//pRB->setPosition(pRB->getPosition() + 5.0f * dt * XMLoadFloat3(&forwardDir));
+	//pRB->addForce(pRB->getMass() * acc * XMLoadFloat3(&forwardDir));
+	pRB->setPosition(pRB->getPosition() + 5.0f * dt * XMLoadFloat3(&forwardDir));
 }
 
 void Tank::driveBackward(float dt)
 {
-	pRB->addForce(pRB->getMass() * acc * -XMLoadFloat3(&forwardDir));
-	//pRB->setPosition(pRB->getPosition() - 5.0f * dt * XMLoadFloat3(&forwardDir));
+	//pRB->addForce(pRB->getMass() * acc * -XMLoadFloat3(&forwardDir));
+	pRB->setPosition(pRB->getPosition() - 5.0f * dt * XMLoadFloat3(&forwardDir));
 }
  
 void Tank::turnRight(float dt)
@@ -129,4 +129,14 @@ DirectX::XMMATRIX Tank::getTurretTransform()
 DirectX::XMVECTOR Tank::getPosition()
 {
 	return pRB->getPosition();
+}
+
+DirectX::XMVECTOR Tank::getGroundPosition()
+{
+	return pRB->getPosition() - XMVectorSet(0.0f, boxDims.y / 2.0f, 0.0f, 0.0f);
+}
+
+DirectX::XMMATRIX Tank::getBodyTransform()
+{
+	return pNode->localToWorld();
 }

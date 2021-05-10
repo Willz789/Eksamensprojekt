@@ -50,7 +50,6 @@ private:
 	Level level;
 
 	std::vector<std::unique_ptr<IGameObject>> gameObjects;
-	std::vector<Enemy> enemies;
 	std::vector<IGameObject*> deleteList;
 
 	

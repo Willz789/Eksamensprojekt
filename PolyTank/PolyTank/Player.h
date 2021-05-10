@@ -1,12 +1,13 @@
 #pragma once
 #include "Interaction.h"
+#include "Level.h"
 #include "Camera.h"
 
 class Player
 {
 public:
 	Player() = default;
-	Player(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Interaction& interaction);
+	Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Interaction& interaction);
 	~Player();
 
 	void update(Graphics& gfx, Physics& pcs, float dt);

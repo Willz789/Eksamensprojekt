@@ -33,10 +33,13 @@ public:
 
 	DirectX::XMVECTOR getTurretTipPos();
 	DirectX::XMMATRIX getTurretTransform();
+
 	DirectX::XMVECTOR getPosition();
+	DirectX::XMVECTOR getGroundPosition();
+	DirectX::XMMATRIX getBodyTransform();
 	
 private:
-	static constexpr DirectX::XMFLOAT3 boxDims = { 1.36f, 0.75f, 2.0f };
+	static constexpr DirectX::XMFLOAT3 boxDims = { 0.68f, 0.4f, 1.0f };
 	
 	static constexpr size_t turretNodeIdx = 13;
 

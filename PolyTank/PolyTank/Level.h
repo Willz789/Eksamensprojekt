@@ -39,9 +39,6 @@ private:
 
 struct Node {
 	uint32_t i, j, k;
-	bool visited;
-	float shortestDist;
-	std::vector<Node*> pathToNode;
 	bool operator==(const Node& rhs) const;
 };
 
@@ -103,13 +100,16 @@ public:
 	void update(float t, float dt);
 
 	Layer* getLayer(size_t idx);
-	Layer* getLayer(DirectX::FXMVECTOR position);
-
+	
+	DirectX::XMVECTOR worldPos(Node n);
 	Node findNearestNode(DirectX::FXMVECTOR pos);
 
 	uint32_t getW();
 	uint32_t getD();
 	uint32_t getH();
+
+	bool hasEdge(Node n1, Node n2);
+	bool hasEdge(size_t idx1, size_t idx2);
 
 	std::vector<uint8_t>* getEdges();
 	std::vector<Layer>* getLayers();

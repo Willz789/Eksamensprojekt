@@ -18,7 +18,7 @@ using namespace DirectX;
 
 inline bool isBlockDrivable(const std::vector<Layer>& layers, uint32_t i, uint32_t j, uint32_t k) {
 	if (layers[i].doesBlockExist(j, k)) {
-		return i + 1 >= layers.size() || !layers[i + 1].isBlockSolid(j,k);
+		return i + 1 >= layers.size() || !layers[i + 1].isBlockSolid(j, k);
 	}
 	return false;
 }
@@ -62,13 +62,6 @@ Layer* Level::getLayer(size_t idx) {
 	return &layers[idx];
 }
 
-Layer* Level::getLayer(DirectX::FXMVECTOR position) {
-	
-	float y = XMVectorGetY(position);
-	
-	return &layers[std::clamp(static_cast<size_t>(y - 1.0f), 0ui64, layers.size() - 1)];
-}
-
 void Level::buildGraph(uint32_t w, uint32_t h, uint32_t d)
 {
 	edges.resize(w * h * d * w * h * d);
@@ -76,9 +69,13 @@ void Level::buildGraph(uint32_t w, uint32_t h, uint32_t d)
 	for (uint32_t i = 0; i < h; i++) {
 		for (uint32_t j = 0; j < d; j++) {
 			for (uint32_t k = 0; k < w; k++) {
-				if (isBlockDrivable(layers, i, j, k)) {
-					size_t col = i * d * w + j * w + k;
+				size_t col = i * d * w + j * w + k;
 
+				if (layers[i].getBlockType(j, k) == liftBlockId) {
+					int x = 4;
+				}
+
+				if (isBlockDrivable(layers, i, j, k)) {
 					for (int8_t jOff = -1; jOff < 2; jOff++) {
 						for (int8_t kOff = -1; kOff < 2; kOff++) {
 							uint32_t jNode = j + jOff;
@@ -90,58 +87,78 @@ void Level::buildGraph(uint32_t w, uint32_t h, uint32_t d)
 										edges[row * w * h * d + col] = 1;
 									}
 								}
-								else if(isBlockDrivable(layers, i, jNode, k) && isBlockDrivable(layers, i, j, kNode) && isBlockDrivable(layers, i, jNode, kNode)){
+								else if (isBlockDrivable(layers, i, jNode, k) && isBlockDrivable(layers, i, j, kNode) && isBlockDrivable(layers, i, jNode, kNode)) {
 									size_t row = i * d * w + jNode * w + kNode;
 									edges[row * w * h * d + col] = 1;
 								}
 							}
-							
+
 						}
 					}
 				}
+
+				if (i > 0 && layers[i].getBlockType(j, k) == liftBlockId) {
+					for (int8_t jOff = -1; jOff < 2; jOff++) {
+						for (int8_t kOff = -1; kOff < 2; kOff++) {
+							uint32_t iNode = i - 1;
+							uint32_t jNode = j + jOff;
+							uint32_t kNode = k + kOff;
+
+							if (jOff != 0 || kOff != 0) {
+								if (jOff == 0 || kOff == 0) {
+									if (isBlockDrivable(layers, iNode, jNode, kNode)) {
+										size_t row = iNode * d * w + jNode * w + kNode;
+										edges[row * w * h * d + col] = 1;
+										edges[col * w * h * d + row] = 1;
+									}
+								}
+								else if (isBlockDrivable(layers, iNode, jNode, k) && isBlockDrivable(layers, iNode, j, kNode) && isBlockDrivable(layers, iNode, jNode, kNode)) {
+									size_t row = iNode * d * w + jNode * w + kNode;
+									edges[row * w * h * d + col] = 1;
+									edges[col * w * h * d + row] = 1;
+								}
+							}
+						}
+					}
+				}
+
+
 			}
 		}
 	}
 }
 
-Layer* Level::getLayer(size_t idx) {
-	return &layers[idx];
-}
-
-Layer* Level::getLayer(DirectX::FXMVECTOR position) {
-	
-	float y = XMVectorGetY(position);
-	
-	return &layers[std::clamp(static_cast<size_t>(y - 1.0f), 0ui64, layers.size() - 1)];
+DirectX::XMVECTOR Level::worldPos(Node n)
+{
+	return XMVectorSet(n.k - w / 2.0f, n.i, n.j - d / 2.0f, 1.0f);
 }
 
 Node Level::findNearestNode(FXMVECTOR pos)
 {
 	float dist = std::numeric_limits<float>::infinity();
-	uint32_t i = 0;
-	uint32_t j = 0;
-	uint32_t k = 0;
+	Node node;
+
 	for (uint32_t i1 = 0; i1 < h; i1++) {
 		for (uint32_t j1 = 0; j1 < d; j1++) {
 			for (uint32_t k1 = 0; k1 < w; k1++) {
 				if (isBlockDrivable(layers, i1, j1, k1)) {
-					XMVECTOR nodeWorldSpace = XMVectorSet(k1 - w / 2.0f, i1, j1 - d / 2.0f, 0.0f);
+					Node node1;
+					node1.i = i1;
+					node1.j = j1;
+					node1.k = k1;
+
+					XMVECTOR nodeWorldSpace = worldPos(node1);
 					float distNew = XMVectorGetX(XMVector3LengthSq(pos - nodeWorldSpace));
 					if (distNew < dist) {
 						dist = distNew;
-						i = i1;
-						j = j1;
-						k = k1;
+						node = node1;
 					}
 				}
 			}
 		}
 	}
 
-	Node node;
-	node.i = i;
-	node.j = j;
-	node.k = k;
+
 
 	return node;
 }
@@ -159,6 +176,16 @@ uint32_t Level::getD()
 uint32_t Level::getH()
 {
 	return h;
+}
+
+bool Level::hasEdge(Node n1, Node n2)
+{
+	return hasEdge(n1.i * w * d + n1.j * w + n1.k, n2.i * w * d + n2.j * w + n2.k);
+}
+
+bool Level::hasEdge(size_t idx1, size_t idx2)
+{
+	return edges[idx1 * w * h * d + idx2];
 }
 
 std::vector<uint8_t>* Level::getEdges()
@@ -275,7 +302,7 @@ bool Layer::doesBlockExist(uint32_t i, uint32_t j) const
 	if (i >= d || j >= w) {
 		return false;
 	}
-	return blocks[pos] != 0;
+	return blocks[pos] != emptyBlockId;
 }
 
 bool Layer::isBlockSolid(uint32_t i, uint32_t j) const
@@ -298,6 +325,8 @@ bool Layer::isBlockSolid(uint32_t i, uint32_t j) const
 	case liftBlockId:
 		return true;
 	}
+
+	return false;
 }
 
 void Layer::update(float t, float dt)

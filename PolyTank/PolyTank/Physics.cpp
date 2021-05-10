@@ -63,8 +63,8 @@ void Physics::update(float t, float dt)
 
 }
 
-inline bool inRange(float x, float a, float b) {
-	return a < x && x < b;
+inline bool overlaps(float min1, float max1, float min2, float max2) {
+	return !(max1 < min2 || min1 > max2);
 }
 
 void Physics::collisions() {
@@ -73,23 +73,30 @@ void Physics::collisions() {
 		bodies[i]->updateWorldShape();
 	}
 
-	auto t1 = std::chrono::steady_clock::now();
-	uint64_t delta = (t1 - t0).count();
-	std::cout << delta / 1e6f << "\n";
-
 	sortAll();
 
 	std::vector<Body*> active;
 	std::vector<std::pair<Body*, Body*>> possibleCollisions;
-		
+	
+	//for (auto it1 = bodies.begin(); it1 != bodies.end(); it1++) {
+	//	for (auto it2 = it1 + 1; it2 != bodies.end(); it2++) {
+	//		possibleCollisions.push_back({ it1->get(), it2->get() });
+	//	}
+	//}
 	for (const EndPoint& ep : xSorted) {
 		if (ep.isBegin) {
 			for (Body* pOther : active) {
+
+				if (dynamic_cast<StaticBody*>(ep.pBody) && dynamic_cast<StaticBody*>(pOther)) {
+					continue;
+				}
+
 				const AABB& bb1 = pOther->getBoundingBox();
 				const AABB& bb2 = ep.pBody->getBoundingBox();
 
-				if ((inRange(bb1.min.y, bb2.min.y, bb2.max.y) || inRange(bb1.max.y, bb2.min.y, bb2.max.y)) &&
-					(inRange(bb1.min.z, bb2.min.z, bb2.max.z) || inRange(bb1.max.z, bb2.min.z, bb2.max.z))) {
+				
+				if (overlaps(bb1.min.y, bb1.max.y, bb2.min.y, bb2.max.y) &&
+					overlaps(bb1.min.z, bb1.max.z, bb2.min.z, bb2.max.z)) {
 					possibleCollisions.emplace_back(pOther, ep.pBody);
 				}
 			}
@@ -102,11 +109,6 @@ void Physics::collisions() {
 	assert(active.empty());
 
 	for (auto pair : possibleCollisions) {
-		
-		if (dynamic_cast<StaticBody*>(pair.first) &&
-			dynamic_cast<StaticBody*>(pair.second)) {
-			continue;
-		}
 
 		XMVECTOR resolution;
 

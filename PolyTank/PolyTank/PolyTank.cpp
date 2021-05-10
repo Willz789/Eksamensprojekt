@@ -51,10 +51,11 @@ void PolyTank::update(float t, float dt) {
 		scene.getRoot()->getChild(0)->getChild(13)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -2.0f * t));
 
 	} else if(state==State::GAME) {
+		level.update(t, dt);
 		for (auto& g : gameObjects) {
 			g->update(dt);
 		}
-		level.update(t, dt);
+
 		player.update(gfx, pcs, dt);
 		pcs.update(t, dt);
 		gfx.setCamera(player.getCamera()->viewMatrix());
@@ -96,10 +97,10 @@ void PolyTank::startGame()
 
 	level.loadFile(gfx, pcs, "./Levels/level1.bin", scene);
 	
-	player = Player(gfx, pcs, scene.getRoot(), *wnd.getInteraction());
+	player = Player(gfx, pcs, level, scene.getRoot(), *wnd.getInteraction());
 	player.initListeners(gfx, pcs);
 
-	Enemy(gfx, pcs, scene.getRoot(), player.getTank(), level);
+	emplaceGameObject<Enemy>(gfx, pcs, scene.getRoot(), player.getTank(), level, Node{ 1, 24, 24 });
 
 	pcs.update(0.0f, 0.0f);
 	resetTime();

@@ -1,7 +1,7 @@
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-int w = 32, h = 4, d = 32;
+int w, h, d;
 float cellSize;
 
 ArrayList<byte[]> blocks;

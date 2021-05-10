@@ -3,12 +3,19 @@
 #include "Tank.h"
 #include "Level.h"
 
-class Enemy
+#include <thread>
+#include <atomic>
+
+class Enemy : public IGameObject
 {
 public:
-	Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level& lvl);
+	Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level& lvl, Node startNode);
+
+	~Enemy();
 
 	void update(float dt);
+	void move(float dt);
+	
 	void buildPath();
 
 private:
@@ -17,6 +24,9 @@ private:
 
 	Level* pLvl;
 	std::vector<Node> path;
+
+	std::thread pathBuilder;
+	std::atomic<bool> pathLocked;
 
 	float shootingRange;
 	float shootingCooldown;

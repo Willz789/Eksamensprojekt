@@ -3,12 +3,12 @@
 
 using namespace DirectX;
 
-Player::Player(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Interaction& interaction) :
+Player::Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Interaction& interaction) :
 	pInteraction(&interaction),
 	shooting(false),
 	shotPower(0.0f)
 {
-	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f));
+	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos({4, 15, 15}));
 	camera.assignTank(*pTank);
 }
 
@@ -36,7 +36,7 @@ void Player::update(Graphics& gfx, Physics& pcs, float dt)
 
 	if (shooting) {
 		if (!pInteraction->lMouseDown) {
-			pTank->shoot(gfx, pcs, shotPower);
+			//pTank->shoot(gfx, pcs, shotPower);
 			shotPower = 0.0f;
 			shooting = false;
 		} else {
