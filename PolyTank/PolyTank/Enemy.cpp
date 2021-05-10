@@ -8,7 +8,7 @@
 using namespace DirectX;
 
 Enemy::Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level& lvl, Node startNode) :
-	shootingCooldown(5.0f),
+	shootingCooldown(1.0f),
 	shootingRange(12.0f),
 	pTarget(pTarget)
 {
@@ -27,6 +27,13 @@ Enemy::~Enemy()
 
 void Enemy::update(float dt)
 {
+	aim();
+	shootingCooldown -= dt;
+	if (shootingCooldown < 0.0f) {
+		pTank->shoot(PolyTank::get().getGfx(), PolyTank::get().getPcs(), 20.0f);
+		shootingCooldown = 1.0f;
+	}
+	
 	if (!pathLocked) {
 		if (!path.empty()) {
 			move(dt);
@@ -51,7 +58,7 @@ void Enemy::move(float dt)
 	XMVECTOR diffLength = XMVector3Length(diff);
 
 	XMVECTOR targetDir = diff / diffLength;
-	XMVECTOR dir = -pTank->getBodyTransform().r[2];
+	XMVECTOR dir = -pTank->bodyToWorld().r[2];
 
 	float rotateAxisY = XMVectorGetZ(targetDir) * XMVectorGetX(dir) - XMVectorGetX(targetDir) * XMVectorGetZ(dir);
 	if (fabsf(rotateAxisY) < 0.1f) {
@@ -71,8 +78,41 @@ void Enemy::move(float dt)
 
 	if (XMVectorGetX(diffLength) < 0.5f) {
 		path.pop_back();
-		std::cout << "got to node at: (" << XMVectorGetX(target) << ", " << XMVectorGetY(target) << ", " << XMVectorGetZ(target) << ")\n";
 	}
+
+}
+
+void Enemy::aim()
+{
+	XMVECTOR diff = XMVector4Transform(pTarget->getPosition(), XMMatrixInverse(nullptr, pTank->bodyToWorld()));
+
+	float yaw = atan2f(XMVectorGetX(diff), XMVectorGetZ(diff));
+
+	diff -= XMVectorSet(0.8f * cosf(yaw), 0.1f, 0.8f * sinf(yaw), 0.0f);
+
+	float y = XMVectorGetY(diff);
+	float x = XMVectorGetX(XMVector2Length(XMVectorSwizzle<0, 2, 3, 3>(diff)));
+
+	float g = Physics::g;
+	float v = 20.0f;
+	float v2 = v * v;
+
+	float sqrt1 = sqrtf(-g*g*x*x - 2.0f*g*v2*y + v2*v2);
+	float sqrt2 = sqrtf((-g * y + v2 + sqrt1) / (x * x + y * y));
+
+	float vy = (y * (-g * y + v2 + sqrt1) / (x * x + y * y) + g) / (v * sqrt2);
+	float vx = x * sqrt2 / v;
+
+	float pitch1 = atan2(vy, vx);
+	float pitch2 = atan2(-0.5f * vy, -0.5f * vx);
+
+	float pitch = pitch2;
+	
+	if (isnan(pitch)) {
+		pitch = -pi;
+	}
+
+	pTank->setTurretRotation(yaw + pi, pitch + pi);
 
 }
 

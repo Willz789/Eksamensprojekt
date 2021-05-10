@@ -52,7 +52,8 @@ void PolyTank::update(float t, float dt) {
 
 	} else if(state==State::GAME) {
 		level.update(t, dt);
-		for (auto& g : gameObjects) {
+		for (size_t i = 0; i < gameObjects.size(); i++) {
+			auto& g = gameObjects[i];
 			g->update(dt);
 		}
 
@@ -100,7 +101,10 @@ void PolyTank::startGame()
 	player = Player(gfx, pcs, level, scene.getRoot(), *wnd.getInteraction());
 	player.initListeners(gfx, pcs);
 
-	emplaceGameObject<Enemy>(gfx, pcs, scene.getRoot(), player.getTank(), level, Node{ 1, 24, 24 });
+	for (uint32_t i = 0; i < 10; i++) {
+		emplaceGameObject<Enemy>(gfx, pcs, scene.getRoot(), player.getTank(), level, Node{ 1, 12 + i, 12 });
+	}
+
 
 	pcs.update(0.0f, 0.0f);
 	resetTime();

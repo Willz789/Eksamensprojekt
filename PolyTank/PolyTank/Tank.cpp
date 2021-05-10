@@ -71,13 +71,18 @@ void Tank::update(float dt) {
 void Tank::shoot(Graphics& gfx, Physics& pcs, float power)
 {
 	XMMATRIX turretTransform = pNode->getChild(turretNodeIdx)->localToWorld();
-	XMVECTOR turretTip = XMVector4Transform(XMVectorSet(0.0f, 0.1f, -2.0f, 1.0f), turretTransform);
-	PolyTank::get().emplaceGameObject<Projectile>(gfx, pcs, pNode->getParent(), turretTip, XMQuaternionRotationMatrix(turretTransform), power);
+	PolyTank::get().emplaceGameObject<Projectile>(gfx, pcs, pNode->getParent(), getTurretTipPos(), XMQuaternionRotationMatrix(turretTransform), power);
 }
 
 void Tank::rotateTurret(float yaw, float pitch) {
 	turretYaw = normalizeAngle(turretYaw + yaw);
 	turretPitch = std::clamp(turretPitch + pitch, 0.001f, 0.499f*pi);
+}
+
+void Tank::setTurretRotation(float yaw, float pitch)
+{
+	turretYaw = yaw;
+	turretPitch = pitch;
 }
 
 void Tank::resetTurretPitch()
@@ -123,12 +128,7 @@ DirectX::XMMATRIX Tank::turretToWorld() {
 DirectX::XMVECTOR Tank::getTurretTipPos()
 {
 	XMMATRIX turretTransform = pNode->getChild(turretNodeIdx)->localToWorld();
-	return XMVector4Transform(XMVectorSet(0.0f, 0.2f, -1.0f, 1.0f), turretTransform);
-}
-
-DirectX::XMMATRIX Tank::getTurretTransform()
-{
-	return pNode->getChild(turretNodeIdx)->localToWorld();;
+	return XMVector4Transform(XMVectorSet(0.0f, 0.05f, -1.0f, 1.0f), turretTransform);
 }
 
 DirectX::XMVECTOR Tank::getPosition()
@@ -139,9 +139,4 @@ DirectX::XMVECTOR Tank::getPosition()
 DirectX::XMVECTOR Tank::getGroundPosition()
 {
 	return pRB->getPosition() - XMVectorSet(0.0f, boxDims.y / 2.0f, 0.0f, 0.0f);
-}
-
-DirectX::XMMATRIX Tank::getBodyTransform()
-{
-	return pNode->localToWorld();
 }

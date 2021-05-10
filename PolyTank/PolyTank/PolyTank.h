@@ -49,9 +49,8 @@ private:
 
 	Level level;
 
-	std::vector<std::unique_ptr<IGameObject>> gameObjects;
 	std::vector<IGameObject*> deleteList;
-
+	std::vector<std::unique_ptr<IGameObject>> gameObjects;
 	
 };
 

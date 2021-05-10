@@ -15,6 +15,7 @@ public:
 
 	void update(float dt);
 	void move(float dt);
+	void aim();
 	
 	void buildPath();
 

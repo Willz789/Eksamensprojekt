@@ -57,3 +57,8 @@ Window* Application::getWnd()
 {
 	return &wnd;
 }
+
+Graphics& Application::getGfx()
+{
+	return gfx;
+}

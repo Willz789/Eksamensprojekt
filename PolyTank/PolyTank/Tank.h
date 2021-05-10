@@ -21,6 +21,7 @@ public:
 	void shoot(Graphics& gfx, Physics& pcs, float power);
 	
 	void rotateTurret(float yaw, float pitch);
+	void setTurretRotation(float yaw, float pitch);
 	void resetTurretPitch();
 
 	void driveForward(float dt);
@@ -32,11 +33,8 @@ public:
 	DirectX::XMMATRIX turretToWorld();
 
 	DirectX::XMVECTOR getTurretTipPos();
-	DirectX::XMMATRIX getTurretTransform();
-
 	DirectX::XMVECTOR getPosition();
 	DirectX::XMVECTOR getGroundPosition();
-	DirectX::XMMATRIX getBodyTransform();
 	
 private:
 	static constexpr DirectX::XMFLOAT3 boxDims = { 0.68f, 0.4f, 1.0f };

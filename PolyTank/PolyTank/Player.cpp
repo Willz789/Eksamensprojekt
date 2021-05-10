@@ -37,7 +37,7 @@ void Player::update(Graphics& gfx, Physics& pcs, float dt)
 
 	if (shooting) {
 		if (!pInteraction->lMouseDown) {
-			//pTank->shoot(gfx, pcs, shotPower);
+			pTank->shoot(gfx, pcs, shotPower);
 			shotPower = 0.0f;
 			shooting = false;
 		} else {

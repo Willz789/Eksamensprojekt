@@ -20,6 +20,8 @@ public:
 
 	Window* getWnd();
 
+	Graphics& getGfx();
+
 protected:
 	Window wnd;
 	Graphics gfx;

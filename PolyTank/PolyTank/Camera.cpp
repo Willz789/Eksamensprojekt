@@ -38,7 +38,7 @@ DirectX::FXMMATRIX Camera::viewMatrix() {
 	}
 	else {
 		XMVECTOR eyeDirection = -turretToWorld.r[2];
-		XMVECTOR eyePos = pTank->getTurretTipPos();
+		XMVECTOR eyePos = XMVector4Transform(XMVectorSet(0.0f, 0.1f, -0.2f, 1.0f), pTank->turretToWorld());
 		return XMMatrixLookToRH(eyePos, eyeDirection, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 	}
 	

@@ -29,7 +29,7 @@ private:
 	void sortAll();
 	void sort(std::vector<EndPoint>& endPoints, std::function<float(const EndPoint&)> eval);
 
-private:	
+public:	
 	static constexpr float g = 9.82f;
 
 private:
