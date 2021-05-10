@@ -8,6 +8,8 @@
 using namespace DirectX;
 
 Enemy::Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level& lvl, Node startNode) :
+	shootingCooldown(5.0f),
+	shootingRange(12.0f),
 	pTarget(pTarget)
 {
 	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos(startNode));
@@ -16,6 +18,10 @@ Enemy::Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level
 
 Enemy::~Enemy()
 {
+	if (pathBuilder.joinable()) {
+		pathBuilder.join();
+	}
+
 	PolyTank::get().deleteGameObject(pTank);
 }
 
@@ -35,8 +41,6 @@ void Enemy::update(float dt)
 			});
 		}
 	}
-
-
 }
 
 void Enemy::move(float dt)

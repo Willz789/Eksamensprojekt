@@ -22,9 +22,9 @@ public:
 	Lift(Graphics& gfx, Physics& pcs, SceneNode* pLayerNode, const Block& b, uint32_t layerIdx, uint32_t i, uint32_t j, uint32_t d, uint32_t w);
 	
 	Lift(const Lift&) = delete;
-	Lift(Lift&& other);
+	Lift(Lift&& other) noexcept;
 	Lift& operator=(const Lift&) = delete;
-	Lift& operator=(Lift&& other);
+	Lift& operator=(Lift&& other) noexcept;
 
 	~Lift();
 

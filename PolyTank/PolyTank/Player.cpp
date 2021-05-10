@@ -6,7 +6,8 @@ using namespace DirectX;
 Player::Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Interaction& interaction) :
 	pInteraction(&interaction),
 	shooting(false),
-	shotPower(0.0f)
+	shotPower(0.0f),
+	pMListener(nullptr)
 {
 	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos({4, 15, 15}));
 	camera.assignTank(*pTank);

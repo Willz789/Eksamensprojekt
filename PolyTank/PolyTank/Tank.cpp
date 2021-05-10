@@ -6,7 +6,9 @@
 
 using namespace DirectX;
 
-Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos) {
+Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos) :
+	maxHealth(100),
+	health(maxHealth) {
 
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
@@ -29,7 +31,10 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 		}
 	});
 
-
+	XMMATRIX world = pNode->localToWorld();
+	XMStoreFloat3(&forwardDir, -world.r[2]);
+	XMStoreFloat3(&upDir, world.r[1]);
+	XMStoreFloat3(&rightDir, world.r[0]);
 }
 
 Tank::~Tank() {

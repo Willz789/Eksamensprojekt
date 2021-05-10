@@ -10,6 +10,8 @@
 class Mesh : public IDrawable
 {
 public:
+	Mesh() = default;
+
 	void draw(Graphics& gfx, DirectX::XMMATRIX transform) const override;
 	
 	void addBindable(std::shared_ptr<IBindable> pBindable);

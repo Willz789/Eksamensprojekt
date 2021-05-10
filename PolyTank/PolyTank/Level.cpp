@@ -136,7 +136,7 @@ DirectX::XMVECTOR Level::worldPos(Node n)
 Node Level::findNearestNode(FXMVECTOR pos)
 {
 	float dist = std::numeric_limits<float>::infinity();
-	Node node;
+	Node node = { 0, 0, 0 };
 
 	for (uint32_t i1 = 0; i1 < h; i1++) {
 		for (uint32_t j1 = 0; j1 < d; j1++) {
@@ -157,8 +157,6 @@ Node Level::findNearestNode(FXMVECTOR pos)
 			}
 		}
 	}
-
-
 
 	return node;
 }
@@ -660,7 +658,7 @@ Lift::Lift(Graphics& gfx, Physics& pcs, SceneNode* pLayerNode, const Block& b, u
 	pNode->addDrawable(std::move(pMesh));
 }
 
-Lift::Lift(Lift&& other) {
+Lift::Lift(Lift&& other) noexcept {
 	pBody = other.pBody;
 	pNode = other.pNode;
 	basePosition = other.basePosition;
@@ -669,7 +667,7 @@ Lift::Lift(Lift&& other) {
 	other.pNode = nullptr;
 }
 
-Lift& Lift::operator=(Lift&& other)
+Lift& Lift::operator=(Lift&& other) noexcept
 {
 	pBody = other.pBody;
 	pNode = other.pNode;
