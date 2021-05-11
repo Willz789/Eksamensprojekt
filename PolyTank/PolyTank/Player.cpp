@@ -81,3 +81,8 @@ Camera* Player::getCamera()
 {
 	return &camera;
 }
+
+uint8_t Player::getActivePowerUp()
+{
+	return activePowerUp;
+}

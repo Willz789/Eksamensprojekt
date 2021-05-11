@@ -16,10 +16,14 @@ public:
 	Tank* getTank();
 
 	Camera* getCamera();
+
+	uint8_t getActivePowerUp();
 	
 private:
 	bool shooting;
 	float shotPower;
+
+	uint8_t activePowerUp;
 
 	Camera camera;
 

@@ -92,6 +92,7 @@ Physics& PolyTank::getPcs()
 void PolyTank::startGame()
 {
 	state = State::GAME;
+
 	scene.getRoot()->reset();
 	wnd.getInteraction()->setCursorLocked(true);
 	wnd.getInteraction()->setCursorVisible(false);
@@ -104,7 +105,6 @@ void PolyTank::startGame()
 	for (uint32_t i = 0; i < 10; i++) {
 		emplaceGameObject<Enemy>(gfx, pcs, scene.getRoot(), player.getTank(), level, Node{ 1, 12 + i, 12 });
 	}
-
 
 	pcs.update(0.0f, 0.0f);
 	resetTime();

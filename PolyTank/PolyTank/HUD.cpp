@@ -7,7 +7,8 @@ using Microsoft::WRL::ComPtr;
 HUD::HUD(Graphics& gfx, Interaction* pInteraction) :
 	pInteraction(pInteraction),
 	hpBar(RoundedRect(RectF(0.0f, 0.0f, 0.0f, 0.0f), 0.0f, 0.0f)),
-	ammoBar(RoundedRect(RectF(0.0f, 0.0f, 0.0f, 0.0f), 0.0f, 0.0f)) {
+	ammoBar(RoundedRect(RectF(0.0f, 0.0f, 0.0f, 0.0f), 0.0f, 0.0f)) 
+{
 	
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(0.0f, 0.0f, 0.0f), &pBlack));
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(1.0f, 0.0f, 0.0f), &pRed));
@@ -26,15 +27,15 @@ void HUD::resize(uint32_t w, uint32_t h) {
 
 	hpBar.rect.left = float(w) * 0.25f;
 	hpBar.rect.right = float(w) * 0.75f;
-	hpBar.rect.top = h - 50;
-	hpBar.rect.bottom = hpBar.rect.top + 15;
+	hpBar.rect.top = h * 0.9f;
+	hpBar.rect.bottom = hpBar.rect.top + h * 0.02f;
 	hpBar.radiusX = (hpBar.rect.bottom - hpBar.rect.top) / 2.0f;
 	hpBar.radiusY = hpBar.radiusX;
 
 	ammoBar.rect.left = hpBar.rect.left;
 	ammoBar.rect.right = hpBar.rect.right;
 	ammoBar.rect.top = hpBar.rect.bottom;
-	ammoBar.rect.bottom = ammoBar.rect.top + 15;
+	ammoBar.rect.bottom = ammoBar.rect.top + h * 0.02f;
 	ammoBar.radiusX = (ammoBar.rect.bottom - ammoBar.rect.top) / 2.0f;
 	ammoBar.radiusY = ammoBar.radiusX;
 	
@@ -42,6 +43,13 @@ void HUD::resize(uint32_t w, uint32_t h) {
 	minimapFrame.point.y = h * 1.0f / 24.0f + w * 2.0f / 24.0f;
 	minimapFrame.radiusX = w * 2.0f / 24.0f;
 	minimapFrame.radiusY = minimapFrame.radiusX;
+
+	powerUpFrame.rect.left = ammoBar.rect.right + w * 0.01f;
+	powerUpFrame.rect.right = powerUpFrame.rect.left + w * 0.03f;
+	powerUpFrame.rect.top = hpBar.rect.top - h * 0.01f;
+	powerUpFrame.rect.bottom = ammoBar.rect.bottom + h * 0.01f;
+	powerUpFrame.radiusX = (ammoBar.rect.bottom - ammoBar.rect.top) / 2.0f;
+	powerUpFrame.radiusY = powerUpFrame.radiusX;
 }
 
 // maps [a, b] -> [c, d]
@@ -71,7 +79,18 @@ void HUD::draw(Graphics& gfx) {
 	gfx.getCtx2D()->FillRoundedRectangle(ammo, pOrange.Get());
 	gfx.getCtx2D()->DrawRoundedRectangle(ammoBar, pBlack.Get(), 3.0f);
 
-
 	gfx.getCtx2D()->DrawEllipse(minimapFrame, pBlack.Get(), 3.0f);
+
+	gfx.getCtx2D()->DrawRoundedRectangle(powerUpFrame, pBlack.Get(), 2.0f);
+
+	// Draw active power-up (Add more if more power-ups)
+	//switch (pPlayer->getActivePowerUp()) {
+	//	case PowerUpDamage:
+	//		gfx.getCtx2D()->DrawRoundedRectangle(powerUpFrame, pBlack.Get(), 2.0f);
+	//		// Damage-symbol
+	//	case PowerUpNone:
+	//		std::cout << "No Power-up\n";
+	//}
+
 }
 
