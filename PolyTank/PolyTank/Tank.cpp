@@ -8,7 +8,7 @@ using namespace DirectX;
 
 Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos) :
 	maxHealth(100),
-	health(maxHealth) {
+	health(100) {
 
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
@@ -20,7 +20,8 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 		std::make_unique<Box>(boxDims.x, boxDims.y, boxDims.z),
 		initPos + XMVectorSet(0.0f, boxDims.y, 0.0f, 0.0f),
 		XMQuaternionIdentity(),
-		10.0f
+		10.0f,
+		this
 	);
 
 	pcs.assignCollisionHandler(pRB, [this](Body* pOther, FXMVECTOR resolution) -> void {
@@ -71,7 +72,13 @@ void Tank::update(float dt) {
 void Tank::shoot(Graphics& gfx, Physics& pcs, float power)
 {
 	XMMATRIX turretTransform = pNode->getChild(turretNodeIdx)->localToWorld();
-	PolyTank::get().emplaceGameObject<Projectile>(gfx, pcs, pNode->getParent(), getTurretTipPos(), XMQuaternionRotationMatrix(turretTransform), power);
+
+	int32_t damage = 10;
+	if (this == PolyTank::get().getPlayer().getTank()) {
+		damage = 100;
+	}
+
+	PolyTank::get().emplaceGameObject<Projectile>(gfx, pcs, pNode->getParent(), getTurretTipPos(), XMQuaternionRotationMatrix(turretTransform), power, damage);
 }
 
 void Tank::rotateTurret(float yaw, float pitch) {
@@ -139,4 +146,33 @@ DirectX::XMVECTOR Tank::getPosition()
 DirectX::XMVECTOR Tank::getGroundPosition()
 {
 	return pRB->getPosition() - XMVectorSet(0.0f, boxDims.y / 2.0f, 0.0f, 0.0f);
+}
+
+void Tank::takeDamage(int32_t damage)
+{
+	health -= damage;
+
+	if (health <= 0) {
+		die();
+	}
+}
+
+void Tank::die()
+{
+	onDeath();
+}
+
+int32_t Tank::getHealth()
+{
+	return health;
+}
+
+int32_t Tank::getMaxHealth()
+{
+	return maxHealth;
+}
+
+void Tank::setDeathAction(std::function<void()> onDeath)
+{
+	this->onDeath = onDeath;
 }

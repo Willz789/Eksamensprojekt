@@ -22,6 +22,8 @@ public:
 	void deleteBody(Body* pBody);
 	void assignCollisionHandler(Body* pBody, CollisionHandler ch);
 
+	size_t bodyCount() const;
+
 	void update(float t, float dt);
 	
 private:

@@ -5,9 +5,10 @@
 
 using namespace DirectX;
 
-RigidBody::RigidBody(std::unique_ptr<ConvexShape>&& pShape, FXMVECTOR initPos, FXMVECTOR initRot, float m) :
+RigidBody::RigidBody(std::unique_ptr<ConvexShape>&& pShape, FXMVECTOR initPos, FXMVECTOR initRot, float m, IGameObject* pOwner) :
 	Body(std::move(pShape), initPos, initRot),
-	mass(m)
+	mass(m),
+	pOwner(pOwner)
 {
 
 	XMMATRIX inertia = mass * this->pShape->inertiaTensor();
@@ -138,4 +139,9 @@ void RigidBody::update(float dt)
 	XMStoreFloat4(&rotation, quaternion);
 
 	transformDirty = true;
+}
+
+IGameObject* RigidBody::owner() const
+{
+	return pOwner;
 }

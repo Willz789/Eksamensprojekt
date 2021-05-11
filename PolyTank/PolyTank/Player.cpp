@@ -7,10 +7,15 @@ Player::Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Intera
 	pInteraction(&interaction),
 	shooting(false),
 	shotPower(0.0f),
+	tankDead(false),
 	pMListener(nullptr)
 {
 	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos({4, 15, 15}));
-	camera.assignTank(*pTank);
+	camera.assignTank(*pTank); 
+
+	pTank->setDeathAction([this]() -> void {
+		PolyTank::get().getPlayer().tankDied();
+	});
 }
 
 Player::~Player()
@@ -34,6 +39,7 @@ void Player::update(Graphics& gfx, Physics& pcs, float dt)
 	if (pInteraction->keyDown('D')) {
 		pTank->turnRight(dt);
 	}
+
 
 	if (shooting) {
 		if (!pInteraction->lMouseDown) {
@@ -72,6 +78,13 @@ void Player::initListeners(Graphics& gfx, Physics& pcs)
 	});
 }
 
+void Player::removeListeners()
+{
+	if (pMListener) {
+		pInteraction->removeListener(pMListener);
+	}
+}
+
 Tank* Player::getTank()
 {
 	return pTank;
@@ -80,4 +93,14 @@ Tank* Player::getTank()
 Camera* Player::getCamera()
 {
 	return &camera;
+}
+
+void Player::tankDied()
+{
+	tankDead = true;
+}
+
+bool Player::isTankDead()
+{
+	return tankDead;
 }

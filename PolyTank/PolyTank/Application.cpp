@@ -14,7 +14,8 @@ using namespace DirectX;
 
 Application::Application() :
 	wnd(1280, 720, "PolyTank"),
-	gfx(wnd)
+	gfx(wnd),
+	scene(gfx)
 	{}
 
 using std::chrono::steady_clock;
@@ -39,7 +40,23 @@ void Application::run() {
 		float dt = std::chrono::duration<float>(tnow - tframe).count();
 		tframe = tnow;
 		
-		update(t, dt);
+		for (size_t i = 0; i < gameObjects.size(); i++) {
+			gameObjects[i]->update(dt);
+		}
+		pcs.update(t, dt);
+		update(t, dt); 
+
+		size_t deleteListSize;
+		do {
+			deleteListSize = deleteList.size();
+			gameObjects.erase(
+				std::remove_if(gameObjects.begin(), gameObjects.end(), [this](std::unique_ptr<IGameObject>& g)->bool {
+					return std::find(deleteList.begin(), deleteList.end(), g.get()) != deleteList.end();
+				}), gameObjects.end()
+			);
+		} while (deleteList.size() != deleteListSize);
+
+		deleteList.clear();
 
 		gfx.beginFrame();
 		render();
@@ -53,6 +70,17 @@ void Application::resetTime()
 	tframe = tstart;
 }
 
+IGameObject* Application::addGameObject(std::unique_ptr<IGameObject>&& pGameObject)
+{
+	gameObjects.push_back(std::move(pGameObject));
+	return gameObjects.back().get();
+}
+
+void Application::deleteGameObject(IGameObject* pGameObject)
+{
+	deleteList.push_back(pGameObject);
+}
+
 Window* Application::getWnd()
 {
 	return &wnd;
@@ -61,4 +89,9 @@ Window* Application::getWnd()
 Graphics& Application::getGfx()
 {
 	return gfx;
+}
+
+Physics& Application::getPcs()
+{
+	return pcs;
 }

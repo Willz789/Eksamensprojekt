@@ -14,6 +14,10 @@ Enemy::Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level
 {
 	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos(startNode));
 	pLvl = &lvl;
+
+	pTank->setDeathAction([this]() -> void {
+		PolyTank::get().deleteGameObject(this);
+	});
 }
 
 Enemy::~Enemy()

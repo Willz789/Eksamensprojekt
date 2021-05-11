@@ -18,45 +18,25 @@ class PolyTank : public Application {
 		GAME
 	};
 
-
 public:
 	PolyTank();
 
 	static PolyTank& get();
 
-	IGameObject* addGameObject(std::unique_ptr<IGameObject>&& pGameObject);
-	template <typename T, typename ...CTorArgs>
-	T* emplaceGameObject(CTorArgs&&... args);
-
-	void deleteGameObject(IGameObject* pGameObject);
-
 	void update(float t, float dt) override;
 	void render() override;
 
-	Physics& getPcs();
-
 	void startGame();
+	void toMenu();
+
+	Player& getPlayer();
 
 private:
 
 	State state;
-	
-	Scene scene;
 	Menu menu;
 	HUD hud;
 
 	Player player;
-
 	Level level;
-
-	std::vector<IGameObject*> deleteList;
-	std::vector<std::unique_ptr<IGameObject>> gameObjects;
-	
 };
-
-template<typename T, typename ...CTorArgs>
-inline T* PolyTank::emplaceGameObject(CTorArgs&&... args)
-{
-	gameObjects.push_back(std::make_unique<T>(std::forward<CTorArgs>(args)...));
-	return static_cast<T*>(gameObjects.back().get());
-}

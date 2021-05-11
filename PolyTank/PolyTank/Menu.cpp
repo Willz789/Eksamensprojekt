@@ -10,8 +10,8 @@ inline bool isPointIn(D2D1_POINT_2F p, D2D1_RECT_F r) {
 	return p.x > r.left && p.x < r.right&& p.y > r.top && p.y < r.bottom;
 }
 
-Menu::Menu(Graphics& gfx, PolyTank& polyTank) :
-	interaction(polyTank.getWnd()->getInteraction())
+Menu::Menu(Graphics& gfx, Interaction* pInteraction) :
+	pInteraction(pInteraction)
 {
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(1.0f, 1.0f, 1.0f), &pWhiteBrush));
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(0.0f, 0.0f, 0.0f), &pBlackBrush));
@@ -39,28 +39,41 @@ Menu::Menu(Graphics& gfx, PolyTank& polyTank) :
 		&pWTFTitle
 	);
 	pWTFTitle->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+}
 
-	buttonListener = interaction->addListener([&polyTank, this](const MouseEvent& e)->void {
+Menu::~Menu() {
+	pInteraction->removeListener(pMListener);
+	pInteraction->removeListener(pRListener);
+}
+
+void Menu::initListeners()
+{
+	pMListener = pInteraction->addListener([this](const MouseEvent& e)->void {
 		if (e.button == MouseEvent::Button::LEFT) {
 			D2D1_POINT_2F mouseLocation = Point2F(e.mousex, e.mousey);
 			if (isPointIn(mouseLocation, startGameRect)) {
-				interaction->removeListener(buttonListener);
-				polyTank.startGame();
+				PolyTank::get().startGame();
 			}
 			else if (isPointIn(mouseLocation, endGameRect)) {
-				polyTank.getWnd()->exit();
+				PolyTank::get().getWnd()->exit();
 			}
 		}
-	});
+		});
 
-	resizeListener = interaction->addListener([this](const ResizeEvent& e) -> void {
+	pRListener = pInteraction->addListener([this](const ResizeEvent& e) -> void {
 		this->resize(e.width, e.height);
 	});
 }
 
-Menu::~Menu() {
-	interaction->removeListener(buttonListener);
-	interaction->removeListener(resizeListener);
+void Menu::removeListeners()
+{
+	if (pMListener) {
+		pInteraction->removeListener(pMListener);
+	}
+
+	if (pRListener) {
+		pInteraction->removeListener(pRListener);
+	}
 }
 
 void Menu::resize(uint32_t w, uint32_t h) {

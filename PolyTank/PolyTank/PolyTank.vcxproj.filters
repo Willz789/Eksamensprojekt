@@ -296,9 +296,6 @@
     <ClInclude Include="Projectile.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
-    <ClInclude Include="IGameObject.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="StaticBody.h">
       <Filter>Header Files\Engine\Physics</Filter>
     </ClInclude>
@@ -313,6 +310,9 @@
     </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="IGameObject.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

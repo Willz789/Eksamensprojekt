@@ -11,7 +11,7 @@ class Projectile : public IGameObject
 {
 public:
 	Projectile() = default;
-	Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR initRot, float initVel);
+	Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR initRot, float initVel, int32_t damage);
 	~Projectile();
 
 	void update(float dt) override;
