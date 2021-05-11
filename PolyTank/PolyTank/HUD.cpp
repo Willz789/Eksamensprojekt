@@ -82,13 +82,13 @@ void HUD::draw(Graphics& gfx) {
 	gfx.getCtx2D()->DrawRoundedRectangle(powerUpFrame, pBlack.Get(), 2.0f);
 
 	// Draw active power-up (Add more if more power-ups)
-	//switch (pPlayer->getActivePowerUp()) {
-	//	case PowerUpDamage:
-	//		gfx.getCtx2D()->DrawRoundedRectangle(powerUpFrame, pBlack.Get(), 2.0f);
-	//		// Damage-symbol
-	//	case PowerUpNone:
-	//		std::cout << "No Power-up\n";
-	//}
+	switch (PolyTank::get().getPlayer().getActivePowerUp()) {
+		case PowerUpDamage:
+			gfx.getCtx2D()->DrawRoundedRectangle(powerUpFrame, pBlack.Get(), 2.0f);
+			// Damage-symbol
+		case PowerUpNone:
+			std::cout << "No Power-up\n";
+	}
 
 }
 
