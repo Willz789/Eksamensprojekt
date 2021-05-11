@@ -36,9 +36,11 @@ void Player::update(Graphics& gfx, Physics& pcs, float dt)
 	}
 	if (pInteraction->keyDown('A')) {
 		pTank->turnLeft(dt);
+		pTank->rotateTurret(-pTank->getRotationSpeed() * dt, 0);
 	}
 	if (pInteraction->keyDown('D')) {
 		pTank->turnRight(dt);
+		pTank->rotateTurret(pTank->getRotationSpeed() * dt, 0);
 	}
 
 

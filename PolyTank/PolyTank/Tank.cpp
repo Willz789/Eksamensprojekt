@@ -94,29 +94,22 @@ void Tank::resetTurretPitch()
 
 void Tank::driveForward(float dt)
 {
-
-	//pRB->addForce(pRB->getMass() * acc * XMLoadFloat3(&forwardDir));
 	pRB->setPosition(pRB->getPosition() + 5.0f * dt * XMLoadFloat3(&forwardDir));
 }
 
 void Tank::driveBackward(float dt)
 {
-	//pRB->addForce(pRB->getMass() * acc * -XMLoadFloat3(&forwardDir));
 	pRB->setPosition(pRB->getPosition() - 5.0f * dt * XMLoadFloat3(&forwardDir));
 }
  
 void Tank::turnRight(float dt)
 {
-	//pRB->addForce(0.5 * pRB->getMass() * acc * XMLoadFloat3(&forwardDir), pRB->getPosition() - (boxDims.x / 2) * XMLoadFloat3(&rightDir));
-	//pRB->addTorque(-acc * XMLoadFloat3(&upDir));
-	pRB->setRotation(XMQuaternionMultiply(pRB->getRotation(), XMQuaternionRotationNormal(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), dt)));
+	pRB->setRotation(XMQuaternionMultiply(pRB->getRotation(), XMQuaternionRotationNormal(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), rotationSpeed * dt)));
 }
 
 void Tank::turnLeft(float dt)
 {
-	//pRB->addForce(0.5 * pRB->getMass() * acc * XMLoadFloat3(&forwardDir), pRB->getPosition() + (boxDims.x / 2) * XMLoadFloat3(&rightDir));
-	//pRB->addTorque(+acc * XMLoadFloat3(&upDir));
-	pRB->setRotation(XMQuaternionMultiply(pRB->getRotation(), XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), dt)));
+	pRB->setRotation(XMQuaternionMultiply(pRB->getRotation(), XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotationSpeed * dt)));
 }
 
 DirectX::XMMATRIX Tank::bodyToWorld() {
@@ -141,6 +134,11 @@ DirectX::XMVECTOR Tank::getPosition()
 DirectX::XMVECTOR Tank::getGroundPosition()
 {
 	return pRB->getPosition() - XMVectorSet(0.0f, boxDims.y / 2.0f, 0.0f, 0.0f);
+}
+
+float Tank::getRotationSpeed()
+{
+	return rotationSpeed;
 }
 
 void Tank::takeDamage(int32_t damage)
