@@ -72,6 +72,7 @@ private:
 	std::list<ResizeListener> resizeListeners;
 
 	bool cursorLocked;
+	bool cursorVisible;
 
 	HWND hWnd;
 };
