@@ -27,6 +27,9 @@ public:
 	float getShotPower();
 	float getMaxShotPower();
 
+	uint32_t getPoints();
+	void addPoints(uint32_t addedPoints);
+
 private:
 	static constexpr int32_t baseDamage = 20;
 
@@ -37,6 +40,8 @@ private:
 	bool tankDead;
 
 	float damageMultiplier;
+
+	uint32_t points;
 
 	uint8_t activePowerUp;
 

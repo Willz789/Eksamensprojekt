@@ -9,6 +9,7 @@ Player::Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Intera
 	shotPower(0.0f),
 	maxShotPower(25.0f),
 	damageMultiplier(1.0f),
+	points(0),
 	tankDead(false),
 	pMListener(nullptr)
 {
@@ -129,4 +130,14 @@ float Player::getShotPower()
 float Player::getMaxShotPower()
 {
 	return maxShotPower;
+}
+
+uint32_t Player::getPoints()
+{
+	return points;
+}
+
+void Player::addPoints(uint32_t addedPoints)
+{
+	points += addedPoints;
 }

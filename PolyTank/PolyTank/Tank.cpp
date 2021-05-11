@@ -67,6 +67,9 @@ void Tank::update(float dt) {
 	XMVECTOR dragAng = -XMVector3Length(angVel) * angVel * dragConstant;
 	pRB->addTorque(dragAng);
 	
+	if (XMVectorGetY(pRB->getPosition()) <= -5) {
+		takeDamage(1);
+	}
 }
 
 void Tank::shoot(Graphics& gfx, Physics& pcs, float power, int32_t damage)

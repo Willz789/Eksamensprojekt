@@ -17,6 +17,19 @@ HUD::HUD(Graphics& gfx, Interaction* pInteraction) :
 	resizeListener = pInteraction->addListener([this](const ResizeEvent& e) -> void {
 		this->resize(e.width, e.height);
 	});
+
+	gfx.getFactoryW()->CreateTextFormat(
+		L"Agency FB",
+		nullptr,
+		DWRITE_FONT_WEIGHT_BOLD,
+		DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH_NORMAL,
+		50.0f,
+		L"en-us",
+		&pWTFScore
+	);
+	pWTFScore->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
 }
 
 HUD::~HUD() {
@@ -38,11 +51,6 @@ void HUD::resize(uint32_t w, uint32_t h) {
 	powerBar.rect.bottom = powerBar.rect.top + h * 0.02f;;
 	powerBar.radiusX = (powerBar.rect.bottom - powerBar.rect.top) / 2.0f;
 	powerBar.radiusY = powerBar.radiusX;
-	
-	minimapFrame.point.x = w * 21.0f / 24.0f;
-	minimapFrame.point.y = h * 1.0f / 24.0f + w * 2.0f / 24.0f;
-	minimapFrame.radiusX = w * 2.0f / 24.0f;
-	minimapFrame.radiusY = minimapFrame.radiusX;
 
 	powerUpFrame.rect.left = hpBar.rect.right + w * 0.01f;
 	powerUpFrame.rect.right = powerUpFrame.rect.left + w * 0.03f;
@@ -50,6 +58,11 @@ void HUD::resize(uint32_t w, uint32_t h) {
 	powerUpFrame.rect.bottom = powerBar.rect.bottom + h * 0.01f;
 	powerUpFrame.radiusX = powerBar.radiusX;
 	powerUpFrame.radiusY = powerUpFrame.radiusX;
+
+	scoreRect.left = w / 2 - w * 0.5f;
+	scoreRect.right = w / 2 + w * 0.5f;
+	scoreRect.top = h * 2.0f / 25.0f;
+	scoreRect.bottom = h * 5.0f / 24.0f;
 }
 
 // maps [a, b] -> [c, d]
@@ -77,7 +90,6 @@ void HUD::draw(Graphics& gfx) {
 	gfx.getCtx2D()->FillRoundedRectangle(power, pOrange.Get());
 	gfx.getCtx2D()->DrawRoundedRectangle(powerBar, pBlack.Get(), 3.0f);
 
-	gfx.getCtx2D()->DrawEllipse(minimapFrame, pBlack.Get(), 3.0f);
 	gfx.getCtx2D()->DrawRoundedRectangle(powerUpFrame, pBlack.Get(), 2.0f);
 
 	// Draw active power-up (Add more if more power-ups)
@@ -88,6 +100,19 @@ void HUD::draw(Graphics& gfx) {
 		case PowerUpNone:
 			std::cout << "No Power-up\n";
 	}
+
+	ComPtr<IDWriteTextLayout> pWTL;
+	std::wstring scoreString = (std::wstringstream() << L"Score: " << PolyTank::get().getPlayer().getPoints()).str();
+	gfx.getFactoryW()->CreateTextLayout(
+		scoreString.c_str(),
+		scoreString.size(), 
+		pWTFScore.Get(),
+		scoreRect.right - scoreRect.left,
+		scoreRect.bottom - scoreRect.top,
+		&pWTL
+	);
+	pWTL->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+	gfx.getCtx2D()->DrawTextLayout(Point2F(scoreRect.left, scoreRect.top), pWTL.Get(), pBlack.Get());
 
 }
 
