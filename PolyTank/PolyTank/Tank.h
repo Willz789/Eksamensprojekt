@@ -35,7 +35,14 @@ public:
 	DirectX::XMVECTOR getTurretTipPos();
 	DirectX::XMVECTOR getPosition();
 	DirectX::XMVECTOR getGroundPosition();
-	
+
+	void takeDamage(int32_t damage);
+	void die();
+	int32_t getHealth();
+	int32_t getMaxHealth();
+
+	void setDeathAction(std::function<void()> onDeath);
+
 private:
 	static constexpr DirectX::XMFLOAT3 boxDims = { 0.68f, 0.4f, 1.0f };
 	
@@ -53,11 +60,12 @@ private:
 	DirectX::XMFLOAT3 upDir;
 	
 	DirectX::XMFLOAT4 turretTipPos;
-
-	SceneNode* pNode;
 	
 	int32_t health;
 	int32_t maxHealth;
+	std::function<void()> onDeath;
 
+	SceneNode* pNode;
 	RigidBody* pRB;
+
 };

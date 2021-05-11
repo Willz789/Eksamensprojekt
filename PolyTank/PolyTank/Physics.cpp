@@ -43,6 +43,11 @@ void Physics::assignCollisionHandler(Body* pBody, CollisionHandler ch) {
 	collisionHandlers[pBody] = ch;
 }
 
+size_t Physics::bodyCount() const
+{
+	return bodies.size();
+}
+
 void Physics::update(float t, float dt)
 {
 	for (auto& pBody : bodies) {

@@ -67,6 +67,11 @@ void SceneNode::deleteNode()
 	pParent->deleteChild(this);
 }
 
+bool SceneNode::isLeaf() const
+{
+	return children.empty();
+}
+
 IDrawable* SceneNode::addDrawable(std::unique_ptr<IDrawable>&& pDrawable) {
 	drawables.push_back(std::move(pDrawable));
 	return drawables.back().get();

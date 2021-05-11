@@ -22,6 +22,7 @@ public:
 	SceneNode* getParent();
 	void deleteChild(SceneNode* pChild);
 	void deleteNode();
+	bool isLeaf() const;
 
 	IDrawable* addDrawable(std::unique_ptr<IDrawable>&& pDrawable);
 	void removeDrawable(IDrawable* pDrawable);

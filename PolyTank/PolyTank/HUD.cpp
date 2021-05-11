@@ -1,5 +1,5 @@
 #include "HUD.h"
-
+#include "PolyTank.h"
 
 using namespace D2D1;
 using Microsoft::WRL::ComPtr;
@@ -60,12 +60,10 @@ inline float map(float x, float a, float b, float c, float d) {
 }
 
 void HUD::draw(Graphics& gfx) {
-
-	// TODO replace these
-	constexpr float playerHP = 80.0f;
-	constexpr float playerMaxHP = 100.0f;
-	constexpr float playerAmmo = 40.0f;
-	constexpr float playerMaxAmmo = 70.0f;
+	float playerHP = float(PolyTank::get().getPlayer().getTank()->getHealth());
+	float playerMaxHP = float(PolyTank::get().getPlayer().getTank()->getMaxHealth());
+	float playerAmmo = 40.0f;
+	float playerMaxAmmo = 70.0f;
 
 	D2D1_ROUNDED_RECT hp = hpBar;
 	hp.rect.right = map(playerHP, 0.0f, playerMaxHP, hpBar.rect.left, hpBar.rect.right);

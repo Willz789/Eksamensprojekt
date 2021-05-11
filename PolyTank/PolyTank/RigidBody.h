@@ -2,12 +2,13 @@
 
 #include "Body.h"
 #include "Util.h"
+#include "IGameObject.h"
 
 #include <memory>
 
 class RigidBody : public Body {
 public:
-	RigidBody(std::unique_ptr<ConvexShape>&& pShape, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR initRot, float m);
+	RigidBody(std::unique_ptr<ConvexShape>&& pShape, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR initRot, float m, IGameObject* pOwner = nullptr);
 
 	DirectX::XMVECTOR getLinMoment() const;
 	DirectX::XMVECTOR getAngMoment() const;
@@ -24,6 +25,7 @@ public:
 	DirectX::XMVECTOR getForce();
 
 	void update(float dt);
+	IGameObject* owner() const;
 
 private:
 	float mass;
@@ -36,4 +38,6 @@ private:
 
 	DirectX::XMFLOAT3 externalForces;
 	DirectX::XMFLOAT3 externalTorques;
+
+	IGameObject* pOwner;
 };

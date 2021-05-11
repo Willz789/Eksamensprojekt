@@ -45,13 +45,13 @@ struct Node {
 class Layer
 {
 public:
-	Layer(Graphics& gfx,  Physics& pcs, uint32_t layerIdx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pNode, DirectX::FXMVECTOR color);
+	Layer(Graphics& gfx,  Physics& pcs, uint32_t layerIdx, uint32_t depth, uint32_t width, std::vector<uint8_t>& blocks, SceneNode* pRoot, DirectX::FXMVECTOR color);
 	~Layer();
 
 	Layer(const Layer&) = delete;
-	Layer(Layer&& other) = default;
+	Layer(Layer&& other) noexcept;
 	Layer& operator=(const Layer&) = delete;
-	Layer& operator=(Layer&& other) = default;
+	Layer& operator=(Layer&& other) noexcept;
 
 	SceneNode* getNode();
 
@@ -96,7 +96,8 @@ public:
 	Level& operator=(const Level&) = delete;
 
 	void loadFile(Graphics& gfx, Physics& pcs, const std::filesystem::path& file, Scene& scene);
-	
+	void clear();
+
 	void update(float t, float dt);
 
 	Layer* getLayer(size_t idx);

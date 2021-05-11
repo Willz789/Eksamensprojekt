@@ -44,11 +44,20 @@ void Level::loadFile(Graphics& gfx, Physics& pcs, const std::filesystem::path& f
 		ifs.read(reinterpret_cast<char*>(blocks.data()), blocks.size());
 		if (!ifs.good()) throw std::runtime_error("");
 
-		SceneNode* pLayerNode = scene.getRoot()->addChild();
-		layers.emplace_back(gfx, pcs, i, d, w, blocks, pLayerNode, colors[i % std::size(colors)]);
+		
+		layers.emplace_back(gfx, pcs, i, d, w, blocks, scene.getRoot(), colors[i % std::size(colors)]);
 	}
 
 	buildGraph(w, h, d);
+}
+
+void Level::clear()
+{
+	layers.clear();
+	edges.clear();
+	w = 0;
+	h = 0;
+	d = 0;
 }
 
 void Level::update(float t, float dt)
@@ -177,7 +186,7 @@ uint32_t Level::getH()
 }
 
 bool Level::hasEdge(Node n1, Node n2)
-{
+{ 
 	return hasEdge(n1.i * w * d + n1.j * w + n1.k, n2.i * w * d + n2.j * w + n2.k);
 }
 
@@ -203,9 +212,9 @@ Layer::Layer(
 	uint32_t depth,
 	uint32_t width,
 	std::vector<uint8_t>& blocks,
-	SceneNode* pNode,
+	SceneNode* pRoot,
 	DirectX::FXMVECTOR color) :
-	pNode(pNode)
+	pNode(pRoot->addChild())
 {
 	this->blocks = blocks;
 	d = depth;
@@ -288,6 +297,36 @@ Layer::~Layer() {
 	for (StaticBody* pBody : blockBodies) {
 		PolyTank::get().getPcs().deleteBody(pBody);
 	}
+
+	if (pNode) {
+		pNode->deleteNode();
+	}
+
+}
+
+Layer::Layer(Layer&& other) noexcept :
+	pNode(other.pNode),
+	w(other.w),
+	d(other.d),
+	blocks(std::move(other.blocks)),
+	blockBodies(std::move(other.blockBodies)),
+	lifts(std::move(other.lifts))
+{
+	other.pNode = nullptr;
+}
+
+Layer& Layer::operator=(Layer&& other) noexcept
+{
+	pNode = other.pNode;
+	w = other.w;
+	d = other.d;
+	blocks = std::move(other.blocks);
+	blockBodies = std::move(other.blockBodies);
+	lifts = std::move(other.lifts);
+
+	other.pNode = nullptr;
+
+	return *this;
 }
 
 SceneNode* Layer::getNode() {

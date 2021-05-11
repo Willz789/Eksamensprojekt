@@ -8,20 +8,25 @@ class Player
 public:
 	Player() = default;
 	Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Interaction& interaction);
-	~Player();
+	~Player(); 
 
 	void update(Graphics& gfx, Physics& pcs, float dt);
 	void initListeners(Graphics& gfx, Physics& pcs);
+	void removeListeners();
 
 	Tank* getTank();
-
 	Camera* getCamera();
 
 	uint8_t getActivePowerUp();
 	
+		
+	void tankDied();
+	bool isTankDead();
+
 private:
 	bool shooting;
 	float shotPower;
+	bool tankDead;
 
 	uint8_t activePowerUp;
 
