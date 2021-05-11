@@ -34,7 +34,7 @@ void Enemy::update(float dt)
 	aim();
 	shootingCooldown -= dt;
 	if (shootingCooldown < 0.0f) {
-		pTank->shoot(PolyTank::get().getGfx(), PolyTank::get().getPcs(), 20.0f);
+		pTank->shoot(PolyTank::get().getGfx(), PolyTank::get().getPcs(), shotPower);
 		shootingCooldown = 1.0f;
 	}
 	
@@ -98,7 +98,7 @@ void Enemy::aim()
 	float x = XMVectorGetX(XMVector2Length(XMVectorSwizzle<0, 2, 3, 3>(diff)));
 
 	float g = Physics::g;
-	float v = 20.0f;
+	float v = shotPower;
 	float v2 = v * v;
 
 	float sqrt1 = sqrtf(-g*g*x*x - 2.0f*g*v2*y + v2*v2);

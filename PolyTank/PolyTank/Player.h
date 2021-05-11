@@ -20,9 +20,13 @@ public:
 	void tankDied();
 	bool isTankDead();
 
+	float getShotPower();
+	float getMaxShotPower();
+
 private:
 	bool shooting;
 	float shotPower;
+	float maxShotPower;
 	bool tankDead;
 
 	Camera camera;

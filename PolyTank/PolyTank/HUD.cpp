@@ -7,7 +7,7 @@ using Microsoft::WRL::ComPtr;
 HUD::HUD(Graphics& gfx, Interaction* pInteraction) :
 	pInteraction(pInteraction),
 	hpBar(RoundedRect(RectF(0.0f, 0.0f, 0.0f, 0.0f), 0.0f, 0.0f)),
-	ammoBar(RoundedRect(RectF(0.0f, 0.0f, 0.0f, 0.0f), 0.0f, 0.0f)) {
+	powerBar(RoundedRect(RectF(0.0f, 0.0f, 0.0f, 0.0f), 0.0f, 0.0f)) {
 	
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(0.0f, 0.0f, 0.0f), &pBlack));
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(1.0f, 0.0f, 0.0f), &pRed));
@@ -31,12 +31,12 @@ void HUD::resize(uint32_t w, uint32_t h) {
 	hpBar.radiusX = (hpBar.rect.bottom - hpBar.rect.top) / 2.0f;
 	hpBar.radiusY = hpBar.radiusX;
 
-	ammoBar.rect.left = hpBar.rect.left;
-	ammoBar.rect.right = hpBar.rect.right;
-	ammoBar.rect.top = hpBar.rect.bottom;
-	ammoBar.rect.bottom = ammoBar.rect.top + 15;
-	ammoBar.radiusX = (ammoBar.rect.bottom - ammoBar.rect.top) / 2.0f;
-	ammoBar.radiusY = ammoBar.radiusX;
+	powerBar.rect.left = hpBar.rect.left;
+	powerBar.rect.right = hpBar.rect.right;
+	powerBar.rect.top = hpBar.rect.bottom;
+	powerBar.rect.bottom = powerBar.rect.top + 15;
+	powerBar.radiusX = (powerBar.rect.bottom - powerBar.rect.top) / 2.0f;
+	powerBar.radiusY = powerBar.radiusX;
 	
 	minimapFrame.point.x = w * 21.0f / 24.0f;
 	minimapFrame.point.y = h * 1.0f / 24.0f + w * 2.0f / 24.0f;
@@ -54,8 +54,8 @@ inline float map(float x, float a, float b, float c, float d) {
 void HUD::draw(Graphics& gfx) {
 	float playerHP = float(PolyTank::get().getPlayer().getTank()->getHealth());
 	float playerMaxHP = float(PolyTank::get().getPlayer().getTank()->getMaxHealth());
-	float playerAmmo = 40.0f;
-	float playerMaxAmmo = 70.0f;
+	float playerPower = PolyTank::get().getPlayer().getShotPower();
+	float playerMaxPower = PolyTank::get().getPlayer().getMaxShotPower();
 
 	D2D1_ROUNDED_RECT hp = hpBar;
 	hp.rect.right = map(playerHP, 0.0f, playerMaxHP, hpBar.rect.left, hpBar.rect.right);
@@ -63,12 +63,11 @@ void HUD::draw(Graphics& gfx) {
 	gfx.getCtx2D()->FillRoundedRectangle(hp, pRed.Get());
 	gfx.getCtx2D()->DrawRoundedRectangle(hpBar, pBlack.Get(), 3.0f);
 
-	D2D1_ROUNDED_RECT ammo = ammoBar;
-	ammo.rect.right = map(playerAmmo, 0.0f, playerMaxAmmo, ammoBar.rect.left, ammoBar.rect.right);
+	D2D1_ROUNDED_RECT power = powerBar;
+	power.rect.right = map(playerPower, 0.0f, playerMaxPower, powerBar.rect.left, powerBar.rect.right);
 
-	gfx.getCtx2D()->FillRoundedRectangle(ammo, pOrange.Get());
-	gfx.getCtx2D()->DrawRoundedRectangle(ammoBar, pBlack.Get(), 3.0f);
-
+	gfx.getCtx2D()->FillRoundedRectangle(power, pOrange.Get());
+	gfx.getCtx2D()->DrawRoundedRectangle(powerBar, pBlack.Get(), 3.0f);
 
 	gfx.getCtx2D()->DrawEllipse(minimapFrame, pBlack.Get(), 3.0f);
 }

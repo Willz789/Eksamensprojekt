@@ -20,6 +20,8 @@ public:
 	void buildPath();
 
 private:
+	static constexpr float shotPower = 25.0f;
+
 	Tank* pTank;
 	Tank* pTarget;
 

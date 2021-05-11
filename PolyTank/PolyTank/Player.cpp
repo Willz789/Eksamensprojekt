@@ -7,6 +7,7 @@ Player::Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Intera
 	pInteraction(&interaction),
 	shooting(false),
 	shotPower(0.0f),
+	maxShotPower(25.0f),
 	tankDead(false),
 	pMListener(nullptr)
 {
@@ -47,7 +48,8 @@ void Player::update(Graphics& gfx, Physics& pcs, float dt)
 			shotPower = 0.0f;
 			shooting = false;
 		} else {
-			shotPower += 30.0f * dt;
+			shotPower += 25.0f * dt;
+			shotPower = std::min(shotPower, maxShotPower);
 		}
 	}
 }
@@ -103,4 +105,14 @@ void Player::tankDied()
 bool Player::isTankDead()
 {
 	return tankDead;
+}
+
+float Player::getShotPower()
+{
+	return shotPower;
+}
+
+float Player::getMaxShotPower()
+{
+	return maxShotPower;
 }
