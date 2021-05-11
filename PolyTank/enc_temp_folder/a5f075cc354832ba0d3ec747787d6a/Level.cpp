@@ -79,17 +79,15 @@ void Level::spawnPowerUp(Node node)
 	static std::random_device rd;
 	static std::default_random_engine rng(rd());
 	std::uniform_int_distribution powerUpIdDist(0u, totalPowerUps-1);
-	
+
+	bool temp = false;
+	while (temp == false) {
+		uint32_t temp2 = powerUpIdDist(rng);
+		std::cout << temp2;
+	}
 	switch (powerUpIdDist(rng)) {
 	case 0:
 		PolyTank::get().emplaceGameObject<PowerUpHealth>(
-			PolyTank::get().getGfx(), 
-			PolyTank::get().getPcs(), 
-			layers[node.i].getNode(),
-			worldPos(node)
-		);
-	case 1:
-		PolyTank::get().emplaceGameObject<PowerUpDamage>(
 			PolyTank::get().getGfx(), 
 			PolyTank::get().getPcs(), 
 			layers[node.i].getNode(),

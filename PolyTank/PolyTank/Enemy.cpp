@@ -34,7 +34,7 @@ void Enemy::update(float dt)
 	aim();
 	shootingCooldown -= dt;
 	if (shootingCooldown < 0.0f) {
-		pTank->shoot(PolyTank::get().getGfx(), PolyTank::get().getPcs(), 20.0f);
+		pTank->shoot(PolyTank::get().getGfx(), PolyTank::get().getPcs(), 20.0f, 10);
 		shootingCooldown = 1.0f;
 	}
 	

@@ -18,15 +18,21 @@ public:
 	Camera* getCamera();
 
 	uint8_t getActivePowerUp();
-	
+
+	void setDamage(float multiplier);
 		
 	void tankDied();
 	bool isTankDead();
 
 private:
+	static constexpr int32_t baseDamage = 20;
+
+private:
 	bool shooting;
 	float shotPower;
 	bool tankDead;
+
+	float damageMultiplier;
 
 	uint8_t activePowerUp;
 

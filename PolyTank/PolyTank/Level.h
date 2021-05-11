@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "Physics.h"
 #include "StaticBody.h"
+#include "PowerUp.h"
 
 #include <filesystem>
 #include <unordered_map>
@@ -100,6 +101,8 @@ public:
 
 	void update(float t, float dt);
 
+	void spawnPowerUp(Node node);
+
 	Layer* getLayer(size_t idx);
 	
 	DirectX::XMVECTOR worldPos(Node n);
@@ -114,6 +117,8 @@ public:
 
 	std::vector<uint8_t>* getEdges();
 	std::vector<Layer>* getLayers();
+
+	Node getRandomDrivableNode();
 	
 private:
 	void buildGraph(uint32_t w, uint32_t h, uint32_t d);
@@ -125,10 +130,18 @@ private:
 	static constexpr uint8_t ramp2BlockId = 4;
 	static constexpr uint8_t liftBlockId = 5;
 
+	static constexpr uint32_t totalPowerUps = 2; // ændres når power-ups tilføjes
+	static constexpr uint8_t powerUpHeal = 0;
+	static constexpr uint8_t powerUpDamage = 1;
+
+	static constexpr float powerUpSpawnTime = 5.0f;
+
 private:
 	std::vector<Layer> layers;
 
 	std::vector<uint8_t> edges;
+
+	float powerUpSpawnCooldown;
 
 	uint32_t w;
 	uint32_t d;

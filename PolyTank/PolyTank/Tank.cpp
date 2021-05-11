@@ -69,14 +69,9 @@ void Tank::update(float dt) {
 	
 }
 
-void Tank::shoot(Graphics& gfx, Physics& pcs, float power)
+void Tank::shoot(Graphics& gfx, Physics& pcs, float power, int32_t damage)
 {
 	XMMATRIX turretTransform = pNode->getChild(turretNodeIdx)->localToWorld();
-
-	int32_t damage = 10;
-	if (this == PolyTank::get().getPlayer().getTank()) {
-		damage = 100;
-	}
 
 	PolyTank::get().emplaceGameObject<Projectile>(gfx, pcs, pNode->getParent(), getTurretTipPos(), XMQuaternionRotationMatrix(turretTransform), power, damage);
 }
@@ -160,6 +155,14 @@ void Tank::takeDamage(int32_t damage)
 void Tank::die()
 {
 	onDeath();
+}
+
+void Tank::heal(int32_t addedHealth)
+{
+	health += addedHealth;
+	if (health > maxHealth) {
+		health = maxHealth;
+	}
 }
 
 int32_t Tank::getHealth()

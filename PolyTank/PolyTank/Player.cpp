@@ -43,8 +43,9 @@ void Player::update(Graphics& gfx, Physics& pcs, float dt)
 
 	if (shooting) {
 		if (!pInteraction->lMouseDown) {
-			pTank->shoot(gfx, pcs, shotPower);
+			pTank->shoot(gfx, pcs, shotPower, floor(baseDamage * damageMultiplier));
 			shotPower = 0.0f;
+			damageMultiplier = 1.0f;
 			shooting = false;
 		} else {
 			shotPower += 30.0f * dt;
@@ -98,6 +99,11 @@ Camera* Player::getCamera()
 uint8_t Player::getActivePowerUp()
 {
 	return activePowerUp;
+}
+
+void Player::setDamage(float multiplier)
+{
+	damageMultiplier += multiplier;
 }
 
 void Player::tankDied()

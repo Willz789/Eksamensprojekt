@@ -11,7 +11,7 @@ public:
 	PowerUp(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR pos);
 	~PowerUp();
 
-	void update(float dt);
+	void update(float dt) override;
 	
 protected:
 	StaticBody* pBody;
