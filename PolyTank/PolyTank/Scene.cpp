@@ -80,7 +80,8 @@ IDrawable* SceneNode::addDrawable(std::unique_ptr<IDrawable>&& pDrawable) {
 void SceneNode::removeDrawable(IDrawable* pDrawable) {
 	for (auto it = drawables.begin(); it != drawables.end(); it++) {
 		if (it->get() == pDrawable) {
-			
+			drawables.erase(it);
+			break;
 		}
 	}
 }

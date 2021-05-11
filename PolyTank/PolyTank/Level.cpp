@@ -266,7 +266,7 @@ Layer::Layer(
 	std::vector<uint8_t>& blocks,
 	SceneNode* pRoot,
 	DirectX::FXMVECTOR color) :
-	pNode(pRoot->addChild())
+	pNode(pRoot)
 {
 	this->blocks = blocks;
 	d = depth;
@@ -280,7 +280,7 @@ Layer::Layer(
 			Block b = getBlock(blocks[idx]);
 
 			if (blocks[idx] == liftBlockId) {
-				lifts.emplace_back(gfx, pcs, pNode, b, layerIdx, i, j, d, w);
+				lifts.emplace_back(gfx, pcs, pRoot, b, layerIdx, i, j, d, w);
 				continue;
 			} 
 			
@@ -341,7 +341,7 @@ Layer::Layer(
 	DirectX::XMStoreFloat3(&pMaterial->factors.baseColor, color);
 	pMesh->addBindable(pMaterial);
 
-	this->pMesh = dynamic_cast<Mesh*>(pNode->addDrawable(std::move(pMesh)));
+	this->pMesh = dynamic_cast<Mesh*>(pRoot->addDrawable(std::move(pMesh)));
 
 }
 
@@ -350,14 +350,15 @@ Layer::~Layer() {
 		PolyTank::get().getPcs().deleteBody(pBody);
 	}
 
-	if (pNode) {
-		pNode->deleteNode();
+	if (pNode && pMesh) {
+		pNode->removeDrawable(pMesh);
 	}
 
 }
 
 Layer::Layer(Layer&& other) noexcept :
 	pNode(other.pNode),
+	pMesh(other.pMesh),
 	w(other.w),
 	d(other.d),
 	blocks(std::move(other.blocks)),
@@ -365,11 +366,13 @@ Layer::Layer(Layer&& other) noexcept :
 	lifts(std::move(other.lifts))
 {
 	other.pNode = nullptr;
+	other.pMesh = nullptr;
 }
 
 Layer& Layer::operator=(Layer&& other) noexcept
 {
 	pNode = other.pNode;
+	pMesh = other.pMesh;
 	w = other.w;
 	d = other.d;
 	blocks = std::move(other.blocks);
@@ -377,6 +380,7 @@ Layer& Layer::operator=(Layer&& other) noexcept
 	lifts = std::move(other.lifts);
 
 	other.pNode = nullptr;
+	other.pMesh = nullptr;
 
 	return *this;
 }
@@ -774,6 +778,10 @@ Lift::~Lift()
 {
 	if (pBody) {
 		PolyTank::get().getPcs().deleteBody(pBody);
+	}
+
+	if (pNode) {
+		pNode->deleteNode();
 	}
 }
 

@@ -8,6 +8,7 @@ Player::Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Intera
 	shooting(false),
 	shotPower(0.0f),
 	maxShotPower(25.0f),
+	damageMultiplier(1.0f),
 	tankDead(false),
 	pMListener(nullptr)
 {

@@ -50,7 +50,7 @@ Graphics::Graphics(Window& wnd) :
 	swapDesc.BufferCount = 2;
 	swapDesc.OutputWindow = wnd.getHwnd();
 	swapDesc.Windowed = true;
-	swapDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swapDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapDesc.Flags = 0;
 
 	UINT flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
