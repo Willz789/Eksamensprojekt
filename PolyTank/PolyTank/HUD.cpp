@@ -44,11 +44,11 @@ void HUD::resize(uint32_t w, uint32_t h) {
 	minimapFrame.radiusX = w * 2.0f / 24.0f;
 	minimapFrame.radiusY = minimapFrame.radiusX;
 
-	powerUpFrame.rect.left = ammoBar.rect.right + w * 0.01f;
+	powerUpFrame.rect.left = hpBar.rect.right + w * 0.01f;
 	powerUpFrame.rect.right = powerUpFrame.rect.left + w * 0.03f;
 	powerUpFrame.rect.top = hpBar.rect.top - h * 0.01f;
-	powerUpFrame.rect.bottom = ammoBar.rect.bottom + h * 0.01f;
-	powerUpFrame.radiusX = (ammoBar.rect.bottom - ammoBar.rect.top) / 2.0f;
+	powerUpFrame.rect.bottom = powerBar.rect.bottom + h * 0.01f;
+	powerUpFrame.radiusX = powerBar.radiusX;
 	powerUpFrame.radiusY = powerUpFrame.radiusX;
 }
 

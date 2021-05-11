@@ -37,6 +37,7 @@ PowerUpDamage::PowerUpDamage(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Dire
 {
 	GLTF::Loader("./Models/Power-ups/Damage/Damage.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
+	pNode->setTranslation(pBody->getPosition());
 
 	pcs.assignCollisionHandler(pBody, [this](Body* pOther, FXMVECTOR resolution) -> void {
 		RigidBody* pColliderRB = dynamic_cast<RigidBody*>(pOther);
@@ -57,6 +58,7 @@ PowerUpHealth::PowerUpHealth(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Dire
 {
 	GLTF::Loader("./Models/Power-ups/Health/Health.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
+	pNode->setTranslation(pBody->getPosition());
 
 	pcs.assignCollisionHandler(pBody, [this](Body* pOther, FXMVECTOR resolution) -> void {
 		RigidBody* pColliderRB = dynamic_cast<RigidBody*>(pOther);

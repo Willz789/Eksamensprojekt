@@ -88,6 +88,7 @@ void Level::spawnPowerUp(Node node)
 			layers[node.i].getNode(),
 			worldPos(node)
 		);
+		break;
 	case 1:
 		PolyTank::get().emplaceGameObject<PowerUpDamage>(
 			PolyTank::get().getGfx(), 
@@ -95,6 +96,7 @@ void Level::spawnPowerUp(Node node)
 			layers[node.i].getNode(),
 			worldPos(node)
 		);
+		break;
 	}
 
 }

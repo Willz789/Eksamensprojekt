@@ -83,9 +83,9 @@ void PolyTank::toMenu()
 {
 	state = State::MENU;
 
-	level.clear();
 	gameObjects.clear();
-	
+	level.clear();
+
 	assert(scene.getRoot()->isLeaf());
 	assert(pcs.bodyCount() == 0);
 

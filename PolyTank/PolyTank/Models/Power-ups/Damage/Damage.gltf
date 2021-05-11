@@ -1,6 +1,6 @@
 {
     "asset" : {
-        "generator" : "Khronos glTF Blender I/O v1.4.40",
+        "generator" : "Khronos glTF Blender I/O v1.5.17",
         "version" : "2.0"
     },
     "scene" : 0,
@@ -15,7 +15,7 @@
     "nodes" : [
         {
             "mesh" : 0,
-            "name" : "Cylinder"
+            "name" : "damage_powerup"
         }
     ],
     "materials" : [
@@ -36,7 +36,7 @@
     ],
     "meshes" : [
         {
-            "name" : "Cylinder.002",
+            "name" : "damage_powerup",
             "primitives" : [
                 {
                     "attributes" : {
