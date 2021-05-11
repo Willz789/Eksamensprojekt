@@ -4,7 +4,8 @@
 
 Interaction::Interaction(HWND hWnd) :
 	hWnd(hWnd),
-	cursorLocked(false) {}
+	cursorLocked(false),
+	cursorVisible(true) {}
 
 bool Interaction::keyDown(char key) {
 	return keysDown[key];
@@ -15,7 +16,10 @@ void Interaction::setCursorLocked(bool cursorLocked) {
 }
 
 void Interaction::setCursorVisible(bool cursorVisible) {
-	ShowCursor(cursorVisible);
+	if (this->cursorVisible ^ cursorVisible) {
+		ShowCursor(cursorVisible);
+		this->cursorVisible = cursorVisible;
+	}
 }
 
 void Interaction::lMouseClick(uint32_t x, uint32_t y)
@@ -68,8 +72,6 @@ void Interaction::resize(uint32_t w, uint32_t h) {
 
 void Interaction::mouseMove(uint32_t x, uint32_t y)
 {
-
-
 	MouseEvent e;
 	e.button = MouseEvent::Button::MOVE;
 
