@@ -36,6 +36,8 @@ public:
 	DirectX::XMVECTOR getPosition();
 	DirectX::XMVECTOR getGroundPosition();
 
+	float getRotationSpeed();
+
 	void takeDamage(int32_t damage);
 	void die();
 	void heal(int32_t addedHealth);
@@ -51,6 +53,7 @@ private:
 
 	static constexpr float dragConstant = 10.0f;
 	static constexpr float acc = 8.0f;
+	static constexpr float rotationSpeed = 2.0f;
 
 private:
 	float turretYaw;
