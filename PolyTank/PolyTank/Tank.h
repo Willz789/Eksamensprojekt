@@ -18,7 +18,7 @@ public:
 	~Tank();
 
 	void update(float dt) override;
-	void shoot(Graphics& gfx, Physics& pcs, float power);
+	void shoot(Graphics& gfx, Physics& pcs, float power, int32_t damage);
 	
 	void rotateTurret(float yaw, float pitch);
 	void setTurretRotation(float yaw, float pitch);
@@ -38,6 +38,7 @@ public:
 
 	void takeDamage(int32_t damage);
 	void die();
+	void heal(int32_t addedHealth);
 	int32_t getHealth();
 	int32_t getMaxHealth();
 

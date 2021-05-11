@@ -59,6 +59,7 @@ void PolyTank::render() {
 void PolyTank::startGame()
 {
 	state = State::GAME;
+
 	scene.getRoot()->reset();
 	wnd.getInteraction()->setCursorLocked(true);
 	wnd.getInteraction()->setCursorVisible(false);
