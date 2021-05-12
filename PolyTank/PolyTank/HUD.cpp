@@ -1,6 +1,8 @@
 #include "HUD.h"
 #include "PolyTank.h"
 
+#include <sstream>
+
 using namespace D2D1;
 using Microsoft::WRL::ComPtr;
 
@@ -105,7 +107,7 @@ void HUD::draw(Graphics& gfx) {
 	std::wstring scoreString = (std::wstringstream() << L"Score: " << PolyTank::get().getPlayer().getPoints()).str();
 	gfx.getFactoryW()->CreateTextLayout(
 		scoreString.c_str(),
-		scoreString.size(), 
+		scoreString.size(),
 		pWTFScore.Get(),
 		scoreRect.right - scoreRect.left,
 		scoreRect.bottom - scoreRect.top,

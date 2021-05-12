@@ -62,6 +62,11 @@ void SceneNode::deleteChild(SceneNode* pChild)
 	}
 }
 
+size_t SceneNode::childCount() const
+{
+	return children.size();
+}
+
 void SceneNode::deleteNode()
 {
 	pParent->deleteChild(this);
@@ -77,6 +82,11 @@ IDrawable* SceneNode::addDrawable(std::unique_ptr<IDrawable>&& pDrawable) {
 	return drawables.back().get();
 }
 
+IDrawable* SceneNode::getDrawable(size_t idx)
+{
+	return drawables[idx].get();
+}
+
 void SceneNode::removeDrawable(IDrawable* pDrawable) {
 	for (auto it = drawables.begin(); it != drawables.end(); it++) {
 		if (it->get() == pDrawable) {
@@ -84,6 +94,11 @@ void SceneNode::removeDrawable(IDrawable* pDrawable) {
 			break;
 		}
 	}
+}
+
+size_t SceneNode::drawableCount() const
+{
+	return drawables.size();
 }
 
 DirectX::XMMATRIX SceneNode::localToParent() const {

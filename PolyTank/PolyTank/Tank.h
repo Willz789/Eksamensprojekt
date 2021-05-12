@@ -13,7 +13,7 @@ class Tank : public IGameObject {
 
 public:
 	Tank() = default;
-	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos);
+	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
 	~Tank();
 

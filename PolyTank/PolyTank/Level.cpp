@@ -707,7 +707,8 @@ Block Layer::getBlock(uint8_t id) {
 	return b;
 }
 
-Lift::Lift(Graphics& gfx, Physics& pcs, SceneNode* pLayerNode, const Block& b, uint32_t layerIdx, uint32_t i, uint32_t j, uint32_t d, uint32_t w)
+Lift::Lift(Graphics& gfx, Physics& pcs, SceneNode* pLayerNode, const Block& b, uint32_t layerIdx, uint32_t i, uint32_t j, uint32_t d, uint32_t w) :
+	isOdd(layerIdx % 2)
 {
 	XMVECTOR pos = XMVectorSet(j - w / 2.0f, float(layerIdx) + 0.001f, i - d / 2.0f, 0.0f);
 	XMStoreFloat3(&basePosition, pos);
@@ -756,6 +757,7 @@ Lift::Lift(Graphics& gfx, Physics& pcs, SceneNode* pLayerNode, const Block& b, u
 Lift::Lift(Lift&& other) noexcept {
 	pBody = other.pBody;
 	pNode = other.pNode;
+	isOdd = other.isOdd;
 	basePosition = other.basePosition;
 
 	other.pBody = nullptr;
@@ -766,6 +768,7 @@ Lift& Lift::operator=(Lift&& other) noexcept
 {
 	pBody = other.pBody;
 	pNode = other.pNode;
+	isOdd = other.isOdd;
 	basePosition = other.basePosition;
 
 	other.pBody = nullptr;
@@ -787,7 +790,7 @@ Lift::~Lift()
 
 void Lift::update(float t)
 {
-	XMVECTOR pos = XMLoadFloat3(&basePosition) - XMVectorSet(0.0f, 0.5f * (cos(t) + 1.0f), 0.0f, 0.0f);
+	XMVECTOR pos = XMLoadFloat3(&basePosition) - XMVectorSet(0.0f, 0.5f * (sin(isOdd ? t : -t) + 1.0f), 0.0f, 0.0f);
 
 	pBody->setPosition(pos);
 	pNode->setTranslation(pos);

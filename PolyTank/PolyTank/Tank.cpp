@@ -3,15 +3,33 @@
 #include "GLTFLoader.h"
 #include "Box.h"
 #include "PolyTank.h"
+#include "GLTFMaterial.h"
 
 using namespace DirectX;
 
-Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos) :
+void setColor(SceneNode* pNode, FXMVECTOR color) {
+	
+	for (size_t i = 0; i < pNode->drawableCount(); i++) {
+		Mesh* pMesh = dynamic_cast<Mesh*>(pNode->getDrawable(i));
+		if (!pMesh) continue;
+		auto pMat = pMesh->getBindableByType<GLTFMaterial>();
+		if (!pMat) continue;
+		XMStoreFloat3(&pMat->factors.baseColor, color);
+	}
+
+	for (size_t i = 0; i < pNode->childCount(); i++) {
+		setColor(pNode->getChild(i), color);
+	}
+}
+
+Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, FXMVECTOR initPos, FXMVECTOR color) :
 	maxHealth(100),
 	health(100) {
 
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
+
+	setColor(pNode, color);
 
 	turretYaw = 0.0f;
 	turretPitch = 0.0f;
@@ -32,10 +50,7 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR ini
 		}
 	});
 
-	XMMATRIX world = pNode->localToWorld();
-	XMStoreFloat3(&forwardDir, -world.r[2]);
-	XMStoreFloat3(&upDir, world.r[1]);
-	XMStoreFloat3(&rightDir, world.r[0]);
+	update(0.0f);
 }
 
 Tank::~Tank() {
