@@ -34,7 +34,7 @@ public:
 private:
 	SceneNode* pNode;
 	StaticBody* pBody;
-
+	bool isOdd;
 	DirectX::XMFLOAT3 basePosition;
 };
 

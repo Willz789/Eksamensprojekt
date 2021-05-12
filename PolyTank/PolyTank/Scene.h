@@ -21,11 +21,15 @@ public:
 	SceneNode* lastChild();
 	SceneNode* getParent();
 	void deleteChild(SceneNode* pChild);
+	size_t childCount() const;
+
 	void deleteNode();
 	bool isLeaf() const;
 
 	IDrawable* addDrawable(std::unique_ptr<IDrawable>&& pDrawable);
+	IDrawable* getDrawable(size_t idx);
 	void removeDrawable(IDrawable* pDrawable);
+	size_t drawableCount() const;
 
 	DirectX::XMMATRIX localToParent() const;
 	DirectX::XMMATRIX localToWorld() const;

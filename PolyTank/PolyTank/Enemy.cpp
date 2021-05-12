@@ -12,7 +12,7 @@ Enemy::Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level
 	shootingRange(12.0f),
 	pTarget(pTarget)
 {
-	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos(startNode));
+	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos(startNode), XMVectorSet(0.2f, 0.2f, 0.2f, 1.0f));
 	pLvl = &lvl;
 
 	pTank->setDeathAction([this]() -> void {

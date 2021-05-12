@@ -33,7 +33,7 @@ bool Camera::getAim()
 DirectX::FXMMATRIX Camera::viewMatrix() {
 	XMMATRIX turretToWorld = pTank->turretToWorld();
 	if (!isAiming) {
-		XMVECTOR eyePos = XMVector4Transform(XMVectorSet(0.0f, 1.5f * sin(pitch), 1.5f * cos(pitch), 1.0f), turretToWorld);
+		XMVECTOR eyePos = XMVector4Transform(XMVectorSet(0.0f, 2.0f * sin(pitch), 2.0f * cos(pitch), 1.0f), turretToWorld);
 		return XMMatrixLookAtRH(eyePos, XMVector4Transform(XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), turretToWorld), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 	}
 	else {
