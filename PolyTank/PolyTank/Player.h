@@ -7,25 +7,26 @@ class Player
 {
 public:
 	Player() = default;
-	Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Interaction& interaction);
+	Player(Interaction& interaction);
 	~Player(); 
 
 	void update(Graphics& gfx, Physics& pcs, float dt);
 	void initListeners(Graphics& gfx, Physics& pcs);
 	void removeListeners();
 
+	void generateNewTank(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot);
+
 	Tank* getTank();
 	Camera* getCamera();
 
-	uint8_t getActivePowerUp();
-
-	void setDamage(float multiplier);
+	void setDamage(uint8_t multiplier);
 		
 	void tankDied();
 	bool isTankDead();
 
 	float getShotPower();
 	float getMaxShotPower();
+	uint8_t getDamageMultiplier();
 
 	uint32_t getPoints();
 	void addPoints(uint32_t addedPoints);
@@ -39,11 +40,9 @@ private:
 	float maxShotPower;
 	bool tankDead;
 
-	float damageMultiplier;
+	uint8_t damageMultiplier;
 
 	uint32_t points;
-
-	uint8_t activePowerUp;
 
 	Camera camera;
 

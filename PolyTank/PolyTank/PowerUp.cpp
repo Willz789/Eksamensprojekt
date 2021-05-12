@@ -45,7 +45,7 @@ PowerUpDamage::PowerUpDamage(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Dire
 			Tank* pTank = dynamic_cast<Tank*>(pColliderRB->owner());
 			if (pTank) {
 				if (pTank == PolyTank::get().getPlayer().getTank()) {
-					PolyTank::get().getPlayer().setDamage(4.0f);
+					PolyTank::get().getPlayer().setDamage(4);
 					PolyTank::get().deleteGameObject(this);
 				}
 			}

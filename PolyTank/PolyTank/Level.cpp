@@ -29,10 +29,15 @@ void Level::loadFile(Graphics& gfx, Physics& pcs, const std::filesystem::path& f
 	layers.clear();
 	edges.clear();
 
+	spawnNode = { 0, 15, 15 };
+
 	std::ifstream ifs(file, std::ios::binary);
 	ifs.read(reinterpret_cast<char*>(&w), sizeof(w));
 	ifs.read(reinterpret_cast<char*>(&h), sizeof(h));
 	ifs.read(reinterpret_cast<char*>(&d), sizeof(d));
+	if (!ifs.good()) {
+		throw std::runtime_error("");
+	}
 	std::vector<uint8_t> blocks(w * d);
 
 	const XMVECTOR colors[] = {
@@ -45,11 +50,12 @@ void Level::loadFile(Graphics& gfx, Physics& pcs, const std::filesystem::path& f
 		ifs.read(reinterpret_cast<char*>(blocks.data()), blocks.size());
 		if (!ifs.good()) throw std::runtime_error("");
 
-		
 		layers.emplace_back(gfx, pcs, i, d, w, blocks, scene.getRoot(), colors[i % std::size(colors)]);
 	}
 
 	buildGraph(w, h, d);
+
+	dijkstras();
 }
 
 void Level::clear()
@@ -69,7 +75,7 @@ void Level::update(float t, float dt)
 
 	powerUpSpawnCooldown -= dt;
 	if (powerUpSpawnCooldown <= 0) {
-		spawnPowerUp(getRandomDrivableNode());
+		spawnPowerUp(getRandomPathableNode());
 		powerUpSpawnCooldown += powerUpSpawnTime;
 	}
 }
@@ -239,22 +245,76 @@ std::vector<Layer>* Level::getLayers()
 	return &layers;
 }
 
-Node Level::getRandomDrivableNode()
+void Level::dijkstras()
+{
+	auto index = [this](const Node& n) -> size_t {
+		return n.i * w * d + n.j * w + n.k;
+	};
+	Node current = spawnNode;
+	std::vector<NodeData> nodes;
+	nodes.reserve(h * d * w);
+	for (uint32_t i = 0; i < h; i++) {
+		for (uint32_t j = 0; j < d; j++) {
+			for (uint32_t k = 0; k < w; k++) {
+				NodeData n;
+				n.pos.i = i;
+				n.pos.j = j;
+				n.pos.k = k;
+				n.shortestDist = std::numeric_limits<float>::infinity();
+				n.visited = false;
+
+				nodes.push_back(n);
+			}
+		}
+	}
+	nodes[index(spawnNode)].shortestDist = 0.0f;
+
+	bool foundNode = true;
+	while (foundNode) {
+		size_t col = index(current);
+
+		for (size_t row = 0; row < w * h * d; row++) {
+
+			if (!nodes[row].visited && hasEdge(row, col)) {
+				XMVECTOR currentPos = worldPos(current);
+				XMVECTOR nextPos = worldPos(nodes[row].pos);
+
+				float nextDist = XMVectorGetX(XMVector3Length(nextPos - currentPos)) + nodes[col].shortestDist;
+
+				if (nextDist < nodes[row].shortestDist) {
+					nodes[row].shortestDist = nextDist;
+				}
+
+			}
+		}
+
+		nodes[index(current)].visited = true;
+		pathableNodes.push_back(current);
+
+		float minDist = std::numeric_limits<float>::infinity();
+		foundNode = false;
+
+		for (size_t next = 0; next < nodes.size(); next++) {
+			if (!nodes[next].visited && nodes[next].shortestDist < minDist) {
+				current = nodes[next].pos;
+				minDist = nodes[next].shortestDist;
+				foundNode = true;
+			}
+		}
+
+		if (!foundNode) {
+			break;
+		}
+	}
+}
+
+Node Level::getRandomPathableNode()
 {
 	static std::random_device rd;
 	static std::default_random_engine rng(rd());
-	std::uniform_int_distribution hDist(0u, h-1);
-	std::uniform_int_distribution dDist(0u, d-1);
-	std::uniform_int_distribution wDist(0u, w-1);
+	std::uniform_int_distribution iDist(0ui64, pathableNodes.size() - 1);
 
-	Node node;
-	do {
-		node.i = hDist(rng);
-		node.j = dDist(rng);
-		node.k = wDist(rng);
-	} while (!isBlockDrivable(layers, node.i, node.j, node.k));
-
-	return node;
+	return pathableNodes[iDist(rng)];
 }
 
 Layer::Layer(

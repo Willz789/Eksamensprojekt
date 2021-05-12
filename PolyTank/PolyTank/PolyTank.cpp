@@ -15,7 +15,8 @@ PolyTank::PolyTank() :
 	menu(gfx, wnd.getInteraction()),
 	hud(gfx, wnd.getInteraction()),
 	state(State::MENU),
-	level() {
+	level(),
+	roundIdx(0){
 	toMenu();
 }
 
@@ -31,6 +32,9 @@ void PolyTank::update(float t, float dt) {
 		scene.getRoot()->getChild(0)->getChild(13)->setRotation(XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -2.0f * t));
 
 	} else if(state==State::GAME) {
+		if (enemiesLeft <= 0) {
+			startRound(++roundIdx);
+		}
 		level.update(t, dt);
 		player.update(gfx, pcs, dt);
 		gfx.setCamera(player.getCamera()->viewMatrix());
@@ -38,7 +42,6 @@ void PolyTank::update(float t, float dt) {
 		if (player.isTankDead()) {
 			toMenu();
 		}
-
 	}
 }
 
@@ -61,18 +64,31 @@ void PolyTank::startGame()
 	state = State::GAME;
 
 	scene.getRoot()->reset();
+
 	wnd.getInteraction()->setCursorLocked(true);
 	wnd.getInteraction()->setCursorVisible(false);
-
-	level.loadFile(gfx, pcs, "./Levels/level1.bin", scene);
 	
-	player = Player(gfx, pcs, level, scene.getRoot(), *wnd.getInteraction());
+	player = Player(*wnd.getInteraction());
 
 	menu.removeListeners();
 	player.initListeners(gfx, pcs);
 
-	for (uint32_t i = 0; i < 1; i++) {
-		emplaceGameObject<Enemy>(gfx, pcs, scene.getRoot(), player.getTank(), level, Node{ 1, 12 + i, 12 });
+	roundIdx = 0;
+	startRound(roundIdx);
+}
+
+void PolyTank::startRound(uint32_t roundIndex)
+{
+	gameObjects.clear();
+	level.clear();
+	int mapId = roundIndex % 4;
+	std::string mapName = (std::stringstream() << "./Levels/level" << mapId << ".bin").str();
+	level.loadFile(gfx, pcs, mapName, scene);
+	player.generateNewTank(gfx, pcs, level, scene.getRoot());
+	enemiesLeft = roundIndex + 1;
+	
+	for (uint32_t i = 0; i < enemiesLeft; i++) {
+		emplaceGameObject<Enemy>(gfx, pcs, scene.getRoot(), player.getTank(), level, level.getRandomPathableNode());
 	}
 
 	pcs.update(0.0f, 0.0f);
@@ -112,5 +128,10 @@ void PolyTank::toMenu()
 Player& PolyTank::getPlayer()
 {
 	return player;
+}
+
+void PolyTank::enemyDied()
+{
+	enemiesLeft--;
 }
  

@@ -27,11 +27,16 @@ public:
 	void render() override;
 
 	void startGame();
+	void startRound(uint32_t roundIndex);
 	void toMenu();
 
 	Player& getPlayer();
 
+	void enemyDied();
+
 private:
+	uint32_t roundIdx;
+	uint32_t enemiesLeft;
 
 	State state;
 	Menu menu;

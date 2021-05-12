@@ -96,7 +96,7 @@ void Tank::shoot(Graphics& gfx, Physics& pcs, float power, int32_t damage)
 
 void Tank::rotateTurret(float yaw, float pitch) {
 	turretYaw = normalizeAngle(turretYaw + yaw);
-	turretPitch = std::clamp(turretPitch + pitch, 0.001f, 0.499f*pi);
+	turretPitch = std::clamp(turretPitch + pitch, -0.1f, 0.4999f*pi);
 }
 
 void Tank::setTurretRotation(float yaw, float pitch)

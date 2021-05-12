@@ -15,6 +15,7 @@ HUD::HUD(Graphics& gfx, Interaction* pInteraction) :
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(0.0f, 0.0f, 0.0f), &pBlack));
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(1.0f, 0.0f, 0.0f), &pRed));
 	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(1.0f, 0.6f, 0.05f), &pOrange));
+	tif(gfx.getCtx2D()->CreateSolidColorBrush(ColorF(1.0f, 1.0f, 1.0f), &pWhite));
 
 	resizeListener = pInteraction->addListener([this](const ResizeEvent& e) -> void {
 		this->resize(e.width, e.height);
@@ -31,6 +32,18 @@ HUD::HUD(Graphics& gfx, Interaction* pInteraction) :
 		&pWTFScore
 	);
 	pWTFScore->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+	gfx.getFactoryW()->CreateTextFormat(
+		L"Agency FB",
+		nullptr,
+		DWRITE_FONT_WEIGHT_BOLD,
+		DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH_NORMAL,
+		20.0f,
+		L"en-us",
+		&pWTFPowerUp
+	);
+	pWTFPowerUp->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
 }
 
@@ -60,6 +73,11 @@ void HUD::resize(uint32_t w, uint32_t h) {
 	powerUpFrame.rect.bottom = powerBar.rect.bottom + h * 0.01f;
 	powerUpFrame.radiusX = powerBar.radiusX;
 	powerUpFrame.radiusY = powerUpFrame.radiusX;
+
+	powerUpRect.left = powerUpFrame.rect.left;
+	powerUpRect.right = powerUpFrame.rect.right;
+	powerUpRect.top = powerUpFrame.rect.top;
+	powerUpRect.bottom = powerUpFrame.rect.bottom;
 
 	scoreRect.left = w / 2 - w * 0.5f;
 	scoreRect.right = w / 2 + w * 0.5f;
@@ -92,18 +110,22 @@ void HUD::draw(Graphics& gfx) {
 	gfx.getCtx2D()->FillRoundedRectangle(power, pOrange.Get());
 	gfx.getCtx2D()->DrawRoundedRectangle(powerBar, pBlack.Get(), 3.0f);
 
+	gfx.getCtx2D()->FillRoundedRectangle(powerUpFrame, pWhite.Get());
 	gfx.getCtx2D()->DrawRoundedRectangle(powerUpFrame, pBlack.Get(), 2.0f);
 
-	// Draw active power-up (Add more if more power-ups)
-	switch (PolyTank::get().getPlayer().getActivePowerUp()) {
-		case PowerUpDamage:
-			gfx.getCtx2D()->DrawRoundedRectangle(powerUpFrame, pBlack.Get(), 2.0f);
-			// Damage-symbol
-		case PowerUpNone:
-			std::cout << "No Power-up\n";
-	}
-
 	ComPtr<IDWriteTextLayout> pWTL;
+	std::wstring powerUpString = (std::wstringstream() << L"x" << PolyTank::get().getPlayer().getDamageMultiplier()).str();
+	gfx.getFactoryW()->CreateTextLayout(
+		powerUpString.c_str(),
+		powerUpString.size(),
+		pWTFPowerUp.Get(),
+		powerUpRect.right - powerUpRect.left,
+		powerUpRect.bottom - powerUpRect.top,
+		&pWTL
+	);
+	pWTL->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+	gfx.getCtx2D()->DrawTextLayout(Point2F(powerUpRect.left, powerUpRect.top), pWTL.Get(), pBlack.Get());
+
 	std::wstring scoreString = (std::wstringstream() << L"Score: " << PolyTank::get().getPlayer().getPoints()).str();
 	gfx.getFactoryW()->CreateTextLayout(
 		scoreString.c_str(),

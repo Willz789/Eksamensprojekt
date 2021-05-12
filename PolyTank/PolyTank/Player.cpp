@@ -3,7 +3,7 @@
 
 using namespace DirectX;
 
-Player::Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Interaction& interaction) :
+Player::Player(Interaction& interaction) :
 	pInteraction(&interaction),
 	shooting(false),
 	shotPower(0.0f),
@@ -12,14 +12,7 @@ Player::Player(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot, Intera
 	points(0),
 	tankDead(false),
 	pMListener(nullptr)
-{
-	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos({4, 15, 15}));
-	camera.assignTank(*pTank); 
-
-	pTank->setDeathAction([this]() -> void {
-		PolyTank::get().getPlayer().tankDied();
-	});
-}
+{}
 
 Player::~Player()
 {
@@ -49,7 +42,7 @@ void Player::update(Graphics& gfx, Physics& pcs, float dt)
 	if (shooting) {
 		if (!pInteraction->lMouseDown) {
 			pTank->shoot(gfx, pcs, shotPower, floor(baseDamage * damageMultiplier));
-			shotPower = 0.0f;
+			shotPower = 5.0f;
 			damageMultiplier = 1.0f;
 			shooting = false;
 		} else {
@@ -92,6 +85,17 @@ void Player::removeListeners()
 	}
 }
 
+void Player::generateNewTank(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot)
+{
+	shooting = false;
+	damageMultiplier = 1;
+	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos(lvl.getRandomPathableNode()));
+	camera.assignTank(*pTank);
+	pTank->setDeathAction([this]() -> void {
+		PolyTank::get().getPlayer().tankDied();
+	});
+}
+
 Tank* Player::getTank()
 {
 	return pTank;
@@ -102,12 +106,7 @@ Camera* Player::getCamera()
 	return &camera;
 }
 
-uint8_t Player::getActivePowerUp()
-{
-	return activePowerUp;
-}
-
-void Player::setDamage(float multiplier)
+void Player::setDamage(uint8_t multiplier)
 {
 	damageMultiplier += multiplier;
 }
@@ -130,6 +129,11 @@ float Player::getShotPower()
 float Player::getMaxShotPower()
 {
 	return maxShotPower;
+}
+
+uint8_t Player::getDamageMultiplier()
+{
+	return damageMultiplier;
 }
 
 uint32_t Player::getPoints()

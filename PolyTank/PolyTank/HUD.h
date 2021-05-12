@@ -20,14 +20,17 @@ private:
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> pBlack;
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> pRed;
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> pOrange;
+	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> pWhite;
 
 	Microsoft::WRL::ComPtr<IDWriteTextFormat> pWTFScore;
+	Microsoft::WRL::ComPtr<IDWriteTextFormat> pWTFPowerUp;
 
 	D2D1_ROUNDED_RECT hpBar;
 	D2D1_ROUNDED_RECT powerBar;
 	D2D1_ROUNDED_RECT powerUpFrame;
 
 	D2D1_RECT_F scoreRect;
+	D2D1_RECT_F powerUpRect;
 
 	Interaction* pInteraction;
 	ResizeListener* resizeListener;

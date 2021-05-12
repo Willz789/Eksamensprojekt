@@ -18,6 +18,7 @@ Enemy::Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level
 	pTank->setDeathAction([this]() -> void {
 		PolyTank::get().deleteGameObject(this);
 		PolyTank::get().getPlayer().addPoints(1);
+		PolyTank::get().enemyDied();
 	});
 }
 
@@ -120,12 +121,6 @@ void Enemy::aim()
 	pTank->setTurretRotation(yaw + pi, pitch + pi);
 
 }
-
-struct NodeData {
-	Node pos;
-	float shortestDist;
-	bool visited;
-};
 
 void Enemy::buildPath()
 {

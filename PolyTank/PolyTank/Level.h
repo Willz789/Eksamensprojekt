@@ -18,6 +18,17 @@ struct Block
 	std::vector<DefaultVertex> vertices;
 };
 
+struct Node {
+	uint32_t i, j, k;
+	bool operator==(const Node& rhs) const;
+};
+
+struct NodeData {
+	Node pos;
+	float shortestDist;
+	bool visited;
+};
+
 class Lift {
 public:
 	Lift(Graphics& gfx, Physics& pcs, SceneNode* pLayerNode, const Block& b, uint32_t layerIdx, uint32_t i, uint32_t j, uint32_t d, uint32_t w);
@@ -36,11 +47,6 @@ private:
 	StaticBody* pBody;
 	bool isOdd;
 	DirectX::XMFLOAT3 basePosition;
-};
-
-struct Node {
-	uint32_t i, j, k;
-	bool operator==(const Node& rhs) const;
 };
 
 class Layer
@@ -118,7 +124,9 @@ public:
 	std::vector<uint8_t>* getEdges();
 	std::vector<Layer>* getLayers();
 
-	Node getRandomDrivableNode();
+	void dijkstras();
+
+	Node getRandomPathableNode();
 	
 private:
 	void buildGraph(uint32_t w, uint32_t h, uint32_t d);
@@ -140,6 +148,10 @@ private:
 	std::vector<Layer> layers;
 
 	std::vector<uint8_t> edges;
+
+	std::vector<Node> pathableNodes;
+
+	Node spawnNode;
 
 	float powerUpSpawnCooldown;
 
