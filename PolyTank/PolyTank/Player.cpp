@@ -6,7 +6,7 @@ using namespace DirectX;
 Player::Player(Interaction& interaction) :
 	pInteraction(&interaction),
 	shooting(false),
-	shotPower(0.0f),
+	shotPower(5.0f),
 	maxShotPower(25.0f),
 	damageMultiplier(1.0f),
 	points(0),
@@ -88,6 +88,7 @@ void Player::removeListeners()
 void Player::generateNewTank(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode* pRoot)
 {
 	shooting = false;
+	shotPower = 5.0f;
 	damageMultiplier = 1;
 	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos(lvl.getRandomPathableNode()));
 	camera.assignTank(*pTank);

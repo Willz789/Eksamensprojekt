@@ -8,7 +8,7 @@
 using namespace DirectX;
 
 Enemy::Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level& lvl, Node startNode) :
-	shootingCooldown(1.0f),
+	shootingCooldown(2.0f),
 	shootingRange(12.0f),
 	pTarget(pTarget)
 {

@@ -53,8 +53,7 @@ void Level::loadFile(Graphics& gfx, Physics& pcs, const std::filesystem::path& f
 		layers.emplace_back(gfx, pcs, i, d, w, blocks, scene.getRoot(), colors[i % std::size(colors)]);
 	}
 
-	buildGraph(w, h, d);
-
+	buildGraph();
 	dijkstras();
 }
 
@@ -111,7 +110,7 @@ Layer* Level::getLayer(size_t idx) {
 	return &layers[idx];
 }
 
-void Level::buildGraph(uint32_t w, uint32_t h, uint32_t d)
+void Level::buildGraph()
 {
 	edges.resize(w * h * d * w * h * d);
 
@@ -247,9 +246,12 @@ std::vector<Layer>* Level::getLayers()
 
 void Level::dijkstras()
 {
+	pathableNodes.clear();
+
 	auto index = [this](const Node& n) -> size_t {
 		return n.i * w * d + n.j * w + n.k;
 	};
+
 	Node current = spawnNode;
 	std::vector<NodeData> nodes;
 	nodes.reserve(h * d * w);

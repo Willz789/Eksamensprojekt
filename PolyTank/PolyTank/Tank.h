@@ -5,7 +5,6 @@
 #include "Scene.h"
 #include "Physics.h"
 #include "RigidBody.h"
-#include "Projectile.h"
 #include "Interaction.h"
 #include "IGameObject.h"
 

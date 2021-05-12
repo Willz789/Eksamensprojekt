@@ -124,13 +124,13 @@ public:
 	std::vector<uint8_t>* getEdges();
 	std::vector<Layer>* getLayers();
 
-	void dijkstras();
 
 	Node getRandomPathableNode();
 	
 private:
-	void buildGraph(uint32_t w, uint32_t h, uint32_t d);
-	
+	void buildGraph();
+	void dijkstras();
+
 	static constexpr uint8_t emptyBlockId = 0;
 	static constexpr uint8_t cubeBlockId = 1;
 	static constexpr uint8_t bridgeBlockId = 2;

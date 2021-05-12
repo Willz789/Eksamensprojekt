@@ -6,7 +6,16 @@
 
 using namespace DirectX;
 
-Projectile::Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR initRot, float initVel, int32_t damage)
+Projectile::Projectile(
+	Graphics& gfx,
+	Physics& pcs,
+	SceneNode* pRoot,
+	DirectX::FXMVECTOR initPos,
+	DirectX::FXMVECTOR initRot,
+	float initVel,
+	int32_t damage,
+	Tank* pTank) :
+	pTank(pTank)
 {
 	GLTF::Loader("./Models/projectile/projectile.gltf").getScene(gfx, pRoot);
 	pNode = pRoot->lastChild();
@@ -28,7 +37,7 @@ Projectile::Projectile(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::F
 
 		if (pHitRB) {
 			Tank* pHit = dynamic_cast<Tank*>(pHitRB->owner());
-			if (pHit) {
+			if (pHit  && pHit != this->pTank) {
 				pHit->takeDamage(damage);
 				PolyTank::get().deleteGameObject(this);
 			}

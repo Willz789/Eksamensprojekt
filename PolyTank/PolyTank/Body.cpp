@@ -60,7 +60,7 @@ const AABB& Body::getBoundingBox() const {
 }
 
 bool Body::checkCollision(const Body& other, DirectX::XMVECTOR* pResolution) const {
-
+	
 	return pWorldShape->checkIntersection(other.pWorldShape.get(), pResolution);
 }
 

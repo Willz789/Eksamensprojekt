@@ -4,6 +4,7 @@
 #include "Box.h"
 #include "PolyTank.h"
 #include "GLTFMaterial.h"
+#include "Projectile.h"
 
 using namespace DirectX;
 
@@ -43,7 +44,8 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, FXMVECTOR initPos, FXM
 	);
 
 	pcs.assignCollisionHandler(pRB, [this](Body* pOther, FXMVECTOR resolution) -> void {
-		if (dynamic_cast<StaticBody*>(pOther)) {
+		auto* pSB = dynamic_cast<StaticBody*>(pOther);
+		if (pSB && pSB->isTerrain()) {
 			pRB->move(resolution);
 			pRB->addMoment(-XMVectorSwizzle<3, 1, 3, 3>(pRB->getLinMoment()));
 			pRB->addForce(-XMVectorSwizzle<3, 1, 3, 3>(pRB->getForce()));
@@ -91,7 +93,7 @@ void Tank::shoot(Graphics& gfx, Physics& pcs, float power, int32_t damage)
 {
 	XMMATRIX turretTransform = pNode->getChild(turretNodeIdx)->localToWorld();
 
-	PolyTank::get().emplaceGameObject<Projectile>(gfx, pcs, pNode->getParent(), getTurretTipPos(), XMQuaternionRotationMatrix(turretTransform), power, damage);
+	PolyTank::get().emplaceGameObject<Projectile>(gfx, pcs, pNode->getParent(), getTurretTipPos(), XMQuaternionRotationMatrix(turretTransform), power, damage, this);
 }
 
 void Tank::rotateTurret(float yaw, float pitch) {

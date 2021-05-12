@@ -12,7 +12,8 @@ PowerUp::PowerUp(Graphics& gfx, Physics& pcs, SceneNode* pRoot, FXMVECTOR pos) :
 	pBody = pcs.emplaceBody<StaticBody>(
 		std::make_unique<Box>(0.2f, 0.2f, 0.2f),
 		pos + XMVectorSet(0.0f, 0.2f, 0.0f, 0.0f),
-		XMQuaternionIdentity()
+		XMQuaternionIdentity(),
+		false
 	);
 }
 
@@ -43,11 +44,9 @@ PowerUpDamage::PowerUpDamage(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Dire
 		RigidBody* pColliderRB = dynamic_cast<RigidBody*>(pOther);
 		if (pColliderRB) {
 			Tank* pTank = dynamic_cast<Tank*>(pColliderRB->owner());
-			if (pTank) {
-				if (pTank == PolyTank::get().getPlayer().getTank()) {
-					PolyTank::get().getPlayer().setDamage(4);
-					PolyTank::get().deleteGameObject(this);
-				}
+			if (pTank == PolyTank::get().getPlayer().getTank()) {
+				PolyTank::get().getPlayer().setDamage(4);
+				PolyTank::get().deleteGameObject(this);
 			}
 		}
 	});
@@ -64,11 +63,9 @@ PowerUpHealth::PowerUpHealth(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Dire
 		RigidBody* pColliderRB = dynamic_cast<RigidBody*>(pOther);
 		if (pColliderRB) {
 			Tank* pTank = dynamic_cast<Tank*>(pColliderRB->owner());
-			if (pTank) {
-				if (pTank == PolyTank::get().getPlayer().getTank()) {
-					PolyTank::get().getPlayer().getTank()->heal(40);
-					PolyTank::get().deleteGameObject(this);
-				}
+			if (pTank == PolyTank::get().getPlayer().getTank()) {
+				PolyTank::get().getPlayer().getTank()->heal(40);
+				PolyTank::get().deleteGameObject(this);
 			}
 		}
 	});
