@@ -57,7 +57,6 @@ void Player::initListeners(Graphics& gfx, Physics& pcs)
 	pMListener = pInteraction->addListener([this, &gfx, &pcs](const MouseEvent& e) -> void {
 		if (e.button == MouseEvent::Button::LEFT) {
 			shooting = true;
-			shotPower = 0.0f;
 		}
 		if (e.button == MouseEvent::Button::RIGHT) {
 			camera.setAim();
@@ -93,7 +92,7 @@ void Player::generateNewTank(Graphics& gfx, Physics& pcs, Level& lvl, SceneNode*
 	pTank = PolyTank::get().emplaceGameObject<Tank>(gfx, pcs, pRoot, lvl.worldPos(lvl.getRandomPathableNode()));
 	camera.assignTank(*pTank);
 	pTank->setDeathAction([this]() -> void {
-		PolyTank::get().getPlayer().tankDied();
+		tankDied();
 	});
 }
 

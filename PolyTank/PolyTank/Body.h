@@ -15,8 +15,11 @@ public:
 	void setPosition(DirectX::FXMVECTOR newPos);
 	void setRotation(DirectX::FXMVECTOR newRot);
 	
+	virtual float getMass() const = 0;
 	virtual float getInvMass() const = 0;
 	virtual void move(DirectX::FXMVECTOR translation);
+	virtual void addForce(DirectX::FXMVECTOR force) = 0;
+	virtual void update(float dt) = 0;
 
 	ConvexShape* getShape();
 

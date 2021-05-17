@@ -39,11 +39,19 @@ Menu::Menu(Graphics& gfx, Interaction* pInteraction) :
 		&pWTFTitle
 	);
 	pWTFTitle->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+	pRListener = pInteraction->addListener([this](const ResizeEvent& e) -> void {
+		this->resize(e.width, e.height);
+	});
 }
 
 Menu::~Menu() {
-	pInteraction->removeListener(pMListener);
-	pInteraction->removeListener(pRListener);
+	if (pMListener) {
+		pInteraction->removeListener(pMListener);
+	}
+	if (pRListener) {
+		pInteraction->removeListener(pRListener);
+	}
 }
 
 void Menu::initListeners()
@@ -58,10 +66,6 @@ void Menu::initListeners()
 				PolyTank::get().getWnd()->exit();
 			}
 		}
-		});
-
-	pRListener = pInteraction->addListener([this](const ResizeEvent& e) -> void {
-		this->resize(e.width, e.height);
 	});
 }
 
@@ -69,10 +73,6 @@ void Menu::removeListeners()
 {
 	if (pMListener) {
 		pInteraction->removeListener(pMListener);
-	}
-
-	if (pRListener) {
-		pInteraction->removeListener(pRListener);
 	}
 }
 

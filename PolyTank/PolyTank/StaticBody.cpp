@@ -8,6 +8,15 @@ StaticBody::StaticBody(std::unique_ptr<ConvexShape>&& pShape, DirectX::FXMVECTOR
 
 void StaticBody::move(DirectX::FXMVECTOR translation) {}
 
+void StaticBody::addForce(DirectX::FXMVECTOR f) {}
+
+void StaticBody::update(float dt) {}
+
+float StaticBody::getMass() const
+{
+	return std::numeric_limits<float>::infinity();
+}
+
 float StaticBody::getInvMass() const {
 	return 0.0f;
 }

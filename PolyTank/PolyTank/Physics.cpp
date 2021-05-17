@@ -51,19 +51,16 @@ size_t Physics::bodyCount() const
 void Physics::update(float t, float dt)
 {
 	for (auto& pBody : bodies) {
-		if (RigidBody* pRB = dynamic_cast<RigidBody*>(pBody.get())) {
-			XMVECTOR gravity = XMVectorSet(0.0f, pRB->getMass() * -g, 0.0f, 0.0f);
-			pRB->addForce(gravity);
+		if (pBody->getInvMass() != 0.0f) {
+			XMVECTOR gravity = XMVectorSet(0.0f, pBody->getMass() * -g, 0.0f, 0.0f);
+			pBody->addForce(gravity);
 		}
 	}
 
 	collisions();
 
 	for (auto& pBody : bodies) {
-		RigidBody* pRB = dynamic_cast<RigidBody*>(pBody.get());
-		if (pRB) {
-			pRB->update(dt);
-		}
+		pBody->update(dt);
 	}
 
 }

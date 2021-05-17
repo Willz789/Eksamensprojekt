@@ -12,11 +12,11 @@ public:
 
 	DirectX::XMVECTOR getLinMoment() const;
 	DirectX::XMVECTOR getAngMoment() const;
-	float getMass() const;
+	float getMass() const override;
 	float getInvMass() const override;
 	DirectX::XMMATRIX getInvInertia() const;
 
-	void addForce(DirectX::FXMVECTOR force);
+	void addForce(DirectX::FXMVECTOR force) override;
 	void addForce(DirectX::FXMVECTOR force, DirectX::FXMVECTOR point);
 	void addTorque(DirectX::FXMVECTOR torque);
 	void addMoment(DirectX::FXMVECTOR moment);
@@ -24,7 +24,7 @@ public:
 	
 	DirectX::XMVECTOR getForce();
 
-	void update(float dt);
+	void update(float dt) override;
 	IGameObject* owner() const;
 
 private:

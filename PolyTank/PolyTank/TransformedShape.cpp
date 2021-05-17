@@ -205,22 +205,27 @@ inline bool GJK(const MinkowskiDiff& diff, Simplex& simplex) {
 	
 	XMVECTOR dir = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	simplex = Simplex(diff.support(dir));
-	
+										  
 	if (!sameDir(simplex.last(), dir)) return false;
-
 	dir = -simplex.last();
 
+	size_t iteration = 0;
+	constexpr size_t maxIterations = 12;
 	while (true) {
 		simplex.next() = diff.support(dir);
 		
 		if (!sameDir(simplex.last(), dir)) {
-			return false;
+			return false;	
 		}
 
 		if (nextSimplex(simplex, dir, diff)) {
 			return true;
 		}
 
+		iteration++;
+		if (iteration > maxIterations) {
+			return false;
+		}
 	}
 }
 

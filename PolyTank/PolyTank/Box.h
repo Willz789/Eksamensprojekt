@@ -13,16 +13,4 @@ public:
 
 private:
 	float w, h, d;
-
-};
-
-class TransformedBox : public TransformedShape {
-public:
-	TransformedBox(const Box& box, DirectX::FXMMATRIX transform);
-
-	DirectX::XMVECTOR support(DirectX::FXMVECTOR dir) const override;
-	AABB getBoundingBox() const override;
-
-private:
-	DirectX::XMFLOAT3 corners[8];
 };

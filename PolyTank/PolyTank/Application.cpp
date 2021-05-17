@@ -44,7 +44,7 @@ void Application::run() {
 			gameObjects[i]->update(dt);
 		}
 		pcs.update(t, dt);
-		update(t, dt); 
+		update(t, dt);
 
 		size_t deleteListSize;
 		do {

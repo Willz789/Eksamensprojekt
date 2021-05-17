@@ -14,6 +14,11 @@ public:
 	Tank() = default;
 	Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, DirectX::FXMVECTOR initPos, DirectX::FXMVECTOR color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
+	Tank(const Tank&) = delete;
+	Tank& operator=(const Tank&) = delete;
+	Tank(Tank&&) = delete;
+	Tank& operator=(Tank&&) = delete;
+
 	~Tank();
 
 	void update(float dt) override;
@@ -38,7 +43,6 @@ public:
 	float getRotationSpeed();
 
 	void takeDamage(int32_t damage);
-	void die();
 	void heal(int32_t addedHealth);
 	int32_t getHealth();
 	int32_t getMaxHealth();

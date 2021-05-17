@@ -11,6 +11,11 @@ class Enemy : public IGameObject
 public:
 	Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level& lvl, Node startNode);
 
+	Enemy(const Enemy&) = delete;
+	Enemy& operator=(const Enemy&) = delete;
+	Enemy(Enemy&&) = delete;
+	Enemy& operator=(Enemy&&) = delete;
+	
 	~Enemy();
 
 	void update(float dt);

@@ -16,9 +16,14 @@ Enemy::Enemy(Graphics& gfx, Physics& pcs, SceneNode* pRoot, Tank* pTarget, Level
 	pLvl = &lvl;
 
 	pTank->setDeathAction([this]() -> void {
+
 		PolyTank::get().deleteGameObject(this);
+		PolyTank::get().deleteGameObject(pTank);
+		pTank = nullptr;
+
 		PolyTank::get().getPlayer().addPoints(1);
 		PolyTank::get().enemyDied();
+
 	});
 }
 
@@ -28,7 +33,12 @@ Enemy::~Enemy()
 		pathBuilder.join();
 	}
 
-	PolyTank::get().deleteGameObject(pTank);
+	if (pTank) {
+		PolyTank::get().deleteGameObject(pTank);
+		pTank = nullptr;
+	}
+
+	std::cout << "deleted enemy";
 }
 
 void Enemy::update(float dt)

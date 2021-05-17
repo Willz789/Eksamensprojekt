@@ -24,6 +24,8 @@ void setColor(SceneNode* pNode, FXMVECTOR color) {
 }
 
 Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, FXMVECTOR initPos, FXMVECTOR color) :
+	turretYaw(0.0f),
+	turretPitch(0.0f),
 	maxHealth(100),
 	health(100) {
 
@@ -31,9 +33,6 @@ Tank::Tank(Graphics& gfx, Physics& pcs, SceneNode* pRoot, FXMVECTOR initPos, FXM
 	pNode = pRoot->lastChild();
 
 	setColor(pNode, color);
-
-	turretYaw = 0.0f;
-	turretPitch = 0.0f;
 
 	pRB = pcs.emplaceBody<RigidBody>(
 		std::make_unique<Box>(boxDims.x, boxDims.y, boxDims.z),
@@ -165,14 +164,9 @@ void Tank::takeDamage(int32_t damage)
 {
 	health -= damage;
 
-	if (health <= 0) {
-		die();
+	if (onDeath && health <= 0) {
+		onDeath();
 	}
-}
-
-void Tank::die()
-{
-	onDeath();
 }
 
 void Tank::heal(int32_t addedHealth)

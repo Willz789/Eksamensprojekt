@@ -36,6 +36,7 @@ void PolyTank::update(float t, float dt) {
 		if (enemiesLeft <= 0) {
 			startRound(++roundIdx);
 		}
+
 		level.update(t, dt);
 		player.update(gfx, pcs, dt);
 		gfx.setCamera(player.getCamera()->viewMatrix());
@@ -94,6 +95,7 @@ void PolyTank::startRound(uint32_t roundIndex)
 
 	pcs.update(0.0f, 0.0f);
 	resetTime();
+	std::cout << "started round " << roundIndex << "\n";
 }
 
 void PolyTank::toMenu()
@@ -120,8 +122,6 @@ void PolyTank::toMenu()
 
 	GLTF::Loader("./Models/tank/tank.gltf").getScene(gfx, scene.getRoot());
 	GLTF::Loader("./Models/ground/ground.gltf").getScene(gfx, scene.getRoot());
-
-
 
 	resetTime();
 }
