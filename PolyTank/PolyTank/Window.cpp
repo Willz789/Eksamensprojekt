@@ -49,6 +49,8 @@ Window::Window(uint32_t width, uint32_t height, const std::string& title) {
 		throw std::runtime_error("failed to create window.");
 	}
 
+	interaction = Interaction(hWnd);
+
 	hWndToWnd[hWnd] = this;
 }
 
@@ -128,7 +130,13 @@ LRESULT Window::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_MOUSEWHEEL:
 
 		return 0;
+
+	case WM_MOUSEMOVE:
+		getWndPtr(hWnd)->interaction.mouseMove(LOWORD(lParam), HIWORD(lParam));
+		return 0;
+
 	}
+
 
 	return DefWindowProcA(hWnd, uMsg, wParam, lParam);
 }

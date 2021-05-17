@@ -1,9 +1,16 @@
-
 #include "Polytank.h"
 
 int main() {
-	PolyTank game;
-	game.run();
-
+	PolyTank::get().run();
+	
 	return 0;
+}
+
+int WinMain(
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	LPSTR     lpCmdLine,
+	int       nShowCmd
+) {
+	main();
 }

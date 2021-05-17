@@ -1,7 +1,5 @@
 #pragma once
 
-class PolyTank;
-
 #include "Util.h"
 #include "Graphics.h"
 #include "Window.h"
@@ -9,8 +7,11 @@ class PolyTank;
 class Menu
 {
 public:
-	Menu(Graphics& gfx, PolyTank& polyTank);
+	Menu(Graphics& gfx, Interaction* pInteraction);
 	~Menu();
+
+	void initListeners();
+	void removeListeners();
 
 	void resize(uint32_t w, uint32_t h);
 	void draw(Graphics& gfx);
@@ -26,8 +27,8 @@ private:
 	D2D1_RECT_F startGameRect;
 	D2D1_RECT_F endGameRect;
 
-	Interaction* interaction;
-	MouseListener* buttonListener;
-	ResizeListener* resizeListener;
+	Interaction* pInteraction;
+	MouseListener* pMListener;
+	ResizeListener* pRListener;
 };
 

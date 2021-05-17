@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Util.h"
+
 #include <bitset>
 #include <list>
 #include <functional>
@@ -7,10 +9,11 @@
 struct MouseEvent {
 	enum class Button{
 		LEFT,
-		RIGHT
+		RIGHT,
+		MOVE
 	};
 
-	uint32_t mousex, mousey;
+	int32_t mousex, mousey;
 
 	Button button;
 };
@@ -32,11 +35,12 @@ class Interaction
 	friend class Window;
 public:
 	Interaction() = default;
-	bool lMouseDown;
-	bool rMouseDown;
+	Interaction(HWND hWnd);
 
-	std::bitset<256> keysDown;
 	bool keyDown(char key);
+
+	void setCursorLocked(bool cursorLocked);
+	void setCursorVisible(bool cursorVisible);
 
 	MouseListener* addListener(MouseListener ml);
 	KeyListener* addListener(KeyListener kl);
@@ -52,13 +56,24 @@ private:
 	void rMouseClick(uint32_t x, uint32_t y);
 	void resize(uint32_t w, uint32_t h);
 
+	void mouseMove(uint32_t x, uint32_t y);
+
 	void keyClick(char key);
 
+public:
+	bool lMouseDown;
+	bool rMouseDown;
+
+	std::bitset<256> keysDown;
 
 private:
 	std::list<MouseListener> mouseListeners;
 	std::list<KeyListener> keyListeners;
 	std::list<ResizeListener> resizeListeners;
 
+	bool cursorLocked;
+	bool cursorVisible;
+
+	HWND hWnd;
 };
 

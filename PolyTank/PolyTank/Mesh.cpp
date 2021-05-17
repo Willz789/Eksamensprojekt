@@ -1,18 +1,24 @@
 #include "Mesh.h"
 
-void Mesh::draw(Graphics& gfx, DirectX::XMMATRIX transform)
+#include "IndexBuffer.h"
+
+#include <iostream>
+
+void Mesh::draw(Graphics& gfx, DirectX::XMMATRIX transform) const
 {
-	for (Drawable& d : drawables) {
-		d.draw(gfx, transform);
+	for (auto& pBindable : bindables) {
+		pBindable->bind(gfx);
 	}
+
+	gfx.drawIndexed(indexCount, transform);
 }
 
-void Mesh::addDrawable(Drawable&& drawable)
-{
-	drawables.emplace_back(std::move(drawable));
-}
+void Mesh::addBindable(std::shared_ptr<IBindable> pBindable) {
 
-void Mesh::reset()
-{
-	drawables.clear();
+	std::shared_ptr<IndexBuffer> pib = std::dynamic_pointer_cast<IndexBuffer>(pBindable);
+	if (pib) {
+		indexCount = pib->getIndexCount();
+	}
+
+	bindables.push_back(pBindable);
 }

@@ -139,7 +139,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -151,8 +151,20 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BindableManager.cpp" />
+    <ClCompile Include="BlendState.cpp" />
+    <ClCompile Include="Body.cpp" />
+    <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Polyhedron.cpp" />
+    <ClCompile Include="PowerUp.cpp" />
+    <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
-    <ClCompile Include="Drawable.cpp" />
+    <ClCompile Include="DepthState.cpp" />
+    <ClCompile Include="Explosion.cpp" />
+    <ClCompile Include="Fire.cpp" />
+    <ClCompile Include="InstanceBuffer.cpp" />
     <ClCompile Include="GLTFLoader.cpp" />
     <ClCompile Include="GLTFMaterial.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -160,14 +172,20 @@
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="Interaction.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="PolyTank.cpp" />
     <ClCompile Include="PrimitiveTopology.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderCommon.cpp" />
+    <ClCompile Include="StaticBody.cpp" />
+    <ClCompile Include="Tank.cpp" />
+    <ClCompile Include="TransformedShape.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -175,8 +193,23 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="BindableManager.h" />
+    <ClInclude Include="BlendState.h" />
+    <ClInclude Include="Body.h" />
+    <ClInclude Include="Box.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="IGameObject.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Polyhedron.h" />
+    <ClInclude Include="PowerUp.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
-    <ClInclude Include="Drawable.h" />
+    <ClInclude Include="ConvexShape.h" />
+    <ClInclude Include="DepthState.h" />
+    <ClInclude Include="Explosion.h" />
+    <ClInclude Include="IDrawable.h" />
+    <ClInclude Include="Fire.h" />
+    <ClInclude Include="InstanceBuffer.h" />
     <ClInclude Include="GLTFLoader.h" />
     <ClInclude Include="GLTFMaterial.h" />
     <ClInclude Include="HUD.h" />
@@ -184,20 +217,51 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="Physics.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="PolyTank.h" />
     <ClInclude Include="PrimitiveTopology.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderCommon.h" />
     <ClInclude Include="Interaction.h" />
+    <ClInclude Include="StaticBody.h" />
+    <ClInclude Include="Tank.h" />
+    <ClInclude Include="TransformedShape.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="ExplosionPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="ExplosionVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="FirePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="FireVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

@@ -2,8 +2,24 @@
 
 #include <queue>
 
+Interaction::Interaction(HWND hWnd) :
+	hWnd(hWnd),
+	cursorLocked(false),
+	cursorVisible(true) {}
+
 bool Interaction::keyDown(char key) {
 	return keysDown[key];
+}
+
+void Interaction::setCursorLocked(bool cursorLocked) {
+	this->cursorLocked = cursorLocked;
+}
+
+void Interaction::setCursorVisible(bool cursorVisible) {
+	if (this->cursorVisible ^ cursorVisible) {
+		ShowCursor(cursorVisible);
+		this->cursorVisible = cursorVisible;
+	}
 }
 
 void Interaction::lMouseClick(uint32_t x, uint32_t y)
@@ -46,6 +62,51 @@ void Interaction::resize(uint32_t w, uint32_t h) {
 
 	std::queue<ResizeListener> executionQueue;
 	for (auto it = resizeListeners.begin(); it != resizeListeners.end(); it++) {
+		executionQueue.push(*it);
+	}
+	while (!executionQueue.empty()) {
+		executionQueue.front()(e);
+		executionQueue.pop();
+	}
+}
+
+void Interaction::mouseMove(uint32_t x, uint32_t y)
+{
+	MouseEvent e;
+	e.button = MouseEvent::Button::MOVE;
+
+	if (cursorLocked) {
+		if (hWnd != GetActiveWindow()) return;
+
+		POINT cursor;
+		GetCursorPos(&cursor);
+		ScreenToClient(hWnd, &cursor);
+
+		RECT clientRect;
+		GetClientRect(hWnd, &clientRect);
+
+		POINT center = {
+			(clientRect.right) / 2,
+			(clientRect.bottom) / 2
+		};
+		
+		e.mousex = cursor.x - center.x;
+		e.mousey = cursor.y - center.y;
+
+		if (x == 0 && y == 0) {
+			return;
+		}
+
+		ClientToScreen(hWnd, &center);
+		SetCursorPos(center.x, center.y);
+	} else {
+		e.mousex = x;
+		e.mousey = y;
+	}
+
+
+	std::queue<MouseListener> executionQueue;
+	for (auto it = mouseListeners.begin(); it != mouseListeners.end(); it++) {
 		executionQueue.push(*it);
 	}
 	while (!executionQueue.empty()) {

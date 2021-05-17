@@ -18,7 +18,11 @@ void SceneNode::draw(Graphics& gfx, XMMATRIX parentTransform)
 		XMLoadFloat3(&translation)
 	);
 	XMMATRIX thisTransform = thisToParent * parentTransform;
-	mesh.draw(gfx, thisTransform);
+	
+	for (auto& pDrawable : drawables) {
+		pDrawable->draw(gfx, thisTransform);
+	}
+
 	for (SceneNode& child : children) {
 		child.draw(gfx, thisTransform);
 	}
@@ -30,11 +34,6 @@ SceneNode* SceneNode::addChild()
 	return &children.back();
 }
 
-Mesh* SceneNode::getMesh()
-{
-	return &mesh;
-}
-
 SceneNode* SceneNode::getChild(size_t index)
 {
 	auto it = children.begin();
@@ -42,6 +41,64 @@ SceneNode* SceneNode::getChild(size_t index)
 		it++;
 	}
 	return &*it;
+}
+
+SceneNode* SceneNode::lastChild() {
+	return &children.back();
+}
+
+SceneNode* SceneNode::getParent()
+{
+	return pParent;
+}
+
+void SceneNode::deleteChild(SceneNode* pChild)
+{
+	for (auto it = children.begin(); it != children.end(); it++) {
+		if (pChild == &(*it)) {
+			children.erase(it);
+			break;
+		}
+	}
+}
+
+size_t SceneNode::childCount() const
+{
+	return children.size();
+}
+
+void SceneNode::deleteNode()
+{
+	pParent->deleteChild(this);
+}
+
+bool SceneNode::isLeaf() const
+{
+	return children.empty();
+}
+
+IDrawable* SceneNode::addDrawable(std::unique_ptr<IDrawable>&& pDrawable) {
+	drawables.push_back(std::move(pDrawable));
+	return drawables.back().get();
+}
+
+IDrawable* SceneNode::getDrawable(size_t idx)
+{
+	return drawables[idx].get();
+}
+
+void SceneNode::removeDrawable(IDrawable* pDrawable) {
+	for (auto it = drawables.begin(); it != drawables.end(); it++) {
+		if (it->get() == pDrawable) {
+			drawables.erase(it);
+			break;
+		}
+	}
+}
+
+size_t SceneNode::drawableCount() const
+{
+	return drawables.size();
 }
 
 DirectX::XMMATRIX SceneNode::localToParent() const {
@@ -99,17 +156,16 @@ void SceneNode::reset()
 void SceneNode::clear()
 {
 	children.clear();
-	mesh.reset();
+	drawables.clear();
 }
 
 Scene::Scene(Graphics& gfx) : 
 	root(nullptr),
 	lightingCBuf(gfx, 0, sizeof(Lighting)) {
 	
-	XMStoreFloat3(&lighting.sun.direction, XMVector3Normalize(XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f)));
+	XMStoreFloat3(&lighting.sun.direction, XMVector3Normalize(XMVectorSet(1.0f, -1.0f, -1.0f, 0.0f)));
 	XMStoreFloat3(&lighting.sun.color, XMVectorSet(3.0f, 3.0f, 3.0f, 0.0f));
 	XMStoreFloat3(&lighting.ambient.color, XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f));
-
 }
 
 void Scene::draw(Graphics& gfx)

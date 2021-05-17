@@ -40,11 +40,29 @@
     <Filter Include="Source Files\Game">
       <UniqueIdentifier>{083f1343-ff77-4e3a-91dc-5ff4f5ace82b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\ParticleEffects">
+      <UniqueIdentifier>{996dffcf-d3cc-45b4-9cc9-8a09449dbda4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\ParticleEffects">
+      <UniqueIdentifier>{80be1afd-4460-4b43-b53b-bf56d28a2fd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\ParticleEffects">
+      <UniqueIdentifier>{02434b29-cbc5-4414-9ddd-c4a8e6c24be9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Physics">
+      <UniqueIdentifier>{4c0840cd-6b03-464b-9b21-3eaacd16e285}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Physics">
+      <UniqueIdentifier>{f4f3347b-8834-4796-8751-67ea1f3c6fa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Geometry">
+      <UniqueIdentifier>{7bfbc146-1120-4431-bb46-b15d5a1f8c27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Geometry">
+      <UniqueIdentifier>{09ba8b5c-087f-4eb5-a617-17578dbcf8c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Drawable.cpp">
-      <Filter>Source Files\Engine\Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="VertexBuffer.cpp">
       <Filter>Source Files\Engine\Rendering\Bindables</Filter>
     </ClCompile>
@@ -99,6 +117,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
+    <ClCompile Include="InstanceBuffer.cpp">
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
+    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files\Engine\Rendering</Filter>
     </ClCompile>
@@ -108,12 +129,63 @@
     <ClCompile Include="HUD.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Fire.cpp">
+      <Filter>Source Files\Game\ParticleEffects</Filter>
+    </ClCompile>
+    <ClCompile Include="BlendState.cpp">
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthState.cpp">
+      <Filter>Source Files\Engine\Rendering\Bindables</Filter>
+    </ClCompile>
+    <ClCompile Include="Explosion.cpp">
+      <Filter>Source Files\Game\ParticleEffects</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Source Files\Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformedShape.cpp">
+      <Filter>Source Files\Engine\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>Source Files\Engine\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticBody.cpp">
+      <Filter>Source Files\Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Body.cpp">
+      <Filter>Source Files\Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Polyhedron.cpp">
+      <Filter>Source Files\Engine\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="PowerUp.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IBindable.h">
-      <Filter>Header Files\Engine\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Drawable.h">
       <Filter>Header Files\Engine\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="VertexBuffer.h">
@@ -170,6 +242,9 @@
     <ClInclude Include="PolyTank.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
+    <ClInclude Include="InstanceBuffer.h">
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
+    </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Header Files\Engine\Rendering</Filter>
     </ClInclude>
@@ -178,6 +253,72 @@
     </ClInclude>
     <ClInclude Include="HUD.h">
       <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files\Engine\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="IDrawable.h">
+      <Filter>Header Files\Engine\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Fire.h">
+      <Filter>Header Files\Game\ParticleEffects</Filter>
+    </ClInclude>
+    <ClInclude Include="BlendState.h">
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthState.h">
+      <Filter>Header Files\Engine\Rendering\Bindables</Filter>
+    </ClInclude>
+    <ClInclude Include="Explosion.h">
+      <Filter>Header Files\Game\ParticleEffects</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Header Files\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvexShape.h">
+      <Filter>Header Files\Engine\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformedShape.h">
+      <Filter>Header Files\Engine\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>Header Files\Engine\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticBody.h">
+      <Filter>Header Files\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Body.h">
+      <Filter>Header Files\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Polyhedron.h">
+      <Filter>Header Files\Engine\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="PowerUp.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="IGameObject.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -189,6 +330,18 @@
     </FxCompile>
     <FxCompile Include="ShadowVS.hlsl">
       <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="FirePS.hlsl">
+      <Filter>Shaders\ParticleEffects</Filter>
+    </FxCompile>
+    <FxCompile Include="FireVS.hlsl">
+      <Filter>Shaders\ParticleEffects</Filter>
+    </FxCompile>
+    <FxCompile Include="ExplosionVS.hlsl">
+      <Filter>Shaders\ParticleEffects</Filter>
+    </FxCompile>
+    <FxCompile Include="ExplosionPS.hlsl">
+      <Filter>Shaders\ParticleEffects</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

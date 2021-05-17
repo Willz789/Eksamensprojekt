@@ -23,6 +23,8 @@ public:
 
 	void bind(Graphics& gfx) override;
 
+	size_t getVertexCount();
+
 	static std::string uid(const std::string& name, const std::vector<DefaultVertex>& vertices);
 	static std::string uid(const std::string& name, const void* pData, size_t vertexCount, size_t vertexSize);
 
